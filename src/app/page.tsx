@@ -1,7 +1,8 @@
 // import styles from './page.module.css'
 import type { Metadata } from 'next'
 
-import Windows from '@/components/Windows/Base'
+// import Windows from '@/components/Windows/Base'
+import Windows from '../components/Windows/Base'
 
 export const metadata:Metadata = {
     title: "Anthon's Windows98",
