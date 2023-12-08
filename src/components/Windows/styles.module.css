@@ -1,0 +1,643 @@
+.main {
+    /* border: 1px solid green; */
+    background-color: var(--background);
+    min-width: 100%;
+    min-height: 100%;
+    /* border-radius: 5px; */
+    padding: 0px;
+    overflow: hidden;
+    position: relative;
+    font-family: 'Windows95', sans-serif;
+
+    z-index: 0;
+}
+
+.highlightBox {
+    color: inherit;
+    position: absolute;
+    border: 1px solid rgb(0, 65, 65);
+    background-color: rgba(0, 194, 194, 0.25);
+}
+
+
+.button {
+    background-color: var(--windows-grey);
+    border-top: 1px solid #fff;
+    border-left: 1px solid #fff;
+    border-right: 1px solid gray;
+    border-bottom: 1px solid gray;
+    box-shadow: inset 1px 1px #dfdfdf, 1px 0 #000, 0 1px #000, 1px 1px #000;
+    margin-right: 2px;
+    margin-bottom: 2px;
+}
+
+.button.selected {
+    border-right: 1px solid #fff;
+    border-bottom: 1px solid #fff;
+    border-left: 1px solid gray;
+    border-top: 1px solid gray;
+    box-shadow: inset -1px -1px #dfdfdf, -1px 0 #000, 0 -1px #000, -1px -1px #000;
+}
+
+.buttonContent {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: left;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    .image {
+        width: 20px;
+        height: 15px;
+        margin-left: 4px;
+        display: inline;
+        pointer-events: none;
+    }
+    .text {
+        color: black;
+        font-size: inherit;
+        margin-left: 4px;
+        margin-right: 4px;
+        font-family: 'Windows95', sans-serif;
+        letter-spacing: 1px;
+    
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: inline;
+    }
+}
+
+.border {
+    border-right: 1px solid #fff;
+    border-bottom: 1px solid #fff;
+    border-left: 1px solid gray;
+    border-top: 1px solid gray;
+    box-shadow: inset -1px -1px #dfdfdf, -1px 0 #000, 0 -1px #000, -1px -1px #000;
+}
+
+.divider {
+    height: 10px;
+}
+.input {
+    background-color: white;
+    color: black;
+    border: none;
+    padding: 2px;
+}
+.input:focus {
+    /* border: none; */
+    outline: none;
+}
+.textarea {
+    background-color: white;
+    color: black;
+    border: none;
+    padding: 2px;
+    resize: vertical;
+}
+.textarea:focus {
+    outline: none;
+}
+.inverseBoxShadow {
+    border-right: 1px solid #fff;
+    border-bottom: 1px solid #fff;
+    border-left: 1px solid gray;
+    border-top: 1px solid gray;
+    box-shadow: inset -1px -1px #dfdfdf, -1px 0 #000, 0 -1px #000, -1px -1px #000;
+    /* margin: 4px;
+    box-shadow: -2px -2px black,
+                -2px 0 black,
+                0 -2px black,
+                -4px -4px #75747a,
+                -4px 0 #75747a,
+                0 -4px #75747a,
+                2px 2px #e3e3e3,
+                0 2px #e3e3e3,
+                2px 0 #e3e3e3,
+                2px -2px #e3e3e3,
+                -2px 2px #e3e3e3,
+                -4px 2px #75747a,
+                -4px 4px white,
+                4px 4px white,
+                4px 0 white,
+                0 4px white,
+                2px -4px #75747a,
+                4px -4px white; */
+}
+
+
+
+
+.bottomBar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: var(--bottom-height);
+    background-color: var(--windows-grey);
+    box-shadow: inset 1px 0 #fff;
+    user-select: none;
+    border-top: 1px solid #f4f4f4;
+    border-bottom: 1px solid #4e4e4e;
+
+    /* display: flex; */
+    /* justify-content: space-between;  */
+    /* flex: 0 0 auto; */
+
+    z-index: 100;
+}
+
+.bottomBar>div {
+    display: inline-block;
+    position: absolute;
+    top: 0px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.bottomBar .leftContainer {
+    left: 0px;
+}
+
+.bottomBar .middleContainer {
+    left: 80px;
+    right: 50px;
+}
+
+.bottomBar .rightContainer {
+    right: 0px;
+}
+
+.bottomBar .clock {
+    color: black;
+    margin: 0px 3px;
+    padding: 0 6px;
+
+    border-right: 1px solid #fff;
+    border-bottom: 1px solid #fff;
+    border-left: 1px solid gray;
+    border-top: 1px solid gray;
+    box-shadow: inset -1px -1px #dfdfdf, -1px 0 #000, 0 -1px #000, -1px -1px #000;
+}
+
+
+.bottomButton {
+    padding-left: 2px;
+    padding-right: 2px;
+    margin-left: 3px;
+    margin-right: 2px;
+    height: 22px;
+
+    display: flex;
+    justify-content: center;
+
+    flex-shrink: 1;
+    box-sizing: border-box;
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.bottomButtonWindow {
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.bottomButtonStart {
+    width: 70px;
+    height: 24px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.bottomButtonStart.selected .buttonContent img {
+    width: 18px;
+    height: 13px;
+}
+
+.bottomButtonStart.selected .buttonContent p {
+    font-size: 13px;
+}
+
+
+
+
+.desktopIcon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: center;
+    padding: 5px;
+    overflow: hidden;
+
+    width: 100px;
+    height: 100px;
+
+    position: absolute;
+    z-index: 5;
+}
+
+.desktopIcon.selected {
+    background-color: var(--grey-light-hover);
+}
+
+.desktopIconImage {
+    max-width: 100%;
+    max-height: 100%;
+    width: 65%;
+    height: auto;
+    pointer-events: none;
+    user-select: none;
+}
+
+.desktopIconText {
+    word-wrap: break-word;
+    margin-top: 5px;
+    flex-grow: 1;
+    /* Allow the text to expand downward */
+    font-size: 14px;
+    pointer-events: none;
+    user-select: none;
+
+    font-family: 'Windows95', sans-serif;
+    /* font-weight: bold; */
+    letter-spacing: 1px;
+}
+
+
+/* Enable hover only on non-touch devices */
+@media (hover: hover) and (pointer: fine) {
+    .desktopIcon:hover {
+        background-color: var(--grey-hover);
+    }
+}
+
+
+
+.startMenu {
+    z-index: 200;
+
+    position: absolute;
+    bottom: calc(var(--bottom-height) - 1px);
+    left: 2px;
+    width: 200px;
+    /* height: 200px; */
+    background-color: var(--windows-grey);
+    border-left: 2px solid white;
+    border-top: 2px solid white;
+    border-right: 2px solid grey;
+    border-bottom: 2px solid grey;
+}
+
+.startMenu .blueBar {
+    background: linear-gradient(to bottom, #000080, #1084d0);
+    display: inline-block;
+    width: 25px;
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+}
+
+.startMenu .headline {
+    transform: rotate(-90deg);
+    transform-origin: 0% 0%;
+    width: 150%;
+    padding-top: 4px;
+    padding-bottom: 3px;
+    padding-left: 0px;
+    color: white;
+    position: absolute;
+    bottom: 0;
+    text-align: left;
+    margin-bottom: -15px;
+
+    font-weight: bold;
+}
+
+.startMenu .headline span {
+    font-weight: normal;
+}
+
+.startMenu .menuContent .item {
+    margin-left: 25px;
+    display: flex;
+    align-items: center;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    color: black;
+}
+
+.startMenu .menuContent .item.more {
+    position: relative;
+}
+
+.startMenu .menuContent .item.more::after {
+    content: "►";
+    position: absolute;
+    right: 7px;
+}
+
+.startMenu .menuContent .item .itemIcon {
+    width: 25px;
+    height: 25px;
+    margin-left: 6px;
+}
+
+.startMenu .menuContent .item .itemText {
+    margin-left: 6px;
+    user-select: none;
+}
+
+
+.startMenu .menuContent .item.more .dropdownContent {
+    display: none;
+    position: absolute;
+    list-style: none;
+    background-color: #bdbebd;
+    color: black;
+    border-left: 2px solid white;
+    border-top: 2px solid white;
+    border-right: 2px solid grey;
+    border-bottom: 2px solid grey;
+    box-sizing: border-box;
+}
+
+.dropdownContent .dropdownItem {
+    display: flex;
+    align-items: center;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    color: black;
+    font-size: 15px;
+    white-space: nowrap;
+}
+
+.dropdownContent .dropdownItem .dropdownItemIcon {
+    width: 15px;
+    height: 15px;
+    margin-left: 5px;
+}
+
+.dropdownContent .dropdownItem .dropdownItemText {
+    user-select: none;
+    margin-left: 7px;
+}
+
+
+/* Enable hover only on non-touch devices */
+@media (hover: hover) and (pointer: fine) {
+    .startMenu .menuContent .item:hover {
+        background-color: var(--blue-dark);
+        color: white;
+    }
+
+    .startMenu .menuContent .item.more:hover .dropdownContent {
+        display: block;
+        top: -2px;
+        left: 100%;
+        min-width: 100%;
+    }
+
+    .dropdownContent .dropdownItem:hover {
+        color: white;
+        background-color: var(--blue-dark);
+    }
+}
+
+
+.windowParent {
+    /* pointer-events: none; */
+}
+
+.window {
+    z-index: 10;
+    position: absolute;
+
+    border: 2px solid #7c7c7c;
+    border-top-color: #fff;
+    border-bottom-color: #131313;
+    border-left-color: #fff;
+    background: #c0c0c0;
+    max-width: 100%;
+    resize: both;
+    min-width: 100px;
+    min-height: 40px;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.window.active {
+    z-index: 90;
+    border-color: #1084d0;
+}
+
+.window.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.windowContent {
+    flex: 1 1 auto;
+    margin: 3px;
+    overflow: hidden;
+
+    
+    /* border-right: 1px solid #fff;
+    border-bottom: 1px solid #fff;
+    border-left: 1px solid gray;
+    border-top: 1px solid gray;
+    box-shadow: inset -1px -1px #dfdfdf, -1px 0 #000, 0 -1px #000, -1px -1px #000;
+    background-color: white; */
+}
+
+.windowHeader {
+    background: var(--blue-dark);
+    color: white;
+    padding: 4px;
+    font-weight: bold;
+    display: flex;
+    /* Use flex container */
+    justify-content: space-between;
+    /* Space content evenly */
+    flex: 0 0 auto;
+}
+
+.windowTitle {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font: inherit;
+    letter-spacing: 1px;
+    /* display: inline-block; */
+    display: flex;
+    align-items: center;
+
+    white-space: nowrap;
+    /* Prevent text from wrapping */
+    overflow: hidden;
+    /* Hide the overflowing content */
+    text-overflow: ellipsis;
+}
+
+.windowIcon {
+    width: 20px;
+    height: 100%;
+    margin-right: 4px;
+    margin-left: 4px;
+    display: inline;
+    pointer-events: none;
+}
+
+.windowTitleText {
+    height: 100%;
+
+    display: inline;
+    margin-left: 7px;
+}
+
+.windowButtons {
+    display: flex;
+    align-items: center;
+    /* Align items vertically in the middle */
+}
+
+.windowButton {
+    background: no-repeat center #ccc;
+    height: 17px;
+    width: 17px;
+    margin-left: 2px;
+    background-size: 80%;
+}
+
+.windowButton.close {
+    background-image: url(/assets/images/icons/close_icon.png);
+}
+
+.windowButton.help {
+    background-image: url(/assets/images/icons/question_icon.png);
+}
+
+.windowButton.hide {
+    background-image: url(/assets/images/icons/hide_icon.png);
+}
+
+.windowButton.max {
+    background-image: url(/assets/images/icons/max_icon.png);
+    background-size: 90%;
+}
+
+.windowButton.min {
+    background-image: url(/assets/images/icons/min_icon.png);
+    background-size: 90%;
+}
+
+.windowButton.close.selected,
+.windowButton.help.selected,
+.windowButton.hide.selected {
+    /* border: 1px solid red; */
+    background-size: 75%;
+}
+
+.windowButton.max.selected,
+.windowButton.min.selected {
+    /* border: 1px solid red; */
+    background-size: 85%;
+}
+
+
+
+.dragToResize {
+    position: absolute;
+}
+
+.bottomRight {
+    bottom: -4px;
+    right: -4px;
+    height: 6px;
+    width: 6px;
+}
+
+.bottomLeft {
+    bottom: -4px;
+    left: -4px;
+    height: 6px;
+    width: 6px;
+}
+
+.topRight {
+    top: -4px;
+    right: -4px;
+    height: 6px;
+    width: 6px;
+}
+
+.topLeft {
+    top: -4px;
+    left: -4px;
+    height: 6px;
+    width: 6px;
+}
+
+.top,
+.bottom {
+    left: 50%;
+    transform: translateX(-50%);
+    height: 4px;
+    width: 98%;
+}
+
+.top {
+    top: -4px;
+}
+
+.bottom {
+    bottom: -4px;
+}
+
+.left,
+.right {
+    top: 50%;
+    transform: translateY(-50%);
+    height: 98%;
+    width: 4px;
+}
+
+.left {
+    left: -4px;
+}
+
+.right {
+    right: -4px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+
+    .bottomRight:hover,
+    .topLeft:hover {
+        cursor: nwse-resize;
+    }
+
+    .bottomLeft:hover,
+    .topRight:hover {
+        cursor: nesw-resize;
+    }
+
+    .top:hover,
+    .bottom:hover {
+        cursor: ns-resize;
+    }
+
+    .left:hover,
+    .right:hover {
+        cursor: ew-resize;
+    }
+}
