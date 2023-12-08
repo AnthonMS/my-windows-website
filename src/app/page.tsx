@@ -10,7 +10,7 @@ export const metadata:Metadata = {
     authors: [{ name: 'Anthon', url: 'https://AnthonMS.dk' }],
     creator: 'Anthon Mølgaard Steiness',
     icons: [
-        '/assets/images/icons/windows98.png'
+        '/Assets/Images/Icons/windows98.png'
     ]
 }
 
