@@ -1,5 +1,5 @@
-import styles from './page.module.css'
-import type { Metadata, ResolvingMetadata } from 'next'
+// import styles from './page.module.css'
+import type { Metadata } from 'next'
 
 import Windows from '@/components/Windows/Base'
 
@@ -15,12 +15,7 @@ export const metadata:Metadata = {
 
 export default function Home() {
     return <>
-        {/* <Head>
-            <title>Your Custom Title</title>
-            <meta name="description" content="Your custom description" />
-        </Head> */}
         <Windows />
-
     </>
 
 }
