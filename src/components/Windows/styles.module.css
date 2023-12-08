@@ -349,11 +349,13 @@
     width: 25px;
     height: 25px;
     margin-left: 6px;
+    pointer-events: none;
 }
 
 .startMenu .menuContent .item .itemText {
     margin-left: 6px;
     user-select: none;
+    pointer-events: none;
 }
 
 
@@ -384,11 +386,14 @@
     width: 15px;
     height: 15px;
     margin-left: 5px;
+    pointer-events: none;
 }
 
 .dropdownContent .dropdownItem .dropdownItemText {
     user-select: none;
     margin-left: 7px;
+    margin-right: 5px;
+    pointer-events: none;
 }
 
 

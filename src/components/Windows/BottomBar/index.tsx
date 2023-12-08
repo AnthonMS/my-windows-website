@@ -11,10 +11,13 @@ import StartMenu from '../StartMenu'
 export interface BottomBarProps {
     update?: Boolean
     triggerUpdate?: Function
+    openWindow: Function
 }
 const BottomBar = (props: BottomBarProps) => {
-    const { update, triggerUpdate } = props
+    const { update, triggerUpdate, openWindow } = props
     const [showStart, setShowStart] = useState<Boolean>(false)
+    const toggleStartMenu = () => {setShowStart(prev => !prev);if (triggerUpdate) {triggerUpdate()}}
+
     const startBtn = useRef<HTMLDivElement>(null)
 
     const [windowElements, setWindowElements] = useState<Array<Element>>([])
@@ -50,9 +53,8 @@ const BottomBar = (props: BottomBarProps) => {
         }
 
         if (currentElement === null) {
-            // The click is outside the 'startMenu'; you can close the menu here
+            // The click is outside 'startMenu'
             setShowStart(false)
-            startBtn.current?.classList.remove(styles.selected)
         }
     }
 
@@ -141,7 +143,7 @@ const BottomBar = (props: BottomBarProps) => {
     return <>
         <div className={styles.bottomBar}>
             <div className={styles.leftContainer}>
-                <div ref={startBtn} className={`${styles.button} ${styles.bottomButton} ${styles.bottomButtonStart}`}
+                <div ref={startBtn} className={`${styles.button} ${styles.bottomButton} ${styles.bottomButtonStart} ${showStart ? styles.selected : ''}`}
                     onClick={click}>
                     <div className={styles.buttonContent}>
                         <Image className={styles.image} src={windowsLogo} alt={`windows-logo`} />
@@ -176,7 +178,7 @@ const BottomBar = (props: BottomBarProps) => {
         </div>
 
         {
-            showStart ? <StartMenu /> : <></>
+            showStart ? <StartMenu openWindow={openWindow} toggleStartMenu={toggleStartMenu} update={update} triggerUpdate={triggerUpdate}/> : <></>
         }
 
     </>

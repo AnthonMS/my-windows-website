@@ -268,7 +268,7 @@ const Windows = () => {
                 {/* <WelcomeWindow update={update} triggerUpdate={triggerUpdate} /> */}
             </div>
 
-            <BottomBar update={update} triggerUpdate={triggerUpdate} />
+            <BottomBar openWindow={openWindow} update={update} triggerUpdate={triggerUpdate} />
 
             {isHighlighting && (
                 <div
