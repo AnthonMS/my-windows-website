@@ -346,4 +346,5 @@ const Window = React.forwardRef((props: WindowProps, ref) => {
 
 })
 
+Window.displayName = 'Window'
 export default Window

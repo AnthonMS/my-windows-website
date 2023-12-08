@@ -88,7 +88,7 @@ const ContactWindow = (props: ContactWindowProps) => {
 
                     <p className={styles.label}>Subject:</p>
                     <input type='text' className={`${globalStyles.inverseBoxShadow} ${globalStyles.input} ${styles.input}`} onChange={e => setSubject(e.target.value)}/>
-                    <p className={styles.label}>What's it all about?</p>
+                    <p className={styles.label}>What&apos;s it all about?</p>
                     <textarea className={`${globalStyles.inverseBoxShadow} ${globalStyles.textarea} ${styles.textarea}`} onChange={e => setContent(e.target.value)}/>
 
                     <div className={globalStyles.divider}/>

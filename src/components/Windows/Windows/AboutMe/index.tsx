@@ -24,19 +24,19 @@ const AboutMeWindow = (props: AboutMeWindowProps) => {
             <div className={`${globalStyles.border} ${styles.content}`}>
                 <p className={styles.title}>Greetings, fellow explorer of the digital realm!</p>
                 <p className={styles.text}>
-                    I'm Anthon, a craftsman of both the physical and virtual world, currently residing in the charming town of Næstved with my wonderful wife.
+                    I&apos;m Anthon, a craftsman of both the physical and virtual world, currently residing in the charming town of Næstved with my wonderful wife.
                 </p>
                 <p className={styles.text}>
-                    Born on August 27, 1995, I share this journey with my three siblings—two wise elder brothers and a delightful little sister. Beyond the confines of the digital landscape, I find solace in transforming our home into a haven. Whether it's meticulously working on our house or tending to the garden, my mission is to add a touch of beauty and functionality to our space.
+                    Born on August 27, 1995, I share this journey with my three siblings—two wise elder brothers and a delightful little sister. Beyond the confines of the digital landscape, I find solace in transforming our home into a haven. Whether it&apos;s meticulously working on our house or tending to the garden, my mission is to add a touch of beauty and functionality to our space.
                 </p>
                 <p className={styles.text}>
-                    Family holds the compass to my heart, and my most cherished moments are spent in their company. When I'm not immersed in the art of renovation or family affairs, you'll likely find me in my digital sanctuary — the computer. Here, my passion unfolds as I delve into the ever-evolving realm of technology, absorbing the latest breakthroughs and staying at the forefront of innovation.
+                    Family holds the compass to my heart, and my most cherished moments are spent in their company. When I&apos;m not immersed in the art of renovation or family affairs, you&apos;ll likely find me in my digital sanctuary — the computer. Here, my passion unfolds as I delve into the ever-evolving realm of technology, absorbing the latest breakthroughs and staying at the forefront of innovation.
                 </p>
                 <p className={styles.text}>
-                    My fascination extends to crafting a smart home that dances to the rhythm of Home Assistant. I've woven the fabric of my own Internet of Things universe, tinkering with the software to orchestrate a seamless symphony of interconnected devices. This passion isn't confined to the virtual space alone — I find joy in the realm of game development, crafting virtual worlds and interactive experiences.
+                    My fascination extends to crafting a smart home that dances to the rhythm of Home Assistant. I&apos;ve woven the fabric of my own Internet of Things universe, tinkering with the software to orchestrate a seamless symphony of interconnected devices. This passion isn&apos;t confined to the virtual space alone — I find joy in the realm of game development, crafting virtual worlds and interactive experiences.
                 </p>
                 <p className={styles.text}>
-                    Now, let me share a bit more about the lens through which I view the world. I navigate the intricacies of life with the lens of Asperger's, a unique perspective that shapes my interactions. While social nuances might be a puzzle, I relish the occasional foray into the world beyond, always mindful of the need for rejuvenation afterward.
+                    Now, let me share a bit more about the lens through which I view the world. I navigate the intricacies of life with the lens of Asperger&apos;s, a unique perspective that shapes my interactions. While social nuances might be a puzzle, I relish the occasional foray into the world beyond, always mindful of the need for rejuvenation afterward.
                 </p>
                 <p className={styles.text}>
                     In essence, my life is a tapestry of home improvement, familial bonds, digital odysseys, and the thrilling realm of game development. Welcome to my world, where every pixel tells a story, and every line of code weaves a narrative. Join me on this journey of creation and connection!

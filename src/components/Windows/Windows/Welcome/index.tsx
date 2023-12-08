@@ -44,7 +44,7 @@ const WelcomeWindow = (props: WelcomeWindowProps) => {
 
                 <p className={styles.title}>What is this?</p>
                 <p className={styles.text}>
-                    Welcome to a nostalgic journey back to the '90s with a virtual twist! Dive into my digital playground, meticulously designed to resemble the iconic Windows 98 desktop. Here, pixels meet nostalgia, and every click unleashes a wave of memories.
+                    Welcome to a nostalgic journey back to the &apos;90s with a virtual twist! Dive into my digital playground, meticulously designed to resemble the iconic Windows 98 desktop. Here, pixels meet nostalgia, and every click unleashes a wave of memories.
                 </p>
 
                 <p className={styles.title}>How to navigate?</p>
@@ -57,18 +57,18 @@ const WelcomeWindow = (props: WelcomeWindowProps) => {
                 
                 <p className={styles.title}>Why did I make this?</p>
                 <p className={styles.text}>
-                    In a world racing towards the future, I wanted to create a cozy corner where the past meets the present. This homage to Windows 98 is my ode to the simpler days of computing – a reminder of where we've been and how far we've come..
+                    In a world racing towards the future, I wanted to create a cozy corner where the past meets the present. This homage to Windows 98 is my ode to the simpler days of computing – a reminder of where we&apos;ve been and how far we&apos;ve come..
                 </p>
                 <p className={styles.title}>Let the exploration continue!</p>
                 <div className={globalStyles.divider}></div>
                 <p className={styles.text}>
-                    Start Here: Click on the Start Menu to explore the array of "programs" and unveil the magic within each window.
+                    Start Here: Click on the Start Menu to explore the array of &quot;programs&quot; and unveil the magic within each window.
                 </p>
                 <p className={styles.text}>
                     Click & Explore: Open windows, interact with icons, and discover hidden gems. Each element has a story waiting to unfold. (Tip: CTRL to move multiple icons)
                 </p>
                 <p className={styles.text}>
-                    Ctrl + Alt + Experience: Immerse yourself in the user-friendly chaos. The more you explore, the more you'll uncover.
+                    Ctrl + Alt + Experience: Immerse yourself in the user-friendly chaos. The more you explore, the more you&apos;ll uncover.
                 </p>
             </div>
         </div>
