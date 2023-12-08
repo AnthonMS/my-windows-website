@@ -1,33 +1,10 @@
-# Get NPM packages
-FROM node:20.10.0-alpine AS dependencies
-RUN apk add --no-cache libc6-compat
+FROM node:latest
+RUN mkdir /app
+COPY package.json /app/
 WORKDIR /app
-COPY package.json package-lock.json ./
-RUN npm ci --only=production
+COPY . ./
 
-# Rebuild the source code only when needed
-FROM node:20.10.0-alpine AS builder
-WORKDIR /app
-COPY . .
-COPY ./src ./src
-COPY --from=dependencies /app/node_modules ./node_modules
+RUN npm install
 RUN npm run build
-
-# Production image, copy all the files and run next
-FROM node:20.10.0-alpine AS runner
-WORKDIR /app
-
-ENV NODE_ENV production
-
-RUN addgroup -g 1001 -S nodejs
-RUN adduser -S nextjs -u 1001
-
-COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/public ./public
-
-USER nextjs
 EXPOSE 3000
-
-CMD ["npm", "run", "start"]
+CMD ["npm", "run","start"]

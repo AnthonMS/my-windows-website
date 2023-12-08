@@ -524,24 +524,24 @@
 }
 
 .windowButton.close {
-    background-image: url(/assets/images/icons/close_icon.png);
+    background-image: url(/Assets/Images/Icons/close_icon.png);
 }
 
 .windowButton.help {
-    background-image: url(/assets/images/icons/question_icon.png);
+    background-image: url(/Assets/Images/Icons/question_icon.png);
 }
 
 .windowButton.hide {
-    background-image: url(/assets/images/icons/hide_icon.png);
+    background-image: url(/Assets/Images/Icons/hide_icon.png);
 }
 
 .windowButton.max {
-    background-image: url(/assets/images/icons/max_icon.png);
+    background-image: url(/Assets/Images/Icons/max_icon.png);
     background-size: 90%;
 }
 
 .windowButton.min {
-    background-image: url(/assets/images/icons/min_icon.png);
+    background-image: url(/Assets/Images/Icons/min_icon.png);
     background-size: 90%;
 }
 
