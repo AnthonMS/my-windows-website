@@ -9,6 +9,7 @@ RUN npm ci --only=production
 FROM node:20.10.0-alpine AS builder
 WORKDIR /app
 COPY . .
+COPY ./src ./src
 COPY --from=dependencies /app/node_modules ./node_modules
 RUN npm run build
 
