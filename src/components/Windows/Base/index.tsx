@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from 'react'
 import ReactDOM from 'react-dom'
 import { Root, createRoot } from 'react-dom/client'
+import Head from 'next/head'
 
 import styles from './../styles.module.css'
 
@@ -235,7 +236,13 @@ const Windows = () => {
     }
 
 
-    return (
+    return <>
+        <Head>
+            <title>Your Custom Title</title>
+            <meta name="description" content="Your custom description" />
+            {/* Add more meta tags as needed */}
+        </Head>
+
         <div className={styles.main} onMouseDown={mouseDown} onMouseUp={mouseUp} onMouseMove={mouseMove}>
             <DesktopIcon left='0px' top='0px' id='computer'
                 update={update} triggerUpdate={triggerUpdate}
@@ -283,7 +290,7 @@ const Windows = () => {
             )}
 
         </div>
-    )
+    </>
 }
 
 export default Windows
