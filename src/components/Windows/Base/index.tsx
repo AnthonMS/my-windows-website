@@ -35,8 +35,8 @@ const Windows = () => {
     useEffect(() => {
         if (initialMount.current) {
             initialMount.current = false
-            // openWindow(<CMDWindow openWindow={openWindow} update={update} triggerUpdate={triggerUpdate} />)
-            openWindow(<WelcomeWindow openWindow={openWindow} update={update} triggerUpdate={triggerUpdate} />)
+            openWindow(<CMDWindow openWindow={openWindow} update={update} triggerUpdate={triggerUpdate} />)
+            // openWindow(<WelcomeWindow openWindow={openWindow} update={update} triggerUpdate={triggerUpdate} />)
             // openWindow(<AboutMeWindow update={update} triggerUpdate={triggerUpdate} />)
             // openWindow(<ContactWindow openWindow={openWindow} update={update} triggerUpdate={triggerUpdate} />)
             // openWindow(<ErrorWindow text='This is an error message. Wubba lubba dub dub!' update={update} triggerUpdate={triggerUpdate} />)
@@ -205,8 +205,8 @@ const Windows = () => {
             const { clientX, clientY } = event
             setHighlightBox((prevBox) => ({
                 ...prevBox,
-                width: clientX - prevBox.startX - 10,
-                height: clientY - prevBox.startY - 10,
+                width: clientX - prevBox.startX,
+                height: clientY - prevBox.startY,
             }))
         }
     }
