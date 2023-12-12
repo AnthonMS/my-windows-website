@@ -20,6 +20,7 @@ import WelcomeWindow from '../Windows/Welcome'
 import AboutMeWindow from '../Windows/AboutMe'
 import ContactWindow from '../Windows/Contact'
 import ErrorWindow from '../Windows/Popup'
+import CMDWindow from '../Windows/CMD'
 
 const Windows = () => {
     const initialMount = useRef<Boolean>(true)
@@ -34,6 +35,7 @@ const Windows = () => {
     useEffect(() => {
         if (initialMount.current) {
             initialMount.current = false
+            // openWindow(<CMDWindow openWindow={openWindow} update={update} triggerUpdate={triggerUpdate} />)
             openWindow(<WelcomeWindow openWindow={openWindow} update={update} triggerUpdate={triggerUpdate} />)
             // openWindow(<AboutMeWindow update={update} triggerUpdate={triggerUpdate} />)
             // openWindow(<ContactWindow openWindow={openWindow} update={update} triggerUpdate={triggerUpdate} />)
@@ -85,7 +87,6 @@ const Windows = () => {
                 console.error('Desktop icon click unhandled:', target)
                 break;
         }
-
     }
 
     const openWindow = (window: JSX.Element) => {
@@ -234,6 +235,7 @@ const Windows = () => {
         }
         return null
     }
+
 
 
     return <>
