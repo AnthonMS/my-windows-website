@@ -42,6 +42,8 @@ const DesktopIcon = (props: DesktopIconProps) => {
         }
     }, [isSelected])
 
+    // TODO: Change mouseMove listener to be attached to window on mouseDown and remove on mouseUp
+    // TODO: Change mouseUp listener to be attached to window on mouseDown with once: true
     const mouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
         if (event.button === 0) { // left
             setIsMouseDown(true)

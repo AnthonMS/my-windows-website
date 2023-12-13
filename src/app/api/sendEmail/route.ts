@@ -19,9 +19,9 @@ export async function POST(req: Request) {
     try {
         const body = await req.json()
         const { nameFrom, emailFrom, phoneFrom, subject, content } = emailSchema.parse(body)
-
+        const text = content + '\n\n From:\n' + nameFrom + '\n' + emailFrom + '\n' + phoneFrom
         try {
-            await sendMail(process.env.NODEMAILER_MAIL, process.env.NODEMAILER_PW, process.env.MY_MAIL, subject, content)
+            await sendMail(process.env.NODEMAILER_MAIL, process.env.NODEMAILER_PW, process.env.MY_MAIL, subject, text)
             return NextResponse.json({
                 message: 'Email sent successfully'
             }, {
