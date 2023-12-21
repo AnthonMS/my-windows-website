@@ -21,14 +21,25 @@
         }
 
         .inputContainer {
-            .inputRunner {
-            }
+            display: flex;
+            align-items: center;
+
             .input {
+                flex: 1;
                 font-size: 14px;
-                width: 100%;
                 outline: none;
-                /* border: none; */
+                border: none;
                 background-color: transparent;
+
+                /* word-break: break-word; */
+                word-break: break-all;
+
+                resize: none;
+                overflow-y: auto;
+                height: auto;
+
+                line-height: 20px;
+                cursor: default;
             }
         }
     }

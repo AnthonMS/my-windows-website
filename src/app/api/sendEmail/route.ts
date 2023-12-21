@@ -31,7 +31,6 @@ export async function POST(req: Request) {
         catch (e) {
             return error(e)
         }
-
     }
     catch (e: any) {
         return error(e)

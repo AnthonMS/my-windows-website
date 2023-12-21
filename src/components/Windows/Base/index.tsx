@@ -22,6 +22,8 @@ import ContactWindow from '../Windows/Contact'
 import ErrorWindow from '../Windows/Popup'
 import CMDWindow from '../Windows/CMD'
 
+import { isElementInClass, findParentWithClass } from '@/lib/util_DOM'
+
 const Windows = () => {
     const initialMount = useRef<Boolean>(true)
     const [update, setUpdate] = useState(false)
@@ -35,8 +37,8 @@ const Windows = () => {
     useEffect(() => {
         if (initialMount.current) {
             initialMount.current = false
-            // openWindow(<CMDWindow openWindow={openWindow} update={update} triggerUpdate={triggerUpdate} />)
-            openWindow(<WelcomeWindow openWindow={openWindow} update={update} triggerUpdate={triggerUpdate} />)
+            openWindow(<CMDWindow openWindow={openWindow} update={update} triggerUpdate={triggerUpdate} />)
+            // openWindow(<WelcomeWindow openWindow={openWindow} update={update} triggerUpdate={triggerUpdate} />)
             // openWindow(<AboutMeWindow update={update} triggerUpdate={triggerUpdate} />)
             // openWindow(<ContactWindow openWindow={openWindow} update={update} triggerUpdate={triggerUpdate} />)
             // openWindow(<ErrorWindow text='This is an error message. Wubba lubba dub dub!' update={update} triggerUpdate={triggerUpdate} />)
@@ -98,6 +100,7 @@ const Windows = () => {
         // We wait to see if window we want to create is already created.
         setTimeout(() => {
             const firstChild = portalContainer.firstChild as Element
+            // TODO: if firstChild is null, we should cancel this timeout and start it over so we wait until firstChild is not null anymore.
             if (windowsContainer.current !== null) {
 
                 const windows = document.querySelectorAll(`.${styles.window}`)
@@ -125,7 +128,7 @@ const Windows = () => {
                 console.error(`windowsContainer is null. Can't open window.`)
             }
             triggerUpdate()
-        }, 10)
+        }, 25)
     }
 
 
@@ -150,6 +153,7 @@ const Windows = () => {
                 if (isElementInClass(target, styles.window)) {
                     const windowParent: Element = findParentWithClass(target, styles.window) as Element
                     windowParent.classList.add(styles.active)
+                    // console.log('SET ACTIVE WINDOW!')
                 }
                 triggerUpdate()
             }
@@ -209,31 +213,6 @@ const Windows = () => {
                 height: clientY - prevBox.startY,
             }))
         }
-    }
-
-
-
-    const isElementInClass = (element: Element | null, classname: string | string[]) => {
-        const classArray = Array.isArray(classname) ? classname : [classname]
-        let el = element
-        while (el !== null) {
-            if (el.classList.contains(classArray[0]) && classArray.every(className => el!.classList.contains(className))) {
-                return true
-            }
-            el = el.parentElement
-        }
-        return false
-    }
-    const findParentWithClass = (element: Element | null, classname: string | string[]): Element | null => {
-        const classArray = Array.isArray(classname) ? classname : [classname]
-        let el = element
-        while (el !== null) {
-            if (classArray.every(className => el!.classList.contains(className))) {
-                return el!
-            }
-            el = el.parentElement
-        }
-        return null
     }
 
 

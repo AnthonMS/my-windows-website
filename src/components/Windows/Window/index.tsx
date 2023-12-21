@@ -4,6 +4,8 @@ import React, { useRef, useState, useEffect } from 'react'
 import Image, { StaticImageData } from 'next/image'
 import { StaticImport } from 'next/dist/shared/lib/get-img-props'
 
+import { isElementInClass, findParentWithClass } from '@/lib/util_DOM'
+
 import Button from '../UI/Button'
 
 export interface WindowProps {
@@ -16,10 +18,11 @@ export interface WindowProps {
     top?: number
     title?: string
     icon?: string | StaticImport
+    onActive?: Function
 }
 
 const Window = React.forwardRef((props: WindowProps, ref) => {
-    const { children, update, triggerUpdate, width, height, left, top, title, icon } = props
+    const { children, update, triggerUpdate, width, height, left, top, title, icon, onActive } = props
     const initialMount = useRef<Boolean>(true)
     const thisWindow = useRef<HTMLDivElement | null>(null)
     const [isHeaderHeld, setIsHeaderHeld] = useState(false)
@@ -70,6 +73,11 @@ const Window = React.forwardRef((props: WindowProps, ref) => {
                     setThisTop(top)
                 }
                 setIsHidden(false)
+                
+                
+                if (onActive) {
+                    onActive()
+                }
             }
         }
     }, [])
@@ -77,7 +85,7 @@ const Window = React.forwardRef((props: WindowProps, ref) => {
     useEffect(() => {
         if (thisWindow.current !== null && update !== null) {
         }
-    }, [update])
+    }, [update, thisWindow.current])
 
     useEffect(() => {
         if (isHeaderHeld) {
@@ -147,6 +155,7 @@ const Window = React.forwardRef((props: WindowProps, ref) => {
         setPrevMousePosition({ x: event.clientX, y: event.clientY })
     }
 
+    // TODO: Add Minimum height and width contraints
     const resize = (event: MouseEvent) => {
         if (event.button !== 0) { return }
         if (!isResizeHeld) { return }
@@ -292,10 +301,24 @@ const Window = React.forwardRef((props: WindowProps, ref) => {
         setPrevMousePosition(null)
     }
 
+    const mouseDownInactiveWindow = (event: React.MouseEvent<HTMLDivElement>) => {
+        if (onActive) {
+            onActive(event)
+        }
+        // const target = event.target as HTMLDivElement
+        // // Check if click is inside inactive window. If so, call onActive function from props
+        // if (!isElementInClass(target, [styles.window, styles.active])) {
+        //     if (onActive) {
+        //         onActive()
+        //     }
+        // }
+    }
+
 
     return <>
         <div ref={thisWindow} data-title={title} id={title} className={`${styles.window} ${isHidden ? styles.hidden : ''}`}
-            style={{ width: `${thisWidth}px`, height: `${thisHeight}px`, top: `${thisTop}px`, left: `${thisLeft}px` }}>
+            style={{ width: `${thisWidth}px`, height: `${thisHeight}px`, top: `${thisTop}px`, left: `${thisLeft}px` }}
+            onMouseDown={mouseDownInactiveWindow}>
 
 
             <div className={styles.windowHeader} onMouseDown={mouseDownHeader} onMouseUp={mouseUpHeader}>
