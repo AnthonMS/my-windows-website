@@ -32,19 +32,12 @@ export const executeCommand = (dir: string, cmd: string): CommandResponse => {
         }
     }
     else {
-
-
         const { command: parsedCommand, options: parsedOptions, arguments: parsedArgs }: {
             command: string;
             options: ParsedOption[];
             arguments: string[];
         } = parseCommand(cmd, commandConfig)
 
-        // Find the command in the commands list
-        const selectedCommand = commands[parsedCommand]
-
-        if (selectedCommand) {
-            const { usage, options, help, arguments: cmdArgs } = selectedCommand
 
             // Check for unknown Option
             const hasOptionError = parsedOptions.some((option: ParsedOption) => !!option.error)
@@ -59,9 +52,9 @@ export const executeCommand = (dir: string, cmd: string): CommandResponse => {
                         parsedCommand: parsedCommand,
                         parsedOptions: parsedOptions,
                         parsedArgs: parsedArgs,
-                        usage: usage,
-                        options: options,
-                        arguments: selectedCommand.arguments,
+                        usage: commandConfig.usage,
+                        options: commandConfig.options,
+                        arguments: commandConfig.arguments,
                         invalidOptions: optionsWithErrorNames,
                     }
                 }
@@ -76,9 +69,9 @@ export const executeCommand = (dir: string, cmd: string): CommandResponse => {
                         parsedCommand: parsedCommand,
                         parsedOptions: parsedOptions,
                         parsedArgs: parsedArgs,
-                        usage: usage,
-                        options: options,
-                        arguments: selectedCommand.arguments,
+                        usage: commandConfig.usage,
+                        options: commandConfig.options,
+                        arguments: commandConfig.arguments,
                         invalidOptions: optionsWithErrorNames,
                     }
                 }
@@ -95,10 +88,10 @@ export const executeCommand = (dir: string, cmd: string): CommandResponse => {
                     parsedCommand: parsedCommand,
                     parsedOptions: parsedOptions,
                     parsedArgs: parsedArgs,
-                    usage: usage,
-                    options: options,
-                    arguments: selectedCommand.arguments,
-                    help: help,
+                    usage: commandConfig.usage,
+                    options: commandConfig.options,
+                    arguments: commandConfig.arguments,
+                    help: commandConfig.help,
                 }
 
             }
@@ -106,8 +99,8 @@ export const executeCommand = (dir: string, cmd: string): CommandResponse => {
 
             // Check if we have the required argument(s) for the command
             // First check if parsedArgs array is longer than selectedCommand.arguments, if so, we have an unknown argument passed to the command
-            if (selectedCommand.arguments) {
-                const requiredArguments = selectedCommand.arguments?.filter((arg) => arg.required) || []
+            if (commandConfig.arguments) {
+                const requiredArguments = commandConfig.arguments?.filter((arg) => arg.required) || []
                 if (parsedArgs.length < requiredArguments.length) {
                     // Handle case where there are missing required arguments
                     return {
@@ -117,13 +110,13 @@ export const executeCommand = (dir: string, cmd: string): CommandResponse => {
                         parsedCommand: parsedCommand,
                         parsedOptions: parsedOptions,
                         parsedArgs: parsedArgs,
-                        usage: usage,
-                        options: options,
-                        arguments: selectedCommand.arguments
+                        usage: commandConfig.usage,
+                        options: commandConfig.options,
+                        arguments: commandConfig.arguments
                     }
                 }
                 else {
-                    if (parsedArgs.length > selectedCommand.arguments.length) {
+                    if (parsedArgs.length > commandConfig.arguments?.length) {
                         // Too many argument(s)
                         return {
                             message: "Too many arguments given",
@@ -132,9 +125,9 @@ export const executeCommand = (dir: string, cmd: string): CommandResponse => {
                             parsedCommand: parsedCommand,
                             parsedOptions: parsedOptions,
                             parsedArgs: parsedArgs,
-                            usage: usage,
-                            options: options,
-                            arguments: selectedCommand.arguments,
+                            usage: commandConfig.usage,
+                            options: commandConfig.options,
+                            arguments: commandConfig.arguments,
                         }
                     }
 
@@ -149,7 +142,7 @@ export const executeCommand = (dir: string, cmd: string): CommandResponse => {
                     }
                 }
             }
-            else if (!selectedCommand.arguments &&
+            else if (!commandConfig.arguments &&
                 parsedArgs.length > 0) {
                 // selectedCommand accept no arguments but were given one or more
                 return {
@@ -159,9 +152,9 @@ export const executeCommand = (dir: string, cmd: string): CommandResponse => {
                     parsedCommand: parsedCommand,
                     parsedOptions: parsedOptions,
                     parsedArgs: parsedArgs,
-                    usage: usage,
-                    options: options,
-                    arguments: selectedCommand.arguments,
+                    usage: commandConfig.usage,
+                    options: commandConfig.options,
+                    arguments: commandConfig.arguments,
                 }
             }
 
@@ -173,17 +166,6 @@ export const executeCommand = (dir: string, cmd: string): CommandResponse => {
                 parsedOptions: parsedOptions,
                 parsedArgs: parsedArgs
             }
-        }
-        else {
-            return {
-                message: "Unkown command",
-                error: "UNKNOWN_COMMAND",
-                success: false,
-                parsedCommand: parsedCommand,
-                parsedOptions: parsedOptions,
-                parsedArgs: parsedArgs
-            }
-        }
 
     }
 }

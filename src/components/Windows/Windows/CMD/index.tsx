@@ -10,7 +10,7 @@ import { getNumberOfLinesInTextArea } from '@/lib/util_textarea'
 import { isElementInClass } from '@/lib/util_DOM'
 import axios from 'axios'
 
-import { executeCommand } from "@/services/cmd"
+// import { executeCommand } from "@/services/cmd"
 
 interface CommandHistoryItem {
     dir: string
@@ -32,7 +32,7 @@ const CMDWindow = (props: CMDWindowProps) => {
 
     const updateOutput = (str: string) => {
         setOutput((prev) => [...prev, str])
-        // TODO: Scroll to the bottom of div.styles.content if scrollable and not at bottom already
+        focusInputArea()
     }
     const updateCommandHistory = (commandItem: CommandHistoryItem) => {
         setCommandHistory((prevHistory) => [...prevHistory, commandItem])

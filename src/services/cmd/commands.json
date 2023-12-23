@@ -17,6 +17,7 @@
             }
         ]
     },
+    
     "cd": {
         "command": "cd",
         "usage": "cd [-L|[-P [-e]] [-@]] [dir]",
