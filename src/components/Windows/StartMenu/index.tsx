@@ -93,7 +93,7 @@ const StartMenu = (props: StartMenuProps) => {
                         </li>
                         <li className={styles.dropdownItem} data-item='project-ha-cards'>
                             <Image className={styles.dropdownItemIcon} src={haIcon} alt={`game-icon`} />
-                            <p className={styles.dropdownItemText}>Home Assistant UI Bundle123</p>
+                            <p className={styles.dropdownItemText}>Home Assistant UI Bundle</p>
                         </li>
                     </ul>
                 </li>
