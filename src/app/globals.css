@@ -61,13 +61,25 @@ a {
 
 @font-face {
   font-family: 'Windows95';
-  src: url('/fonts/WindowsRegular.ttf') format('truetype');
+  src: url('/Assets/Fonts/WindowsRegular.ttf') format('truetype');
   font-weight: normal; /* Default or regular weight */
   font-style: normal; /* Default or normal style */
 }
 @font-face {
   font-family: 'Microsoft';
   src: url('/Assets/Fonts/micross.ttf') format('truetype');
+  font-weight: normal; 
+  font-style: normal; 
+}
+@font-face {
+  font-family: 'DOS Win';
+  src: url('/Assets/Fonts/PerfectDOSVGA437Win.ttf') format('truetype');
+  font-weight: normal; 
+  font-style: normal; 
+}
+@font-face {
+  font-family: 'DOS';
+  src: url('/Assets/Fonts/PerfectDOSVGA437.ttf') format('truetype');
   font-weight: normal; 
   font-style: normal; 
 }

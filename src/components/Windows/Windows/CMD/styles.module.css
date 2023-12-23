@@ -9,36 +9,43 @@
     .content {
         flex-grow: 1;
         background-color: black;
-        color: white;
-        font-family: 'Microsoft', 'sans-serif';
+        color: #b5bdbc;
+        /* font-family: 'Microsoft', 'sans-serif'; */
+        font-family: 'DOS', 'monospace';
         user-select: text;
         overflow-y: auto;
         padding: 2px;
 
         .output {
-            font-size: 14px;
+            font-size: 15px;
+            line-height: 18px;
+            font-family: 'DOS', 'monospace';
             user-select: text;
+            white-space: pre-wrap;
+            color: inherit;
         }
 
         .inputContainer {
             display: flex;
             align-items: center;
+            color: inherit;
 
             .input {
+                color: inherit;
+                font-size: 15px;
+                line-height: 18px;
+                font-family: 'DOS', 'monospace';
+
                 flex: 1;
-                font-size: 14px;
                 outline: none;
                 border: none;
                 background-color: transparent;
-
                 /* word-break: break-word; */
                 word-break: break-all;
-
                 resize: none;
                 overflow-y: auto;
                 height: auto;
 
-                line-height: 20px;
                 cursor: default;
             }
         }
