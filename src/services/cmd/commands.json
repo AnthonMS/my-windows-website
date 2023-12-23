@@ -54,7 +54,7 @@
 
     "test": {
         "command": "test",
-        "usage": "test [-A testA] test",
+        "usage": "test [-A testA] [test]",
         "help": "\tTest the command validation logic",
         "options": [
             {

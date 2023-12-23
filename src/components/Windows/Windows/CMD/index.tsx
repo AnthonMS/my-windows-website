@@ -48,33 +48,38 @@ const CMDWindow = (props: CMDWindowProps) => {
         updateOutput(currentDir + command)
         setCommand('')
 
+        hideInputArea()
 
-        const res = executeCommand(commandItem.dir, commandItem.command)
-        console.log('res:', res)
-        if (!res.error) {
-            handleCommand(res)
-        }
-        else {
-            handleError(res)
-        }
-        // console.log('Direct execute res:', res)
-        // const res = await axios.post('/api/cmd', commandItem)
-        // const data = await res.data
-
-        // if (res.status === 200) {
-        //     if (!data.error) {
-        //         handleCommand(data)
-        //     }
-        //     else {
-        //         handleError(data)
-        //     }
+        // const res = executeCommand(commandItem.dir, commandItem.command)
+        // console.log('res:', res)
+        // if (!res.error) {
+        //     handleCommand(res)
         // }
         // else {
-        //     console.error('ERROR:', data)
+        //     handleError(res)
         // }
+
+        const res = await axios.post('/api/cmd', commandItem)
+        const data = await res.data
+
+        if (res.status === 200) {
+            if (!data.error) {
+                handleCommand(data)
+            }
+            else {
+                handleError(data)
+            }
+        }
+        else {
+            console.error('ERROR:', data)
+        }
+
+        showInputArea()
+        focusInputArea()
     }
 
     const handleCommand = (data: any) => {
+        console.log('HANDLE COMMAND:', data)
         let outputMsg: string = ''
         switch (data.success) {
             case 'HELP':
@@ -100,7 +105,7 @@ const CMDWindow = (props: CMDWindowProps) => {
     const handleError = (data: any) => {
         switch (data.error) {
             case 'UNKNOWN_COMMAND':
-                let UNKNOWN_COMMAND_MSG = `${data.command}: command not found`
+                let UNKNOWN_COMMAND_MSG = `${data.parsedCommand}: command not found`
                 updateOutput(UNKNOWN_COMMAND_MSG)
                 break;
             case 'UNKNOWN_OPTION':
@@ -172,34 +177,58 @@ const CMDWindow = (props: CMDWindowProps) => {
         }
     }
 
-    const focusTextinput = (event: React.MouseEvent<HTMLDivElement> | null) => {
+    // Function called 
+    const focusInputOnEvent = (event: React.MouseEvent<HTMLDivElement>) => {
         setTimeout(() => {
             if (inputArea.current !== null) {
                 if (event) {
                     const target = event.target as Element
+                    const isClickInInput = isElementInClass(target, styles.input)
+                    const isClickInOutput = isElementInClass(target, styles.output)
+                    const selectedText = window.getSelection()?.toString() || ''
+                    const isTextSelectedInOutput = isClickInOutput && selectedText.length > 0
 
                     // Dont focus input if click is inside input or output
-                    // TODO: If click is in styles.output check if there is text selected, if not, focus the input
-                    if (!isElementInClass(target, styles.input) && !isElementInClass(target, styles.output)) {
-                        const { value } = inputArea.current
-                        inputArea.current.setSelectionRange(value.length, value.length) // focus end of input
-                        inputArea.current.focus()
+                    if (!isClickInInput && !isClickInOutput) {
+                        focusInputArea()
+                    } 
+                    // If click is in output check if there is text selected, if not, focus the input
+                    else if (isClickInOutput && !isTextSelectedInOutput) {
+                        // Focus the input only if there is no text selected in the output
+                        focusInputArea()
                     }
                 }
                 else {
-                    const { value } = inputArea.current
-                    inputArea.current.setSelectionRange(value.length, value.length)
-                    inputArea.current.focus()
+                    focusInputArea()
                 }
             }
         }, 100);
     }
 
-    // TODO: Add mouse down handler on windowContainer that will focus input
+    const focusInputArea = () => {
+        if (inputArea.current) {
+            const { value } = inputArea.current
+            inputArea.current.setSelectionRange(value.length, value.length)
+            inputArea.current.focus()
+        }
+    }
+    const hideInputArea = () => {
+        if (inputArea.current) {
+            inputArea.current.style.display = 'none'
+        }
+    }
+
+    const showInputArea = () => {
+        if (inputArea.current) {
+            inputArea.current.style.display = ''
+        }
+    }
+
+
     return <Window update={update} triggerUpdate={triggerUpdate}
         width={550} height={300}
         title='Command Prompt' icon={cmdIcon}
-        onActive={focusTextinput}>
+        onActive={focusInputOnEvent}>
 
         <div className={styles.windowContainer}>
             <div className={`${globalStyles.border} ${styles.content}`}>
@@ -212,7 +241,7 @@ const CMDWindow = (props: CMDWindowProps) => {
                     output.map((out, index) => {
                         const indentedText = out.replace(/\t/g, '  ')
                         return <p key={`output-${index}`} className={styles.output}>
-                            {out.replace(/\t/g, '  ')}
+                            { indentedText }
                         </p>
                     })
                 }

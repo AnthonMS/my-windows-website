@@ -301,24 +301,17 @@ const Window = React.forwardRef((props: WindowProps, ref) => {
         setPrevMousePosition(null)
     }
 
-    const mouseDownInactiveWindow = (event: React.MouseEvent<HTMLDivElement>) => {
+    const mouseDownWindow = (event: React.MouseEvent<HTMLDivElement>) => {
         if (onActive) {
             onActive(event)
         }
-        // const target = event.target as HTMLDivElement
-        // // Check if click is inside inactive window. If so, call onActive function from props
-        // if (!isElementInClass(target, [styles.window, styles.active])) {
-        //     if (onActive) {
-        //         onActive()
-        //     }
-        // }
     }
 
 
     return <>
         <div ref={thisWindow} data-title={title} id={title} className={`${styles.window} ${isHidden ? styles.hidden : ''}`}
             style={{ width: `${thisWidth}px`, height: `${thisHeight}px`, top: `${thisTop}px`, left: `${thisLeft}px` }}
-            onMouseDown={mouseDownInactiveWindow}>
+            onMouseDown={mouseDownWindow}>
 
 
             <div className={styles.windowHeader} onMouseDown={mouseDownHeader} onMouseUp={mouseUpHeader}>
