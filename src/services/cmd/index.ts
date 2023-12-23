@@ -4,7 +4,7 @@ import * as commandsJson from './commands.json'
 type Commands = Record<string, Command>
 const commands: Commands = commandsJson as Commands
 
-interface CommandResponse {
+export interface CommandResponse {
     message: string
     error: boolean | "UNKNOWN_COMMAND" | "MISSING_ARG" | "UNKNOWN_OPTION" | "UNKNOWN_OPTION_ARG" | "UNKNOWN_ARG"
     success: boolean | "EXECUTE" | "HELP"

@@ -5,13 +5,11 @@ export interface Command {
     options?: Option[];
     arguments?: Argument[];
 }
-
 export interface Option {
     option: string;
     usage: string;
     arguments?: Argument[];
 }
-
 export interface Argument {
     name: string;
     required: boolean;
@@ -29,8 +27,6 @@ export interface ParsedOption {
     arguments: string[]
     error?: string
 }
-
-
 export function parseCommand(command: string, commandConfig: Command): ParsedCommand {
     const parts = command.split(' ')
     const commandPart = parts.shift() // Extract the command

@@ -10,8 +10,10 @@ import { getNumberOfLinesInTextArea } from '@/lib/util_textarea'
 import { isElementInClass } from '@/lib/util_DOM'
 import axios from 'axios'
 
-// import { executeCommand } from "@/services/cmd"
+import { CommandResponse } from '@/services/cmd'
+import { isDirectorySyntax } from '@/lib/utils'
 
+import { ParsedCommand } from '@/services/cmd/util_cmdParsing'
 interface CommandHistoryItem {
     dir: string
     command: string
@@ -29,6 +31,8 @@ const CMDWindow = (props: CMDWindowProps) => {
     const [currentDir, setCurrentDir] = useState<string>('C:\\> ')
     const [command, setCommand] = useState<string>('')
     const [output, setOutput] = useState<string[]>([])
+
+    const windowRef = useRef<{ closeWindow?: () => void } | null>(null)
 
     const updateOutput = (str: string) => {
         setOutput((prev) => [...prev, str])
@@ -50,17 +54,8 @@ const CMDWindow = (props: CMDWindowProps) => {
 
         hideInputArea()
 
-        // const res = executeCommand(commandItem.dir, commandItem.command)
-        // console.log('res:', res)
-        // if (!res.error) {
-        //     handleCommand(res)
-        // }
-        // else {
-        //     handleError(res)
-        // }
-
         const res = await axios.post('/api/cmd', commandItem)
-        const data = await res.data
+        const data: CommandResponse = await res.data
 
         if (res.status === 200) {
             if (!data.error) {
@@ -78,27 +73,77 @@ const CMDWindow = (props: CMDWindowProps) => {
         focusInputArea()
     }
 
-    const handleCommand = (data: any) => {
-        console.log('HANDLE COMMAND:', data)
+    const handleCommand = (data: CommandResponse) => {
         let outputMsg: string = ''
         switch (data.success) {
             case 'HELP':
                 outputMsg = `${data.parsedCommand}: ${data.usage}\n`
-                outputMsg += `${data.help}\n\n\t`
-                outputMsg += `Options:\n\t`
-                data.options.map((option: { option: string, usage: string }) => {
-                    outputMsg += `\t ${option.option} \t ${option.usage}\n\t`
-                })
+                outputMsg += `${data.help}\n\n`
+                outputMsg += `\tOptions:\n`
+                if (data.options) {
+                    data.options.map((option: { option: string, usage: string }) => {
+                        outputMsg += `\t\t ${option.option} \t ${option.usage}\n`
+                    })
+                }
                 outputMsg += `\n`
                 updateOutput(outputMsg)
                 break;
             case 'EXECUTE':
-                console.log('Executing command:', data.parsedCommand)
-                console.log('Options:', data.parsedOptions)
-                console.log('Args:', data.parsedArgs)
+                const commandParsed: ParsedCommand = {
+                    command: data.parsedCommand,
+                    options: data.parsedOptions,
+                    arguments: data.parsedArgs
+                }
+                switch (data.parsedCommand) {
+                    case 'cd':
+                        cd(commandParsed)
+                        break;
+                    default:
+                        console.log(`${data.parsedCommand} is not a command that is handled in the frontend yet. Sorry.`)
+                        break;
+                }
                 break;
             default:
                 break;
+        }
+    }
+
+    const cd = (data: ParsedCommand) => {
+        // Since command was parsed successfully, we know there is a single argument in data
+        let path = data.arguments[0]
+        const pathValid = isDirectorySyntax(path)
+        if (pathValid) {
+            if (typeof pathValid === 'string') {
+                path = pathValid
+            }
+            // Remove the ending "/" from the path if it has one
+            path = path.replace(/\/$/, '')
+
+            const startsWithSlash = /^\//.test(path)
+            if (startsWithSlash) { // if path starts with "/" then we want to override the currentDir with C:\${path}>
+                const finalPath = path.replace(/\//g, '\\') // Replace '/' with '\'
+                setCurrentDir(`C:${finalPath}> `)
+
+            }
+            else { // if path does not start with "/" we want to add to currentDir
+                // RegEx to capture content between ":" and ">"
+                const match = currentDir.match(/:(.*?)(?=>)/)
+                // Extracting the captured content or empty string
+                let finalPath = match ? match[1] : ''
+                const endsWithBackslash = /\\$/.test(finalPath)
+                if (!endsWithBackslash) {
+                    finalPath += '\\'
+                }
+                path = path.replace(/\//g, '\\') // Replace '/' with '\'
+                finalPath += path
+                setCurrentDir(`C:${finalPath}> `)
+
+            }
+
+        }
+        else {
+            const outputMsg = `${data.command}: path invalid "${path}"\n`
+            updateOutput(outputMsg)
         }
     }
 
@@ -148,6 +193,50 @@ const CMDWindow = (props: CMDWindowProps) => {
     }
 
 
+    const focusInputOnEvent = (event: React.MouseEvent<HTMLDivElement>) => {
+        setTimeout(() => {
+            if (inputArea.current !== null) {
+                if (event) {
+                    const target = event.target as Element
+                    const isClickInInput = isElementInClass(target, styles.input)
+                    const isClickInOutput = isElementInClass(target, styles.output)
+                    const selectedText = window.getSelection()?.toString() || ''
+                    const isTextSelectedInOutput = isClickInOutput && selectedText.length > 0
+
+                    // Dont focus input if click is inside input or output
+                    if (!isClickInInput && !isClickInOutput) {
+                        focusInputArea()
+                    }
+                    // If click is in output check if there is text selected, if not, focus the input
+                    else if (isClickInOutput && !isTextSelectedInOutput) {
+                        // Focus the input only if there is no text selected in the output
+                        focusInputArea()
+                    }
+                }
+                else {
+                    focusInputArea()
+                }
+            }
+        }, 100);
+    }
+    const focusInputArea = () => {
+        if (inputArea.current) {
+            const { value } = inputArea.current
+            inputArea.current.setSelectionRange(value.length, value.length)
+            inputArea.current.focus()
+        }
+    }
+    const hideInputArea = () => {
+        if (inputArea.current) {
+            inputArea.current.style.display = 'none'
+        }
+    }
+    const showInputArea = () => {
+        if (inputArea.current) {
+            inputArea.current.style.display = ''
+        }
+    }
+
     const handleKeyDown: KeyboardEventHandler<HTMLTextAreaElement> = (event) => {
         const cursorPosition = event.currentTarget.selectionStart
 
@@ -165,7 +254,6 @@ const CMDWindow = (props: CMDWindowProps) => {
         }
     }
 
-
     const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const inputValue = e.target.value
         // Check if the inputValue starts with the currentDir
@@ -177,55 +265,7 @@ const CMDWindow = (props: CMDWindowProps) => {
         }
     }
 
-    // Function called 
-    const focusInputOnEvent = (event: React.MouseEvent<HTMLDivElement>) => {
-        setTimeout(() => {
-            if (inputArea.current !== null) {
-                if (event) {
-                    const target = event.target as Element
-                    const isClickInInput = isElementInClass(target, styles.input)
-                    const isClickInOutput = isElementInClass(target, styles.output)
-                    const selectedText = window.getSelection()?.toString() || ''
-                    const isTextSelectedInOutput = isClickInOutput && selectedText.length > 0
-
-                    // Dont focus input if click is inside input or output
-                    if (!isClickInInput && !isClickInOutput) {
-                        focusInputArea()
-                    } 
-                    // If click is in output check if there is text selected, if not, focus the input
-                    else if (isClickInOutput && !isTextSelectedInOutput) {
-                        // Focus the input only if there is no text selected in the output
-                        focusInputArea()
-                    }
-                }
-                else {
-                    focusInputArea()
-                }
-            }
-        }, 100);
-    }
-
-    const focusInputArea = () => {
-        if (inputArea.current) {
-            const { value } = inputArea.current
-            inputArea.current.setSelectionRange(value.length, value.length)
-            inputArea.current.focus()
-        }
-    }
-    const hideInputArea = () => {
-        if (inputArea.current) {
-            inputArea.current.style.display = 'none'
-        }
-    }
-
-    const showInputArea = () => {
-        if (inputArea.current) {
-            inputArea.current.style.display = ''
-        }
-    }
-
-
-    return <Window update={update} triggerUpdate={triggerUpdate}
+    return <Window ref={windowRef} update={update} triggerUpdate={triggerUpdate}
         width={550} height={300}
         title='Command Prompt' icon={cmdIcon}
         onActive={focusInputOnEvent}>
@@ -241,7 +281,7 @@ const CMDWindow = (props: CMDWindowProps) => {
                     output.map((out, index) => {
                         const indentedText = out.replace(/\t/g, '  ')
                         return <p key={`output-${index}`} className={styles.output}>
-                            { indentedText }
+                            {indentedText}
                         </p>
                     })
                 }
