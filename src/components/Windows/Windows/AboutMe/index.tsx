@@ -3,7 +3,7 @@ import styles from './styles.module.css'
 
 import Window from '@/components/Windows/Window'
 
-import aboutMeIcon from '@/assets/images/icons/aboutme_icon.png'
+import userCardIcon from '@/assets/images/icons/user_card.png'
 
 export interface AboutMeWindowProps {
     update?: Boolean
@@ -14,7 +14,7 @@ const AboutMeWindow = (props: AboutMeWindowProps) => {
 
     return <Window update={update} triggerUpdate={triggerUpdate}
         width={window.innerWidth - 25} height={window.innerHeight - 30 - 25}
-        title='About Me' icon={aboutMeIcon}>
+        title='About Me' icon={userCardIcon}>
 
         <div className={styles.aboutMeContainer}>
             <p className={styles.mainTitle}>

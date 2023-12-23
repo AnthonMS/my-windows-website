@@ -14,6 +14,7 @@ import msieIcon from '@/assets/images/icons/msie.png'
 import welcomeIcon from '@/assets/images/icons/welcome_icon.png'
 import aboutMeIcon from '@/assets/images/icons/aboutme_icon.png'
 import contactIcon from '@/assets/images/icons/contact_icon.png'
+import userCardIcon from '@/assets/images/icons/user_card.png'
 
 import Window from '../Window'
 import WelcomeWindow from '../Windows/Welcome'
@@ -242,7 +243,7 @@ const Windows = () => {
 
             <DesktopIcon left='100px' top='100px' id='about-me'
                 update={update} triggerUpdate={triggerUpdate}
-                text='About Me' icon={aboutMeIcon}
+                text='About Me' icon={userCardIcon}
                 primaryAction={onClickDesktopIcon} />
 
             <DesktopIcon left='200px' top='0px' id='contact'
