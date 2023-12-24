@@ -115,6 +115,7 @@ const Window = React.forwardRef((props: WindowProps, ref) => {
     useEffect(() => {
         if (thisWindow.current) {
             if (isFullscreen) {
+                // TODO: Fix bug where bottom bar overlays window when we fullscreen. We want to take the bottomBar height into account
                 const screenWidth = window.innerWidth
                 const screenHeight = window.innerHeight
                 thisWindow.current.style.left = `0px`

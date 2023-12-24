@@ -3,11 +3,12 @@ export interface Command {
     usage: string;
     help?: string;
     options?: Option[];
-    arguments?: Argument[];
+    arguments?: Argument[]
 }
 export interface Option {
     option: string;
     usage: string;
+    description: string;
     arguments?: Argument[];
 }
 export interface Argument {
@@ -26,6 +27,7 @@ export interface ParsedOption {
     usage: string
     arguments: string[]
     error?: string
+    description?: string
 }
 export function parseCommand(command: string, commandConfig: Command): ParsedCommand {
     const parts = command.split(' ')

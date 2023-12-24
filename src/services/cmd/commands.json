@@ -1,90 +1,272 @@
 {
+    "cd": {
+        "command": "cd",
+        "usage": "cd [-L|[-P [-e]] [-@]] [dir]",
+        "help": "\tChange the shell working directory.\n\n\tChange the current directory to DIR.  The default DIR is the value of the \n\tHOME shell variable. If DIR is '-', it is converted to $OLDPWD.\n\n\tThe variable CDPATH defines the search path for the directory containing \n\tDIR.  Alternative directory names in CDPATH are separated by a colon (:). \n\tA null directory name is the same as the current directory.  If DIR begins \n\twith a slash (/), then CDPATH is not used. \n\n\tIf the directory is not found, and the shell option `cdable_vars' is set, \n\tthe word is assumed to be a variable name.  If that variable has a value, \n\tits value is used for DIR. \n\n\tThe default is to follow symbolic links, as if '-L' were specified. \n\t'..' is processed by removing the immediately previous pathname component \n\tback to a slash or the beginning of DIR.\n\n\tExit Status:\n\t\tReturns 0 if the directory is changed, and if $PWD is set successfully when \n\t\t-P is used; non-zero otherwise.",
+        "arguments": [
+            {
+                "name": "dir",
+                "required": false,
+                "description": "directory to change to"
+            }
+        ],
+        "options": [
+            {
+                "option": "--help",
+                "usage": "--help",
+                "description": "Show the help menu"
+            },
+            {
+                "option": "-L",
+                "usage": "-L",
+                "description": "\t\tforce symbolic links to be followed..."
+            },
+            {
+                "option": "-P",
+                "usage": "-P",
+                "description": "\t\tuse the physical directory structure..."
+            },
+            {
+                "option": "-e",
+                "usage": "-e",
+                "description": "\t\tif the -e option is supplied..."
+            },
+            {
+                "option": "-@",
+                "usage": "-@",
+                "description": "\t\ton systems that support it..."
+            }
+        ]
+    },
+
+
+    "pwd": {
+        "command": "pwd",
+        "usage": "pwd [-LPW]",
+        "help": "\tPrint the name of the current working directory.\n\n\tBy default, `pwd' behaves as if `-L' were specified.\n\n\tExit Status:\n\t\tReturns 0 unless an invalid option is given or the current directory cannot be read.",
+        "options": [
+            {
+                "option": "--help",
+                "usage": "--help",
+                "description": "Show the help menu"
+            },
+            {
+                "option": "-L",
+                "usage": "-L",
+                "description": "\t\tprint the value of $PWD if it names the current working directory"
+            },
+            {
+                "option": "-P",
+                "usage": "-P",
+                "description": "\t\tprint the physical directory, without any symbolic links"
+            },
+            {
+                "option": "-W",
+                "usage": "-W",
+                "description": "\t\tprint the Win32 value of the physical directory"
+            }
+        ]
+    },
+
     "clear": {
         "command": "clear",
         "usage": "clear [options]",
         "options": [
             {
                 "option": "-T",
-                "usage": "use this instead of $TERM"
+                "usage": "-T TERM",
+                "description": "use this instead of $TERM",
+                "arguments": [
+                    {
+                        "name": "TERM",
+                        "required": true,
+                        "description": "use this instead of $TERM"
+                    }
+                ]
             },
             {
                 "option": "-V",
-                "usage": "print curses-version"
+                "usage": "-V",
+                "description": "\t\t print curses-version"
             },
             {
                 "option": "-x",
-                "usage": "do not try to clear scrollback"
-            }
-        ]
-    },
-    
-    "cd": {
-        "command": "cd",
-        "usage": "cd [-L|[-P [-e]] [-@]] [dir]",
-        "help": "\tChange the shell working directory.\n\n\tChange the current directory to DIR.  The default DIR is the value of the \n\tHOME shell variable. If DIR is '-', it is converted to $OLDPWD.\n\n\tThe variable CDPATH defines the search path for the directory containing \n\tDIR.  Alternative directory names in CDPATH are separated by a colon (:). \n\tA null directory name is the same as the current directory.  If DIR begins \n\twith a slash (/), then CDPATH is not used. \n\n\tIf the directory is not found, and the shell option `cdable_vars' is set, \n\tthe word is assumed to be a variable name.  If that variable has a value, \n\tits value is used for DIR. \n\n\tThe default is to follow symbolic links, as if '-L' were specified. \n\t'..' is processed by removing the immediately previous pathname component \n\tback to a slash or the beginning of DIR.\n\n\tExit Status:\n\tReturns 0 if the directory is changed, and if $PWD is set successfully when \n\t-P is used; non-zero otherwise.",
-        "options": [
-            {
-                "option": "--help",
-                "usage": "Show the help menu"
-            },
-            {
-                "option": "-L",
-                "usage": "force symbolic links to be followed..."
-            },
-            {
-                "option": "-P",
-                "usage": "use the physical directory structure..."
-            },
-            {
-                "option": "-e",
-                "usage": "if the -P option is supplied..."
-            },
-            {
-                "option": "-@",
-                "usage": "on systems that support it..."
-            }
-        ],
-        "arguments": [
-            {
-                "name": "dir",
-                "required": true,
-                "description": "directory to change to"
+                "usage": "-x",
+                "description": "\t\t do not try to clear scrollback"
             }
         ]
     },
 
-    "test": {
-        "command": "test",
-        "usage": "test [-A testA] [test]",
-        "help": "\tTest the command validation logic",
-        "options": [
-            {
-                "option": "--help",
-                "usage": "Show the help menu"
-            },
-            {
-                "option": "-A",
-                "usage": "Test an option with a required argument",
-                "arguments": [
-                    {
-                        "name": "testA",
-                        "required": true,
-                        "description": "Argument for option -A"
-                    },
-                    {
-                        "name": "testA2",
-                        "required": false,
-                        "description": "Argument 2 for option -A"
-                    }
-                ]
-            }
-        ],
+    "ping": {
+        "command": "ping",
+        "usage": "ping [-t] [-a] [-n count] [-l size] [-f] [-i TTL] [-v TOS] \n\t\t\t\t\t\t[-r count] [-s count] [[-j host-list] | [-k host-list]] \n\t\t\t\t\t\t[-w timeout] [-R] [-S srcaddr] [-c compartment] [-p] \n\t\t\t\t\t\t[-4] [-6] target_name",
         "arguments": [
             {
-                "name": "test",
-                "required": false,
-                "description": "directory to change to"
+                "name": "target_name",
+                "required": true,
+                "description": "target to ping"
+            }
+        ],
+        "options": [
+            {
+                "option": "-t",
+                "usage": "-t",
+                "description": "\t\t\t\t\t\tPing the specified host until stopped.\n\t\t\t\t\t\t\t\t\t\t To see statistics and continue - type Control-Break;\n\t\t\t\t\t\t\t\t\t\t To stop - type Control-C."
+            },
+            {
+                "option": "-a",
+                "usage": "-a",
+                "description": "\t\t\t\t\t\tResolve addresses to hostnames."
+            },
+            {
+                "option": "-n",
+                "usage": "-n count",
+                "description": "\t\t\tNumber of echo requests to send.",
+                "arguments": [
+                    {
+                        "name": "count",
+                        "required": true
+                    }
+                ]
+            },
+            {
+                "option": "-l",
+                "usage": "-l size",
+                "description": "\t\t\t Send buffer size.",
+                "arguments": [
+                    {
+                        "name": "size",
+                        "required": true
+                    }
+                ]
+            },
+            {
+                "option": "-f",
+                "usage": "-f",
+                "description": "\t\t\t\t\t\tSet Don't Fragment flag in packet (IPv4-only)."
+            },
+            {
+                "option": "-i",
+                "usage": "-i TTL",
+                "description": "\t\t\t\tTime To Live.",
+                "arguments": [
+                    {
+                        "name": "TTL",
+                        "required": true
+                    }
+                ]
+            },
+            {
+                "option": "-v",
+                "usage": "-v VOS",
+                "description": "\t\t\t\tType Of Service (IPv4-only. This setting has been deprecated\n\t\t\t\t\t\t\t\t\t\t and has no effect on the type of service field in the IP\n\t\t\t\t\t\t\t\t\t\t Header).",
+                "arguments": [
+                    {
+                        "name": "VOS",
+                        "required": true
+                    }
+                ]
+            },
+            {
+                "option": "-r",
+                "usage": "-r count",
+                "description": "\t\t\tRecord route for count hops (IPv4-only).",
+                "arguments": [
+                    {
+                        "name": "count",
+                        "required": true
+                    }
+                ]
+            },
+            {
+                "option": "-s",
+                "usage": "-s count",
+                "description": "\t\t\tTimestamp for count hops (IPv4-only).",
+                "arguments": [
+                    {
+                        "name": "count",
+                        "required": true
+                    }
+                ]
+            },
+            {
+                "option": "-j",
+                "usage": "-j host-list",
+                "description": "\tTimesLoose source route along host-list (IPv4-only).",
+                "arguments": [
+                    {
+                        "name": "host-list",
+                        "required": true
+                    }
+                ]
+            },
+            {
+                "option": "-k",
+                "usage": "-k host-list",
+                "description": "\tStrict source route along host-list (IPv4-only).",
+                "arguments": [
+                    {
+                        "name": "host-list",
+                        "required": true
+                    }
+                ]
+            },
+            {
+                "option": "-w",
+                "usage": "-w timeout",
+                "description": "\t\tTimeout in milliseconds to wait for each reply.",
+                "arguments": [
+                    {
+                        "name": "timeout",
+                        "required": true
+                    }
+                ]
+            },
+            {
+                "option": "-R",
+                "usage": "-R",
+                "description": "\t\t\t\t\t\tUse routing header to test reverse route also (IPv6-only).\n\t\t\t\t\t\t\t\t\t\t Per RFC 5095 the use of this routing header has been\n\t\t\t\t\t\t\t\t\t\t deprecated. Some systems may drop echo requests if\n\t\t\t\t\t\t\t\t\t\t this header is used."
+            },
+            {
+                "option": "-S",
+                "usage": "-S srcaddr",
+                "description": "\t\tSource address to use",
+                "arguments": [
+                    {
+                        "name": "srcaddr",
+                        "required": true
+                    }
+                ]
+            },
+            {
+                "option": "-c",
+                "usage": "-c compartment",
+                "description": "Routing compartment identifier.",
+                "arguments": [
+                    {
+                        "name": "compartment",
+                        "required": true
+                    }
+                ]
+            },
+            {
+                "option": "-p",
+                "usage": "-p",
+                "description": "\t\t\t\t\t\tPing a Hyper-V Network Virtualization provider address."
+            },
+            {
+                "option": "-4",
+                "usage": "-4",
+                "description": "\t\t\t\t\t\tForce using IPv4."
+            },
+            {
+                "option": "-6",
+                "usage": "-6",
+                "description": "\t\t\t\t\t\tForce using IPv6."
             }
         ]
     }
+
+
+
 }

@@ -6,7 +6,7 @@ const commands: Commands = commandsJson as Commands
 
 export interface CommandResponse {
     message: string
-    error: boolean | "UNKNOWN_COMMAND" | "MISSING_ARG" | "UNKNOWN_OPTION" | "UNKNOWN_OPTION_ARG" | "UNKNOWN_ARG"
+    error: boolean | "UNKNOWN_COMMAND" | "MISSING_ARG" | "UNKNOWN_ARG" | "UNKNOWN_OPTION" | "UNKNOWN_OPTION_ARG"
     success: boolean | "EXECUTE" | "HELP"
     parsedCommand: string
     parsedOptions: ParsedOption[]

@@ -30,7 +30,7 @@ const CMDWindow = (props: CMDWindowProps) => {
     const [commandHistory, setCommandHistory] = useState<CommandHistoryItem[]>([]);
     const [currentDir, setCurrentDir] = useState<string>('C:\\> ')
     const [command, setCommand] = useState<string>('')
-    const [output, setOutput] = useState<string[]>([])
+    const [output, setOutput] = useState<string[]>(['Welcome to the Command Prompt Emulator!'])
 
     const windowRef = useRef<{ closeWindow?: () => void } | null>(null)
 
@@ -38,15 +38,17 @@ const CMDWindow = (props: CMDWindowProps) => {
         setOutput((prev) => [...prev, str])
         focusInputArea()
     }
+    const clearOutput = () => {
+        setOutput([])
+    }
     const updateCommandHistory = (commandItem: CommandHistoryItem) => {
         setCommandHistory((prevHistory) => [...prevHistory, commandItem])
     }
 
-
     const execute = async () => {
         const commandItem: CommandHistoryItem = {
             dir: currentDir,
-            command: command
+            command: command.trim() // Remove leading and trailing whitespace
         }
         updateCommandHistory(commandItem)
         updateOutput(currentDir + command)
@@ -59,7 +61,12 @@ const CMDWindow = (props: CMDWindowProps) => {
 
         if (res.status === 200) {
             if (!data.error) {
-                handleCommand(data)
+                if (data.success === 'HELP') {
+                    showHelp(data)
+                }
+                else if (data.success === 'EXECUTE') {
+                    handleCommand(data)
+                }
             }
             else {
                 handleError(data)
@@ -74,41 +81,78 @@ const CMDWindow = (props: CMDWindowProps) => {
     }
 
     const handleCommand = (data: CommandResponse) => {
-        let outputMsg: string = ''
-        switch (data.success) {
-            case 'HELP':
-                outputMsg = `${data.parsedCommand}: ${data.usage}\n`
-                outputMsg += `${data.help}\n\n`
-                outputMsg += `\tOptions:\n`
-                if (data.options) {
-                    data.options.map((option: { option: string, usage: string }) => {
-                        outputMsg += `\t\t ${option.option} \t ${option.usage}\n`
-                    })
-                }
-                outputMsg += `\n`
-                updateOutput(outputMsg)
+        const commandParsed: ParsedCommand = {
+            command: data.parsedCommand,
+            options: data.parsedOptions,
+            arguments: data.parsedArgs
+        }
+        switch (data.parsedCommand) {
+            case 'cd':
+                cd(commandParsed)
                 break;
-            case 'EXECUTE':
-                const commandParsed: ParsedCommand = {
-                    command: data.parsedCommand,
-                    options: data.parsedOptions,
-                    arguments: data.parsedArgs
-                }
-                switch (data.parsedCommand) {
-                    case 'cd':
-                        cd(commandParsed)
-                        break;
-                    default:
-                        console.log(`${data.parsedCommand} is not a command that is handled in the frontend yet. Sorry.`)
-                        break;
-                }
+            case 'pwd':
+                pwd(commandParsed)
+                break;
+            case 'clear':
+                clear(commandParsed)
+                break;
+            case 'ping':
+                ping(commandParsed)
                 break;
             default:
+                defaultCommand(commandParsed)
                 break;
         }
     }
 
+    const showHelp = (data: CommandResponse) => {
+        let outputMsg: string = ''
+        outputMsg = `${data.parsedCommand}: ${data.usage}\n`
+        outputMsg += `${data.help}\n\n`
+        outputMsg += `\tOptions:\n`
+        if (data.options) {
+            data.options.map((option: { option: string, usage: string, description: string }) => {
+                outputMsg += `\t\t ${option.usage} \t ${option.description}\n`
+            })
+        }
+        outputMsg += `\n`
+        updateOutput(outputMsg)
+    }
+
+    const showError = (data: CommandResponse) => {
+        // const formattedInvalidOptions = data.invalidOptions.map((arg: string) => `'${arg}'`).join(', ')
+        // const formattedArgs = data.parsedArgs.map((arg: string) => `'${arg}'`).join(', ')
+        let MISSING_ARG_MSG = `${data.parsedCommand}: ${data.message}\n`
+        MISSING_ARG_MSG += `Usage: ${data.usage}\n\n`
+        if (data.options) {
+            MISSING_ARG_MSG += `Options:\n`
+            data.options.map((option: { option: string, usage: string, description: string }) => {
+                MISSING_ARG_MSG += `\t ${option.usage} \t ${option.description}\n`
+            })
+            MISSING_ARG_MSG += `\n`
+        }
+        if (data.arguments) {
+            MISSING_ARG_MSG += `Arguments:\n`
+            data.arguments.map((arg: { name: string, description: string, required: boolean }) => {
+                MISSING_ARG_MSG += `\t ${arg.name} \t ${arg.description}\n`
+            })
+            MISSING_ARG_MSG += `\n`
+        }
+        updateOutput(MISSING_ARG_MSG)
+    }
+
+    const handleError = (data: CommandResponse) => {
+        if (data.error === 'UNKNOWN_COMMAND') {
+            updateOutput(`${data.parsedCommand}: command not found`)
+        }
+        else {
+            showError(data)
+        }
+    }
+
+
     const cd = (data: ParsedCommand) => {
+        // TODO: Handle options and arguments for changing directory
         // Since command was parsed successfully, we know there is a single argument in data
         let path = data.arguments[0]
         const pathValid = isDirectorySyntax(path)
@@ -126,10 +170,10 @@ const CMDWindow = (props: CMDWindowProps) => {
 
             }
             else { // if path does not start with "/" we want to add to currentDir
-                // RegEx to capture content between ":" and ">"
-                const match = currentDir.match(/:(.*?)(?=>)/)
+                // RegEx to capture content between ":" and ">" in currentDir
+                const currentPathMatch = currentDir.match(/:(.*?)(?=>)/)
                 // Extracting the captured content or empty string
-                let finalPath = match ? match[1] : ''
+                let finalPath = currentPathMatch ? currentPathMatch[1] : ''
                 const endsWithBackslash = /\\$/.test(finalPath)
                 if (!endsWithBackslash) {
                     finalPath += '\\'
@@ -139,7 +183,6 @@ const CMDWindow = (props: CMDWindowProps) => {
                 setCurrentDir(`C:${finalPath}> `)
 
             }
-
         }
         else {
             const outputMsg = `${data.command}: path invalid "${path}"\n`
@@ -147,51 +190,33 @@ const CMDWindow = (props: CMDWindowProps) => {
         }
     }
 
-    const handleError = (data: any) => {
-        switch (data.error) {
-            case 'UNKNOWN_COMMAND':
-                let UNKNOWN_COMMAND_MSG = `${data.parsedCommand}: command not found`
-                updateOutput(UNKNOWN_COMMAND_MSG)
-                break;
-            case 'UNKNOWN_OPTION':
-                // Encapsulate each item in "'" and separate them with ", "
-                const formattedInvalidOptions = data.invalidOptions.map((arg: string) => `'${arg}'`).join(', ')
-                let UNKNOWN_OPTION_MSG = `${data.parsedCommand}: unknown option: ${formattedInvalidOptions}\n`
-                UNKNOWN_OPTION_MSG += `Usage: ${data.usage}\n\n`
-                UNKNOWN_OPTION_MSG += `Options:\n`
-                data.options.map((option: { option: string, usage: string }) => {
-                    UNKNOWN_OPTION_MSG += `\t ${option.option} \t ${option.usage}\n`
-                })
-                UNKNOWN_OPTION_MSG += `\n`
-                updateOutput(UNKNOWN_OPTION_MSG)
-                break;
-            case 'UNKNOWN_OPTION_ARG': // TODO: Create output when error: unknown argument for option
-                // const formattedInvalidOptions = data.invalidOptions.map((arg: string) => `'${arg}'`).join(', ')
-                // let UNKNOWN_OPTION_MSG = `${data.parsedCommand}: unknown option: ${formattedInvalidOptions}\n`
-                // UNKNOWN_OPTION_MSG += `Usage: ${data.usage}\n\n`
-                // UNKNOWN_OPTION_MSG += `Options:\n`
-                // data.options.map((option: { option: string, usage: string }) => {
-                //     UNKNOWN_OPTION_MSG += `\t ${option.option} \t ${option.usage}\n`
-                // })
-                // UNKNOWN_OPTION_MSG += `\n`
-                // updateOutput(UNKNOWN_OPTION_MSG)
-                break;
-            case 'UNKNOWN_ARG':
-                const formattedArgs = data.parsedArgs.map((arg: string) => `'${arg}'`).join(', ')
-                let UNKNOWN_ARG_MSG = `${data.parsedCommand}: unknown argument: ${formattedArgs}\n`
-                UNKNOWN_ARG_MSG += `Usage: ${data.usage}\n\n`
-                UNKNOWN_ARG_MSG += `Options:\n`
-                data.options.map((option: { option: string, usage: string }) => {
-                    UNKNOWN_ARG_MSG += `\t ${option.option} \t ${option.usage}\n`
-                })
-                UNKNOWN_ARG_MSG += `\n`
-                updateOutput(UNKNOWN_ARG_MSG)
-                break;
-            default:
-                break;
+    const pwd = (data: ParsedCommand) => {
+        // TODO: Handle options and arguments for showing pwd
+        // RegEx to capture content between ":" and ">" in currentDir
+        const currentPathMatch = currentDir.match(/:(.*?)(?=>)/)
+        // Extracting the matched content or empty string
+        let currentPath = currentPathMatch ? currentPathMatch[1] : ''
+        const endsWithBackslash = /\\$/.test(currentPath)
+        if (!endsWithBackslash) {
+            currentPath += '\\'
         }
+        const currentDrive = currentDir.charAt(0)
+        currentPath = "\\" + currentDrive + currentPath
+        currentPath = currentPath.replace(/\\/g, '/') // Replace all "\\" with "/"
+        updateOutput(currentPath)
     }
 
+    const clear = (data: ParsedCommand) => {
+        // TODO: Handle options and arguments for clearing console
+        clearOutput()
+    }
+    const ping = (data: ParsedCommand) => {
+        console.log('PING TARGET!', data)
+    }
+
+    const defaultCommand = (data: ParsedCommand) => {
+        console.log(`${data.command} is not a command that is handled in the frontend yet. Sorry.`)
+    }
 
     const focusInputOnEvent = (event: React.MouseEvent<HTMLDivElement>) => {
         setTimeout(() => {
@@ -272,10 +297,6 @@ const CMDWindow = (props: CMDWindowProps) => {
 
         <div className={styles.windowContainer}>
             <div className={`${globalStyles.border} ${styles.content}`}>
-
-                <p className={styles.output}>
-                    Welcome to the Command Prompt Emulator!
-                </p>
 
                 {
                     output.map((out, index) => {
