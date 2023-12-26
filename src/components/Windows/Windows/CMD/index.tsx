@@ -14,6 +14,14 @@ import { CommandResponse } from '@/services/cmd'
 import { isDirectorySyntax } from '@/lib/utils'
 
 import { ParsedCommand } from '@/services/cmd/util_cmdParsing'
+
+
+import * as commandsJson from '@/services/cmd_new/commands.json'
+type Commands = Record<string, Command>
+const commands: Commands = commandsJson as Commands
+import { parseCommand, Command } from '@/services/cmd_new'
+
+
 interface CommandHistoryItem {
     dir: string
     command: string
@@ -54,30 +62,40 @@ const CMDWindow = (props: CMDWindowProps) => {
         updateOutput(currentDir + command)
         setCommand('')
 
-        hideInputArea()
-
-        const res = await axios.post('/api/cmd', commandItem)
-        const data: CommandResponse = await res.data
-
-        if (res.status === 200) {
-            if (!data.error) {
-                if (data.success === 'HELP') {
-                    showHelp(data)
-                }
-                else if (data.success === 'EXECUTE') {
-                    handleCommand(data)
-                }
-            }
-            else {
-                handleError(data)
-            }
-        }
-        else {
-            console.error('ERROR:', data)
+        
+        const commandParts = commandItem.command.split(' ')
+        const commandPart = commandParts.shift() || ''
+        const commandConfig = commands[commandPart]
+        if (commandConfig) {
+            console.log('COMMANDCONFIG:', commandConfig)
+            const test = parseCommand(commandItem.command, commandConfig)
+            console.log('TEST:', test)
         }
 
-        showInputArea()
-        focusInputArea()
+        // hideInputArea()
+
+        // const res = await axios.post('/api/cmd', commandItem)
+        // const data: CommandResponse = await res.data
+
+        // if (res.status === 200) {
+        //     if (!data.error) {
+        //         if (data.success === 'HELP') {
+        //             showHelp(data)
+        //         }
+        //         else if (data.success === 'EXECUTE') {
+        //             handleCommand(data)
+        //         }
+        //     }
+        //     else {
+        //         handleError(data)
+        //     }
+        // }
+        // else {
+        //     console.error('ERROR:', data)
+        // }
+
+        // showInputArea()
+        // focusInputArea()
     }
 
     const handleCommand = (data: CommandResponse) => {
