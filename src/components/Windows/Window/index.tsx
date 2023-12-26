@@ -317,7 +317,7 @@ const Window = React.forwardRef((props: WindowProps, ref) => {
 
             <div className={styles.windowHeader} onMouseDown={mouseDownHeader} onMouseUp={mouseUpHeader}>
                 <div className={styles.windowTitle}>
-                    {icon !== null ? <Image className={styles.windowIcon} src={icon as StaticImport} alt={`icon`} /> : <></>}
+                    {icon !== null ? <Image className={styles.windowIcon} width={48} height={48} src={icon as string | StaticImport} alt={`icon`} data-icon={true} /> : <></>}
                     <p className={styles.windowTitleText}>{thisTitle}</p>
 
                 </div>

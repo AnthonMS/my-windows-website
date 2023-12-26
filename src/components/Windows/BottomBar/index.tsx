@@ -20,15 +20,22 @@ const BottomBar = (props: BottomBarProps) => {
 
     const startBtn = useRef<HTMLDivElement>(null)
 
-    const [windowElements, setWindowElements] = useState<Array<Element>>([])
+    const [windowElements, setWindowElements] = useState<Element[]>([])
+    const [windowIcons, setWindowIcons] = useState<string[]>([])
 
     useEffect(() => {
         const windows = document.querySelectorAll(`.${styles.window}`)
-        let windowsArray: Array<Element> = []
+        let windowsArray: Element[] = []
+        let windowIconsArray: string[] = []
         windows.forEach((window: Element) => {
             windowsArray.push(window)
+
+            const iconElement = window.querySelector('[data-icon="true"]')
+            const iconSrc = iconElement ? iconElement.getAttribute('src') : null
+            windowIconsArray.push(iconSrc || '');
         })
         setWindowElements(windowsArray)
+        setWindowIcons(windowIconsArray)
     }, [update])
 
 
@@ -161,7 +168,7 @@ const BottomBar = (props: BottomBarProps) => {
                                 className={`${styles.button} ${styles.bottomButton} ${styles.bottomButtonWindow} ${window.classList.contains(styles.active) ? styles.selected : ''}`}
                                 onClick={clickWindow}>
                                 <div className={styles.buttonContent}>
-                                    <Image className={styles.image} src={windowsLogo} alt={`windows-logo`} />
+                                    <Image className={styles.image} width={48} height={48} src={windowIcons[index] ? windowIcons[index] : windowsLogo} alt={`window-icon`} />
                                     <p className={styles.text}>{window.getAttribute('data-title')}</p>
                                 </div>
                             </div>
