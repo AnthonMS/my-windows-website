@@ -3,39 +3,70 @@ import { NextResponse } from "next/server"
 
 import { executeCommand } from "@/services/cmd"
 
+import { parseCommand, Command } from "@/services/cmd_new"
+import * as commandsJson from '@/services/cmd_new/commands.json'
+type Commands = Record<string, Command>
+const commands: Commands = commandsJson as Commands
 
+export interface Res {
+    message: string
+    command?: Command|string
+    config?: Command
+}
 export async function POST(req: Request) {
     try {
         const body = await req.json()
         // console.log('BODY:', body)
         if (!body.command) {
-            return NextResponse.json({
-                message: 'Missing command',
-            }, {
-                status: 406 // Not Acceptable
-            })
+            const res:Res = {
+                message: "MISSING_COMMAND"
+            }
+            return returnNow(res, 400)
         }
 
         try {
-            const res = executeCommand(body.dir, body.command)
+            // const res = executeCommand(body.dir, body.command)
+            const command:string = body.command
+            const commandParts = command.split(' ')
+            const commandPart = commandParts.shift() || ''
+            const commandConfig = commands[commandPart]
 
-            return NextResponse.json(res, {
-                status: 200
-            })
+            if (commandConfig) {
+                const parsedCommand = parseCommand(body.command, commandConfig)
+                const res:Res = {
+                    message: "PARSED",
+                    command: parsedCommand,
+                    config: commandConfig
+                }
+                return returnNow(res, 200)
+            }
+            else {
+                const res:Res = {
+                    message: "UNKNOWN_COMMAND",
+                    command: commandPart
+                }
+                return returnNow(res, 200)
+            }
         }
-        catch (e) {
-            // return error(e)
-            return NextResponse.json(e, {
-                status: 500
-            })
+        catch (e:any) {
+            const res:Res = {
+                message: e.stacktrace
+            }
+            return returnNow(res, 500)
         }
     }
-    catch (e: any) {
-        // return error(e)
-        return NextResponse.json(e, {
-            status: 500
-        })
+    catch (e:any) {
+        const res:Res = {
+            message: e.stacktrace
+        }
+        return returnNow(res, 500)
     }
+}
+
+const returnNow = (res:Res, status:number) => {
+    return NextResponse.json(res, {
+        status: status
+    })
 }
 
 

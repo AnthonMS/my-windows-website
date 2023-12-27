@@ -24,12 +24,14 @@
             {
                 "option": "-P",
                 "usage": "-P",
-                "description": "\t\tuse the physical directory structure..."
-            },
-            {
-                "option": "-e",
-                "usage": "-e",
-                "description": "\t\tif the -e option is supplied..."
+                "description": "\t\tuse the physical directory structure...",
+                "options": [
+                    {
+                        "option": "-e",
+                        "usage": "-e",
+                        "description": "\t\tif the -e option is supplied..."
+                    }
+                ]
             },
             {
                 "option": "-@",

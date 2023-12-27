@@ -1,9 +1,10 @@
 export interface Command {
     command: string
-    usage: string
-    help: string
-    options: Option[]
-    arguments: Argument[]
+    usage?: string
+    help?: string
+    helpExtra?: string
+    options?: Option[]
+    arguments?: Argument[]
     error?: boolean | string
 }
 export interface Option {
@@ -22,8 +23,6 @@ export interface Argument {
     error?: boolean | string
 }
 
-
-
 export function parseCommand(command: string, commandConfig: Command): Command {
     const parts = command.split(' ')
     const commandPart = parts.shift()
@@ -40,7 +39,8 @@ export function parseCommand(command: string, commandConfig: Command): Command {
             if (optionConfig === undefined) {
                 const currentOption: Option = { option: optionName, error: 'UNKNOWN_OPTION' }
                 parsedOptions.push(currentOption)
-            } else {
+            }
+            else {
                 const currentOption: Option = { option: optionName, usage: optionConfig.usage, description: optionConfig.description, options: optionConfig.options, arguments: optionConfig.arguments || [] }
                 const remainingOptionArgsConfig = optionConfig.arguments || []
                 const remainingOptionArgsValues = parts.slice(i + 1)
@@ -71,7 +71,8 @@ export function parseCommand(command: string, commandConfig: Command): Command {
 
                 parsedOptions.push(currentOption)
             }
-        } 
+
+        }
         else {
             const remainingArgsConfig = commandConfig.arguments || []
             const remainingArgsValues = parts.slice(i)
@@ -86,15 +87,27 @@ export function parseCommand(command: string, commandConfig: Command): Command {
                         value: '',
                         required: argConfig.required,
                         description: argConfig.description || '',
-                        error: 'MISSING_ARGUMENT',
+                        error: 'MISSING_ARG',
                     })
                 } else {
-                    commandArgs.push({
-                        name: argConfig.name,
-                        value: argValue,
-                        required: argConfig.required || false,
-                        description: argConfig.description || '',
-                    })
+                    const existingArg = commandArgs.find(arg => arg.name === argConfig.name)
+
+                    if (!existingArg) {
+                        commandArgs.push({
+                            name: argConfig.name,
+                            value: argValue,
+                            required: argConfig.required || false,
+                            description: argConfig.description || '',
+                        })
+                    }
+                    else {
+                        // Duplicate argument found, handle accordingly
+                        commandArgs.push({
+                            name: '',
+                            value: argValue,
+                            error: 'UNKNOWN_ARG',
+                        });
+                    }
                 }
             }
 
@@ -126,11 +139,11 @@ export function parseCommand(command: string, commandConfig: Command): Command {
     }
 }
 
-function findOptionConfig(optionName: string, options: Option[] = []): Option | undefined {
+export function findOptionConfig(optionName: string, options: Option[] = []): Option | undefined {
     return options.find((opt) => opt.option === optionName) || undefined
 }
 
-function parseNestedOptions(parts: string[], parentOptionConfig: Option): Option[] {
+export function parseNestedOptions(parts: string[], parentOptionConfig: Option): Option[] {
     const parsedOptions: Option[] = []
 
     for (let i = 0; i < parts.length; i++) {
@@ -173,7 +186,7 @@ function parseNestedOptions(parts: string[], parentOptionConfig: Option): Option
 }
 
 
-function parseArguments(parts: string[], optionConfig: Option): Argument[] {
+export function parseArguments(parts: string[], optionConfig: Option): Argument[] {
     const parsedArgs: Argument[] = []
     const remainingArgsConfig = optionConfig.arguments || []
     const remainingArgsValues = parts
@@ -205,7 +218,7 @@ function parseArguments(parts: string[], optionConfig: Option): Argument[] {
     return parsedArgs
 }
 
-function countParsedParts(options: Option[]): number {
+export function countParsedParts(options: Option[]): number {
     return options.reduce((count, option) => {
         count++ // for the option itself
 
@@ -219,4 +232,157 @@ function countParsedParts(options: Option[]): number {
 
         return count
     }, 0)
+}
+
+
+export const extractErrors = (obj: Command): string[] => {
+    const errors: string[] = []
+
+    const traverseObject = (innerObj: any) => {
+        if (innerObj && typeof innerObj === 'object') {
+            if ('error' in innerObj && typeof innerObj.error === 'string') {
+                errors.push(innerObj.error)
+            }
+
+            for (const key in innerObj) {
+                if (Array.isArray(innerObj[key])) {
+                    for (const item of innerObj[key]) {
+                        traverseObject(item)
+                    }
+                } else if (typeof innerObj[key] === 'object') {
+                    traverseObject(innerObj[key])
+                }
+            }
+        }
+    };
+
+    traverseObject(obj)
+
+    return errors
+}
+export const extractErrorObjects = (obj: Command): { errors: any[], errorOptions: Option[], errorArguments: Argument[] } => {
+    const errors: (Option | Argument)[] = [];
+    const errorOptions: Option[] = []
+    const errorArguments: Argument[] = []
+
+    const traverseObject = (innerObj: any) => {
+        if (innerObj && typeof innerObj === 'object') {
+            if ('error' in innerObj && typeof innerObj.error === 'string') {
+                errors.push(innerObj)
+
+                if ('option' in innerObj) {
+                    errorOptions.push(innerObj)
+                } else if ('name' in innerObj) {
+                    errorArguments.push(innerObj)
+                }
+            }
+
+            for (const key in innerObj) {
+                if (Array.isArray(innerObj[key])) {
+                    for (const item of innerObj[key]) {
+                        traverseObject(item)
+                    }
+                } else if (typeof innerObj[key] === 'object') {
+                    traverseObject(innerObj[key])
+                }
+            }
+        }
+    };
+
+    traverseObject(obj)
+
+    return { errors, errorOptions, errorArguments }
+}
+
+export const processOptions = (options: Option[]): string => {
+    let optionOutputMsg = '';
+    options.forEach((option) => {
+        optionOutputMsg += `\t\t` + `${option.usage} \t ${option.description}\n`;
+
+        if (option.options) {
+            optionOutputMsg += processOptions(option.options);
+        }
+    });
+    return optionOutputMsg;
+};
+
+export const processArguments = (args: Argument[], options: Option[] = []): string => {
+    let argOutputMsg = '';
+
+    args.forEach((arg: Argument) => {
+        const argName = arg.required ? arg.name : `[${arg.name}]`;
+        argOutputMsg += `\t\t` + `${argName} \t ${arg.description}\n`;
+    });
+
+    options.forEach((option) => {
+        if (option.arguments) {
+            argOutputMsg += processArguments(option.arguments, option.options);
+        }
+    });
+
+    return argOutputMsg;
+};
+
+export const errorsToOutputString = (commandConfig: Command, command:Command, err: string
+):string => {
+
+    const errors = extractErrorObjects(command)
+
+    let outputMsg: string = ``
+
+    switch (err) {
+        case 'UNKNOWN_OPTION':
+            outputMsg += `Unknown option(s)\n`
+            outputMsg += `Usage: ${commandConfig.usage}\n\n`
+
+            outputMsg += `\tProblem option(s):\n`
+            errors.errorOptions.map((errObj:Option) => {
+                outputMsg += `\t\t` + `${errObj.option} \t ${errObj.error}\n`;
+            })
+            outputMsg += `\n`
+
+            if (commandConfig.options) {
+                outputMsg += `\tOptions:\n`
+                outputMsg += processOptions(commandConfig.options)
+            }
+
+            break;
+        case 'MISSING_ARG':
+            outputMsg += `Missing argument(s)\n`
+            outputMsg += `Usage: ${commandConfig.usage}\n\n`
+
+            outputMsg += `\tProblem argument(s):\n`
+            errors.errorArguments.map((errArg:Argument) => {
+                outputMsg += `\t\t` + `${errArg.name} \t ${errArg.error}\n`;
+            })
+            outputMsg += `\n`
+
+            if (commandConfig.arguments) {
+                outputMsg += `\tArguments:\n`
+                outputMsg += processArguments(commandConfig.arguments, commandConfig.options);
+            }
+
+            break
+        case 'UNKNOWN_ARG':
+            outputMsg += `Unknown argument(s)\n`
+            outputMsg += `Usage: ${commandConfig.usage}\n\n`
+
+            outputMsg += `\tProblem argument(s):\n`
+            errors.errorArguments.map((errArg:Argument) => {
+                outputMsg += `\t\t` + `${errArg.value} \t ${errArg.error}\n`;
+            })
+            outputMsg += `\n`
+
+            if (commandConfig.arguments) {
+                outputMsg += `\tArguments:\n`
+                outputMsg += processArguments(commandConfig.arguments, commandConfig.options);
+            }
+
+            break
+        default:
+            break
+    }
+
+    outputMsg += '\n'
+    return outputMsg
 }
