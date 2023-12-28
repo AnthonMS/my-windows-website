@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, MutableRefObject } from 'react'
 import ReactDOM from 'react-dom'
 import { Root, createRoot } from 'react-dom/client'
 import Head from 'next/head'
@@ -25,21 +25,26 @@ import CMDWindow from '../Windows/CMD'
 
 import { isElementInClass, findParentWithClass } from '@/lib/util_DOM'
 
+
+import { useWindowStore } from '@/stores/windowStore'
+
 const Windows = () => {
     const initialMount = useRef<Boolean>(true)
     const [update, setUpdate] = useState(false)
     const triggerUpdate = () => { setUpdate(prev => !prev); }
     const windowsContainer = useRef<HTMLDivElement | null>(null)
+    const { openWindow, setWindowsContainer, setStyles } = useWindowStore()
 
     const [isHighlighting, setIsHighlighting] = useState(false)
     const [highlightBox, setHighlightBox] = useState({ startX: 0, startY: 0, width: 0, height: 0 })
     const [highlightBoxRendered, setHighlightBoxRendered] = useState({ startX: 0, startY: 0, width: 0, height: 0 })
 
+
     useEffect(() => {
         if (initialMount.current) {
             initialMount.current = false
-            // openWindow(<CMDWindow openWindow={openWindow} update={update} triggerUpdate={triggerUpdate} />)
-            openWindow(<WelcomeWindow openWindow={openWindow} update={update} triggerUpdate={triggerUpdate} />)
+            openWindow(<CMDWindow openWindow={openWindow} update={update} triggerUpdate={triggerUpdate} />)
+            // openWindow(<WelcomeWindow openWindow={openWindow} update={update} triggerUpdate={triggerUpdate} />)
             // openWindow(<AboutMeWindow update={update} triggerUpdate={triggerUpdate} />)
             // openWindow(<ContactWindow openWindow={openWindow} update={update} triggerUpdate={triggerUpdate} />)
             // openWindow(<ErrorWindow text='This is an error message. Wubba lubba dub dub!' update={update} triggerUpdate={triggerUpdate} />)
@@ -48,6 +53,17 @@ const Windows = () => {
         return () => {
         }
     }, [])
+
+
+    useEffect(() => {
+        if (windowsContainer.current) {
+            setWindowsContainer(windowsContainer as MutableRefObject<HTMLDivElement>)
+        }
+    }, [windowsContainer, setWindowsContainer])
+    useEffect(() => {
+        setStyles(styles)
+    }, [styles, setStyles])
+
 
     // parse highlight box coordinates (handle negatives)
     useEffect(() => {
@@ -88,50 +104,10 @@ const Windows = () => {
             // openWindow(<AboutMeWindow update={update} triggerUpdate={triggerUpdate} />)
             default:
                 console.error('Desktop icon click unhandled:', target)
+
                 break;
         }
     }
-
-    const openWindow = (window: JSX.Element) => {
-        const portalContainer = document.createElement('div')
-        portalContainer.classList.add(styles.windowParent)
-        const rootPortal = createRoot(portalContainer)
-        rootPortal.render(window) // root.unmount() to remove from DOM
-
-        // We wait to see if window we want to create is already created.
-        setTimeout(() => {
-            const firstChild = portalContainer.firstChild as Element
-            // TODO: if firstChild is null, we should cancel this timeout and start it over so we wait until firstChild is not null anymore.
-            if (windowsContainer.current !== null) {
-
-                const windows = document.querySelectorAll(`.${styles.window}`)
-                let windowOpen: Boolean = false
-                windows.forEach((window: Element) => {
-                    if (window.getAttribute('data-title') === firstChild.getAttribute('data-title')) {
-                        windowOpen = true
-                        window.classList.remove(styles.hidden)
-                        if (!window.classList.contains(styles.active))
-                            window.classList.add(styles.active)
-                    }
-                    else {
-                        if (window.classList.contains(styles.active))
-                            window.classList.remove(styles.active)
-                    }
-                })
-
-                if (!windowOpen) {
-                    firstChild.classList.add(styles.active)
-                    windowsContainer.current.appendChild(portalContainer)
-                }
-
-            }
-            else {
-                console.error(`windowsContainer is null. Can't open window.`)
-            }
-            triggerUpdate()
-        }, 25)
-    }
-
 
     const mouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
         const target = event.target
@@ -226,6 +202,8 @@ const Windows = () => {
         </Head>
 
         <div className={styles.main} onMouseDown={mouseDown} onMouseUp={mouseUp} onMouseMove={mouseMove}>
+            {/* TODO: Add data-window to DesktopIcon, it should equal the name of the window's folder*/}
+            {/* So if we set data-window='AboutMe' it should try to import that window, so it can call openWindow directly. */}
             <DesktopIcon left='0px' top='0px' id='computer'
                 update={update} triggerUpdate={triggerUpdate}
                 text='Computer' icon={computerExplorer}
