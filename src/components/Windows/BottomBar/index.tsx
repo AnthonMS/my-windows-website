@@ -192,7 +192,7 @@ const BottomBar = (props: BottomBarProps) => {
         </div>
 
         {
-            showStart ? <StartMenu openWindow={openWindow} toggleStartMenu={toggleStartMenu} update={update} triggerUpdate={triggerUpdate}/> : <></>
+            showStart ? <StartMenu toggleStartMenu={toggleStartMenu} update={update} triggerUpdate={triggerUpdate}/> : <></>
         }
 
     </>

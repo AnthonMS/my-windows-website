@@ -1,4 +1,4 @@
-import styles from './../styles.module.css'
+// import styles from './../styles.module.css'
 import Image from 'next/image'
 
 import aboutMeIcon from '@/assets/images/icons/user_card.png'
@@ -14,6 +14,7 @@ import windowsLogo from '@/assets/images/windows92-logo.png'
 
 import minesGameIcon from '@/assets/images/icons/game_mine_1-0.png'
 
+import { useWindowStore } from '@/stores/windowStore'
 
 import WelcomeWindow from '../Windows/Welcome'
 import AboutMeWindow from '../Windows/AboutMe'
@@ -22,11 +23,11 @@ import ContactWindow from '../Windows/Contact'
 export interface StartMenuProps {
     update?: Boolean
     triggerUpdate?: Function
-    openWindow: Function
     toggleStartMenu: Function
 }
 const StartMenu = (props: StartMenuProps) => {
-    const { update, triggerUpdate, openWindow, toggleStartMenu } = props
+    const { update, triggerUpdate, toggleStartMenu } = props
+    const { openWindow, styles } = useWindowStore()
 
     function isMouseEvent(event: React.MouseEvent<HTMLLIElement> | React.TouchEvent<HTMLLIElement>): event is React.MouseEvent<HTMLLIElement> {
         return 'clientX' in event;
@@ -46,7 +47,7 @@ const StartMenu = (props: StartMenuProps) => {
 
             switch (btnItem) {
                 case 'welcome':
-                    openWindow(<WelcomeWindow openWindow={openWindow} update={update} triggerUpdate={triggerUpdate} />)
+                    openWindow(<WelcomeWindow update={update} triggerUpdate={triggerUpdate} />)
                     toggleStartMenu()
                     break
                 case 'about':
@@ -54,7 +55,7 @@ const StartMenu = (props: StartMenuProps) => {
                     toggleStartMenu()
                     break
                 case 'contact':
-                    openWindow(<ContactWindow openWindow={openWindow} update={update} triggerUpdate={triggerUpdate} />)
+                    openWindow(<ContactWindow update={update} triggerUpdate={triggerUpdate} />)
                     toggleStartMenu()
                     break
                 case 'computer':
@@ -75,6 +76,7 @@ const StartMenu = (props: StartMenuProps) => {
         }
     }
 
+    if (!styles.startMenu) return <></>
     return (
         <div className={styles.startMenu}>
             <div className={styles.blueBar}></div>
