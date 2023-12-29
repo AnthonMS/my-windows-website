@@ -1,4 +1,4 @@
-import styles from './../styles.module.css'
+// import styles from './../styles.module.css'
 import Image, { StaticImageData } from 'next/image'
 import { useState, useEffect, useRef } from 'react'
 
@@ -8,13 +8,16 @@ import windowsLogo from '@/assets/images/windows92-logo.png'
 import Button from '../UI/Button'
 import StartMenu from '../StartMenu'
 
+import { useWindowStore } from '@/stores/windowStore'
+
+// TODO: Update to use new windowStore: openWindow, windows, styles
 export interface BottomBarProps {
     update?: Boolean
     triggerUpdate?: Function
-    openWindow: Function
 }
 const BottomBar = (props: BottomBarProps) => {
-    const { update, triggerUpdate, openWindow } = props
+    const { update, triggerUpdate } = props
+    const { openWindow, windows, styles } = useWindowStore()
     const [showStart, setShowStart] = useState<Boolean>(false)
     const toggleStartMenu = () => {setShowStart(prev => !prev);if (triggerUpdate) {triggerUpdate()}}
 
@@ -146,14 +149,14 @@ const BottomBar = (props: BottomBarProps) => {
     }
 
 
-
+    if (!styles.bottomBar) return <></>
     return <>
         <div className={styles.bottomBar}>
             <div className={styles.leftContainer}>
                 <div ref={startBtn} className={`${styles.button} ${styles.bottomButton} ${styles.bottomButtonStart} ${showStart ? styles.selected : ''}`}
                     onClick={click}>
                     <div className={styles.buttonContent}>
-                        <Image className={styles.image} src={windowsLogo} alt={`windows-logo`} />
+                        <Image className={styles.image} src={windowsLogo} width={48} height={48} alt={`windows-logo`} />
                         <p className={styles.text}>Start</p>
                     </div>
                 </div>
@@ -162,13 +165,17 @@ const BottomBar = (props: BottomBarProps) => {
             <div className={styles.middleContainer}>
 
                 {
-                    windowElements.map((window: Element, index: number) => {
+                    windows.map((window: Element, index: number) => {
+                        
+                        const iconElement = window.querySelector('[data-icon="true"]')
+                        const iconSrc = iconElement ? iconElement.getAttribute('src') : null
+                        // windowIconsArray.push(iconSrc || '');
                         return (
                             <div key={`window-${index}`} data-window={window.getAttribute('data-title')} 
                                 className={`${styles.button} ${styles.bottomButton} ${styles.bottomButtonWindow} ${window.classList.contains(styles.active) ? styles.selected : ''}`}
                                 onClick={clickWindow}>
                                 <div className={styles.buttonContent}>
-                                    <Image className={styles.image} width={48} height={48} src={windowIcons[index] ? windowIcons[index] : windowsLogo} alt={`window-icon`} />
+                                    <Image className={styles.image} width={48} height={48} src={iconSrc ? iconSrc : windowsLogo} alt={`window-icon`} />
                                     <p className={styles.text}>{window.getAttribute('data-title')}</p>
                                 </div>
                             </div>

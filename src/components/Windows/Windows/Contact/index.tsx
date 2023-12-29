@@ -11,16 +11,17 @@ import sendmailIcon from '@/assets/images/icons/sendmail_icon.png'
 import PopupWindow from '../Popup'
 import Button from '../../UI/Button'
 
+import { useWindowStore } from '@/stores/windowStore'
 
 import axios from 'axios'
 
 export interface ContactWindowProps {
     update?: Boolean
     triggerUpdate?: Function
-    openWindow: Function
 }
 const ContactWindow = (props: ContactWindowProps) => {
-    const { update, triggerUpdate, openWindow } = props
+    const { update, triggerUpdate } = props
+    const { openWindow } = useWindowStore()
 
     const [name, setName] = useState<string>('')
     const [email, setEmail] = useState<string>('')

@@ -43,8 +43,8 @@ const Windows = () => {
     useEffect(() => {
         if (initialMount.current) {
             initialMount.current = false
-            openWindow(<CMDWindow openWindow={openWindow} update={update} triggerUpdate={triggerUpdate} />)
-            // openWindow(<WelcomeWindow openWindow={openWindow} update={update} triggerUpdate={triggerUpdate} />)
+            // openWindow(<CMDWindow update={update} triggerUpdate={triggerUpdate} />)
+            openWindow(<WelcomeWindow openWindow={openWindow} update={update} triggerUpdate={triggerUpdate} />)
             // openWindow(<AboutMeWindow update={update} triggerUpdate={triggerUpdate} />)
             // openWindow(<ContactWindow openWindow={openWindow} update={update} triggerUpdate={triggerUpdate} />)
             // openWindow(<ErrorWindow text='This is an error message. Wubba lubba dub dub!' update={update} triggerUpdate={triggerUpdate} />)
@@ -90,13 +90,13 @@ const Windows = () => {
                 openWindow(<Window update={update} triggerUpdate={triggerUpdate} title='Test' icon={welcomeIcon}><p style={{ color: 'black' }}>FUCKING HELL MAN!</p></Window>)
                 break;
             case 'welcome':
-                openWindow(<WelcomeWindow openWindow={openWindow} update={update} triggerUpdate={triggerUpdate} />)
+                openWindow(<WelcomeWindow update={update} triggerUpdate={triggerUpdate} />)
                 break;
             case 'about-me':
                 openWindow(<AboutMeWindow update={update} triggerUpdate={triggerUpdate} />)
                 break;
             case 'contact':
-                openWindow(<ContactWindow openWindow={openWindow} update={update} triggerUpdate={triggerUpdate} />)
+                openWindow(<ContactWindow update={update} triggerUpdate={triggerUpdate} />)
                 break;
             case 'computer':
                 console.log('computer clicked!')
@@ -235,7 +235,7 @@ const Windows = () => {
                 {/* <WelcomeWindow update={update} triggerUpdate={triggerUpdate} /> */}
             </div>
 
-            <BottomBar openWindow={openWindow} update={update} triggerUpdate={triggerUpdate} />
+            <BottomBar update={update} triggerUpdate={triggerUpdate} />
 
             {isHighlighting && (
                 <div

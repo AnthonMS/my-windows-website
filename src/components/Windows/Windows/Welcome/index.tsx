@@ -7,13 +7,15 @@ import welcomeIcon from '@/assets/images/icons/welcome_icon.png'
 import AboutMeWindow from '../AboutMe'
 import ContactWindow from '../Contact'
 
+import { useWindowStore } from '@/stores/windowStore'
+
 export interface WelcomeWindowProps {
     update?: Boolean
     triggerUpdate?: Function
-    openWindow: Function
 }
 const WelcomeWindow = (props: WelcomeWindowProps) => {
-    const { update, triggerUpdate, openWindow } = props
+    const { update, triggerUpdate } = props
+    const { openWindow } = useWindowStore()
 
     const click = (event: React.MouseEvent<HTMLAnchorElement>) => {
         const target = event.target
@@ -23,7 +25,7 @@ const WelcomeWindow = (props: WelcomeWindowProps) => {
                 openWindow(<AboutMeWindow update={update} triggerUpdate={triggerUpdate} />)
             }
             if (target.id === 'contact') {
-                openWindow(<ContactWindow openWindow={openWindow} update={update} triggerUpdate={triggerUpdate} />)
+                openWindow(<ContactWindow update={update} triggerUpdate={triggerUpdate} />)
             }
         }
     }

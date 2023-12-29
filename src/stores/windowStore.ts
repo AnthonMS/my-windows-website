@@ -1,9 +1,9 @@
-import { create, StoreApi  } from 'zustand'
+import { create, StoreApi } from 'zustand'
 import { createRoot } from 'react-dom/client'
 import { MutableRefObject } from 'react'
 
 interface WindowStore {
-    windows: JSX.Element[]
+    windows: HTMLDivElement[]
     windowsContainer: MutableRefObject<HTMLDivElement> | null
     setWindowsContainer: (container: MutableRefObject<HTMLDivElement>) => void
     styles: any; // This is the new styles property
@@ -22,20 +22,25 @@ export const useWindowStore = create<WindowStore>((set: StoreApi<WindowStore>['s
     setStyles: (newStyles) => set({ styles: newStyles }),
     openWindow: (window) => {
         const currentStyles = get().styles
+        const currentWindows = get().windows
+
         const portalContainer = document.createElement('div')
         portalContainer.classList.add(currentStyles.windowParent)
         const rootPortal = createRoot(portalContainer)
         rootPortal.render(window) // root.unmount() to remove from DOM
 
-        // We wait to see if window we want to create is already created.
-        setTimeout(() => {
-            const firstChild = portalContainer.firstChild as Element
-            // TODO: if firstChild is null, we should cancel this timeout and start it over so we wait until firstChild is not null anymore.
-
-            const windowELs = document.querySelectorAll(`.${currentStyles.window}`);
+        // wait for render to see if window we want to create is already created.
+        setTimeout(function waitForRender() {
+            const windowDiv = portalContainer.firstChild as HTMLDivElement
+            if (windowDiv === null) {
+                // retry after short delay
+                setTimeout(waitForRender, 10)
+                return
+            }
+            
             let windowOpen: Boolean = false
-            windowELs.forEach((win: Element) => {
-                if (win.getAttribute('data-title') === firstChild.getAttribute('data-title')) {
+            currentWindows.forEach((win: Element) => {
+                if (win.getAttribute('data-title') === windowDiv.getAttribute('data-title')) {
                     windowOpen = true
                     win.classList.remove(currentStyles.hidden)
                     if (!win.classList.contains(currentStyles.active)) win.classList.add(currentStyles.active)
@@ -45,13 +50,13 @@ export const useWindowStore = create<WindowStore>((set: StoreApi<WindowStore>['s
             })
 
             if (!windowOpen) {
-                firstChild.classList.add(currentStyles.active)
+                windowDiv.classList.add(currentStyles.active)
                 const currentWindowsContainer = get().windowsContainer
                 if (currentWindowsContainer) {
-                  currentWindowsContainer.current.appendChild(portalContainer)
+                    currentWindowsContainer.current.appendChild(portalContainer)
                 }
-                set((state) => ({ windows: [...state.windows, window] }))
+                set((state) => ({ windows: [...state.windows, windowDiv] }))
             }
-        }, 25)
+        }, 10)
     },
 }))

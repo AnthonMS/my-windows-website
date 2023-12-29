@@ -19,6 +19,8 @@ const commands: Commands = commandsJson as Commands
 import { extractErrors, errorsToOutputString, Command } from '@/services/cmd_new'
 import { Res } from '@/app/api/cmd/route'
 
+import { useWindowStore } from '@/stores/windowStore'
+
 interface CommandHistoryItem {
     dir: string
     command: string
@@ -26,10 +28,10 @@ interface CommandHistoryItem {
 export interface CMDWindowProps {
     update?: Boolean
     triggerUpdate?: Function
-    openWindow: Function
 }
 const CMDWindow = (props: CMDWindowProps) => {
-    const { update, triggerUpdate, openWindow } = props
+    const { update, triggerUpdate } = props
+    const { openWindow } = useWindowStore()
     const inputArea = useRef<HTMLTextAreaElement | null>(null)
     const [inputAreaLines, setInputAreaLines] = useState(1)
     const [commandHistory, setCommandHistory] = useState<CommandHistoryItem[]>([]);
