@@ -34,7 +34,7 @@ const Windows = () => {
     const [update, setUpdate] = useState(false)
     const triggerUpdate = () => { setUpdate(prev => !prev); }
     const windowsContainer = useRef<HTMLDivElement | null>(null)
-    const { openWindow, setWindowsContainer, setStyles } = useWindowStore()
+    const { windows, openWindow, setWindowsContainer, setStyles } = useWindowStore()
 
     const [isHighlighting, setIsHighlighting] = useState(false)
     const [highlightBox, setHighlightBox] = useState({ startX: 0, startY: 0, width: 0, height: 0 })
@@ -44,8 +44,8 @@ const Windows = () => {
     useEffect(() => {
         if (initialMount.current) {
             initialMount.current = false
-            // openWindow(<CMDWindow update={update} triggerUpdate={triggerUpdate} />)
-            openWindow(<WelcomeWindow update={update} triggerUpdate={triggerUpdate} />)
+            openWindow(<CMDWindow />)
+            // openWindow(<WelcomeWindow update={update} triggerUpdate={triggerUpdate} />)
             // openWindow(<AboutMeWindow update={update} triggerUpdate={triggerUpdate} />)
             // openWindow(<ContactWindow update={update} triggerUpdate={triggerUpdate} />)
             // openWindow(<ErrorWindow text='This is an error message. Wubba lubba dub dub!' update={update} triggerUpdate={triggerUpdate} />)
@@ -88,7 +88,7 @@ const Windows = () => {
         switch (iconId) {
             case 'test':
                 console.log('TEST CLICKED!')
-                openWindow(<Window update={update} triggerUpdate={triggerUpdate} title='Test' icon={welcomeIcon}><p style={{ color: 'black' }}>FUCKING HELL MAN!</p></Window>)
+                openWindow(<Window title='Test' icon={welcomeIcon}><p style={{ color: 'black' }}>FUCKING HELL MAN!</p></Window>)
                 break;
             case 'welcome':
                 openWindow(<WelcomeWindow update={update} triggerUpdate={triggerUpdate} />)
@@ -120,8 +120,8 @@ const Windows = () => {
 
             // If click is not in the bottomBar -> remove active class from all windows
             if (!isElementInClass(target, styles.bottomBar)) {
-                const windows = document.querySelectorAll(`.${styles.window}`)
-                windows.forEach((window: Element) => {
+                const windowsFound = document.querySelectorAll(`.${styles.window}`)
+                windowsFound.forEach((window: Element) => {
                     if (window.classList.contains(styles.active)) {
                         window.classList.remove(styles.active)
                     }
@@ -236,7 +236,7 @@ const Windows = () => {
                 {/* <WelcomeWindow update={update} triggerUpdate={triggerUpdate} /> */}
             </div>
 
-            <BottomBar update={update} triggerUpdate={triggerUpdate} />
+            <BottomBar />
 
             {isHighlighting && (
                 <div

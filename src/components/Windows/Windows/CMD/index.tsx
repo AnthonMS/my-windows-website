@@ -26,11 +26,9 @@ interface CommandHistoryItem {
     command: string
 }
 export interface CMDWindowProps {
-    update?: Boolean
-    triggerUpdate?: Function
 }
 const CMDWindow = (props: CMDWindowProps) => {
-    const { update, triggerUpdate } = props
+    const {  } = props
     const { openWindow } = useWindowStore()
     const inputArea = useRef<HTMLTextAreaElement | null>(null)
     const [inputAreaLines, setInputAreaLines] = useState(1)
@@ -39,7 +37,7 @@ const CMDWindow = (props: CMDWindowProps) => {
     const [command, setCommand] = useState<string>('')
     const [output, setOutput] = useState<string[]>(['Welcome to the Command Prompt Emulator!'])
 
-    const windowRef = useRef<{ closeWindow?: () => void } | null>(null)
+    const windowRef = useRef<{  } | null>(null)
 
     const updateOutput = (str: string) => {
         hideInputArea()
@@ -246,7 +244,7 @@ const CMDWindow = (props: CMDWindowProps) => {
         }
     }
 
-    return <Window ref={windowRef} update={update} triggerUpdate={triggerUpdate}
+    return <Window ref={windowRef}
         width={550} height={300}
         title='Command Prompt' icon={cmdIcon}
         onActive={focusInputOnEvent}>

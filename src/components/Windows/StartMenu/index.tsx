@@ -21,12 +21,10 @@ import AboutMeWindow from '../Windows/AboutMe'
 import ContactWindow from '../Windows/Contact'
 
 export interface StartMenuProps {
-    update?: Boolean
-    triggerUpdate?: Function
     toggleStartMenu: Function
 }
 const StartMenu = (props: StartMenuProps) => {
-    const { update, triggerUpdate, toggleStartMenu } = props
+    const { toggleStartMenu } = props
     const { openWindow, styles } = useWindowStore()
 
     function isMouseEvent(event: React.MouseEvent<HTMLLIElement> | React.TouchEvent<HTMLLIElement>): event is React.MouseEvent<HTMLLIElement> {
@@ -47,15 +45,15 @@ const StartMenu = (props: StartMenuProps) => {
 
             switch (btnItem) {
                 case 'welcome':
-                    openWindow(<WelcomeWindow update={update} triggerUpdate={triggerUpdate} />)
+                    openWindow(<WelcomeWindow />)
                     toggleStartMenu()
                     break
                 case 'about':
-                    openWindow(<AboutMeWindow update={update} triggerUpdate={triggerUpdate} />)
+                    openWindow(<AboutMeWindow />)
                     toggleStartMenu()
                     break
                 case 'contact':
-                    openWindow(<ContactWindow update={update} triggerUpdate={triggerUpdate} />)
+                    openWindow(<ContactWindow />)
                     toggleStartMenu()
                     break
                 case 'computer':

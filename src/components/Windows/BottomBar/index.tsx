@@ -12,36 +12,19 @@ import { useWindowStore } from '@/stores/windowStore'
 
 // TODO: Update to use new windowStore: openWindow, windows, styles
 export interface BottomBarProps {
-    update?: Boolean
-    triggerUpdate?: Function
 }
 const BottomBar = (props: BottomBarProps) => {
-    const { update, triggerUpdate } = props
-    const { openWindow, windows, styles } = useWindowStore()
+    const {  } = props
+    const { windows, openWindow, closeWindow, hideWindow, showWindow, styles } = useWindowStore()
     const [showStart, setShowStart] = useState<Boolean>(false)
-    const toggleStartMenu = () => {setShowStart(prev => !prev);if (triggerUpdate) {triggerUpdate()}}
+    const toggleStartMenu = () => { setShowStart(prev => !prev) }
 
     const startBtn = useRef<HTMLDivElement>(null)
 
-    const [windowElements, setWindowElements] = useState<Element[]>([])
-    const [windowIcons, setWindowIcons] = useState<string[]>([])
-
     useEffect(() => {
-        const windows = document.querySelectorAll(`.${styles.window}`)
-        let windowsArray: Element[] = []
-        let windowIconsArray: string[] = []
-        windows.forEach((window: Element) => {
-            windowsArray.push(window)
-
-            const iconElement = window.querySelector('[data-icon="true"]')
-            const iconSrc = iconElement ? iconElement.getAttribute('src') : null
-            windowIconsArray.push(iconSrc || '');
-        })
-        setWindowElements(windowsArray)
-        setWindowIcons(windowIconsArray)
-    }, [update])
-
-
+        console.log('Windows Updated in BottomBar:', windows)
+    }, [windows])
+    
 
     useEffect(() => {
         const handleWindowClick = (event: any) => {
@@ -87,64 +70,78 @@ const BottomBar = (props: BottomBarProps) => {
             else if (target.classList.contains(styles.bottomButtonWindow)) {
                 // remove active class from active window(s) (there should only be 1)
                 const foundWindows = document.querySelectorAll(`.${styles.window}.${styles.active}`)
+                const activeWindows = windows.filter((win: HTMLDivElement) => win.classList.contains(styles.active))
                 foundWindows.forEach((window: Element) => {
                     window.classList.remove(styles.active)
                 })
 
                 let btnTitle: string = target.getAttribute('data-title') as string
-                const element: Element | null = document.querySelector(`[data-title="${btnTitle}"]`)
-                if (element !== null) {
+                const elementOld: Element | null = document.querySelector(`[data-title="${btnTitle}"]`)
+                const element: HTMLDivElement|undefined = windows.find((win: HTMLDivElement) => win.getAttribute('data-title') === btnTitle)
+                if (element !== undefined) {
                     if (target.classList.contains(styles.selected)) {
-                        if (element.classList.contains(styles.hidden)) {
-                            element.classList.remove(styles.hidden)
-                        }
-                        if (!element.classList.contains(styles.active)) {
-                            element.classList.add(styles.active)
-                        }
+                        // Hide
+                        console.log('HIDE')
+                        hideWindow(btnTitle)
+                        // if (!element.classList.contains(styles.hidden)) {
+                        //     element.classList.add(styles.hidden)
+                        // }
+                        // if (element.classList.contains(styles.active)) {
+                        //     element.classList.remove(styles.active)
+                        // }
                     }
                     else {
-                        if (!element.classList.contains(styles.hidden)) {
-                            element.classList.add(styles.hidden)
-                        }
-                        if (element.classList.contains(styles.active)) {
-                            element.classList.remove(styles.active)
-                        }
+                        // Show
+                        console.log('SHOW')
+                        showWindow(btnTitle)
+                        // if (element.classList.contains(styles.hidden)) {
+                        //     element.classList.remove(styles.hidden)
+                        // }
+                        // if (!element.classList.contains(styles.active)) {
+                        //     element.classList.add(styles.active)
+                        // }
                     }
-
                 }
             }
         }
     }
+
     const clickWindow = async (event: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
         const target = event.currentTarget
 
         // remove active class from active window(s) (there should only be 1)
+        const activeWindows = windows.filter((win: HTMLDivElement) => win.classList.contains(styles.active))
         const foundWindows = document.querySelectorAll(`.${styles.window}.${styles.active}`)
         foundWindows.forEach((window: Element) => {
             window.classList.remove(styles.active)
         })
 
         let btnTitle: string = target.getAttribute('data-window') as string
-        const element: Element | null = document.querySelector(`[data-title="${btnTitle}"]`)
-        if (element !== null) {
+        const elementOld: Element | null = document.querySelector(`[data-title="${btnTitle}"]`)
+        const element: HTMLDivElement|undefined = windows.find((win: HTMLDivElement) => win.getAttribute('data-title') === btnTitle)
+        if (element !== undefined) {
             if (target.classList.contains(styles.selected)) {
-                if (!element.classList.contains(styles.hidden)) {
-                    element.classList.add(styles.hidden)
-                }
-                if (element.classList.contains(styles.active)) {
-                    element.classList.remove(styles.active)
-                }
+                // Hide
+                console.log('HIDE')
+                hideWindow(btnTitle)
+                // if (!element.classList.contains(styles.hidden)) {
+                //     element.classList.add(styles.hidden)
+                // }
+                // if (element.classList.contains(styles.active)) {
+                //     element.classList.remove(styles.active)
+                // }
             }
             else {
-                if (element.classList.contains(styles.hidden)) {
-                    element.classList.remove(styles.hidden)
-                }
-                if (!element.classList.contains(styles.active)) {
-                    element.classList.add(styles.active)
-                }
+                // Show
+                console.log('SHOW')
+                showWindow(btnTitle)
+                // if (element.classList.contains(styles.hidden)) {
+                //     element.classList.remove(styles.hidden)
+                // }
+                // if (!element.classList.contains(styles.active)) {
+                //     element.classList.add(styles.active)
+                // }
             }
-            if (triggerUpdate)
-                triggerUpdate()
         }
     }
 
@@ -169,7 +166,7 @@ const BottomBar = (props: BottomBarProps) => {
                         
                         const iconElement = window.querySelector('[data-icon="true"]')
                         const iconSrc = iconElement ? iconElement.getAttribute('src') : null
-                        // windowIconsArray.push(iconSrc || '');
+
                         return (
                             <div key={`window-${index}`} data-window={window.getAttribute('data-title')} 
                                 className={`${styles.button} ${styles.bottomButton} ${styles.bottomButtonWindow} ${window.classList.contains(styles.active) ? styles.selected : ''}`}
@@ -192,7 +189,7 @@ const BottomBar = (props: BottomBarProps) => {
         </div>
 
         {
-            showStart ? <StartMenu toggleStartMenu={toggleStartMenu} update={update} triggerUpdate={triggerUpdate}/> : <></>
+            showStart ? <StartMenu toggleStartMenu={toggleStartMenu} /> : <></>
         }
 
     </>

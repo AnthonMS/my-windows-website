@@ -1,4 +1,4 @@
-import styles from './../styles.module.css'
+// import styles from './../styles.module.css'
 
 import React, { useRef, useState, useEffect } from 'react'
 import Image, { StaticImageData } from 'next/image'
@@ -8,10 +8,10 @@ import { isElementInClass, findParentWithClass } from '@/lib/util_DOM'
 
 import Button from '../UI/Button'
 
+import { useWindowStore } from '@/stores/windowStore'
+
 export interface WindowProps {
     children?: React.ReactNode
-    update?: Boolean
-    triggerUpdate?: Function
     width?: number
     height?: number
     left?: number
@@ -21,8 +21,9 @@ export interface WindowProps {
     onActive?: Function
 }
 
-const Window = React.forwardRef((props: WindowProps, ref) => {
-    const { children, update, triggerUpdate, width, height, left, top, title, icon, onActive } = props
+const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unknown>) => {
+    const { children, width, height, left, top, title, icon, onActive } = props
+    const { windows, openWindow, closeWindow, hideWindow, styles } = useWindowStore()
     const initialMount = useRef<Boolean>(true)
     const thisWindow = useRef<HTMLDivElement | null>(null)
     const [isHeaderHeld, setIsHeaderHeld] = useState(false)
@@ -41,19 +42,20 @@ const Window = React.forwardRef((props: WindowProps, ref) => {
     const [thisTitle, setThisTitle] = useState<string>(title || 'Untitled-')
     const [thisIndex, setThisIndex] = useState(10)
 
+    const closeThis = () =>{
+        if (thisWindow.current) {
+            closeWindow(thisWindow.current!.getAttribute('data-title') as string)
+        }
+    }
+    const hideThis = () =>{
+        if (thisWindow.current) {
+            hideWindow(thisWindow.current!.getAttribute('data-title') as string)
+        }
+    }
 
     React.useImperativeHandle(ref, () => ({
-        closeWindow: () => {
-            if (thisWindow.current) {
-                const parent = thisWindow.current.parentElement
-                if (parent && parent.classList.contains(styles.windowParent)) {
-                    parent.remove()
-                }
-                else {
-                    thisWindow.current.remove()
-                }
-            }
-            if (triggerUpdate) triggerUpdate()
+        close: () => {
+            closeThis()
         },
         // expose more functions or values here if needed
     }))
@@ -73,19 +75,14 @@ const Window = React.forwardRef((props: WindowProps, ref) => {
                     setThisTop(top)
                 }
                 setIsHidden(false)
-                
-                
+
+
                 if (onActive) {
                     onActive()
                 }
             }
         }
     }, [])
-
-    useEffect(() => {
-        if (thisWindow.current !== null && update !== null) {
-        }
-    }, [update, thisWindow.current])
 
     useEffect(() => {
         if (isHeaderHeld) {
@@ -214,24 +211,14 @@ const Window = React.forwardRef((props: WindowProps, ref) => {
         }
         else if (event.currentTarget.classList.contains(styles.hide)) {
             setIsHidden(true)
-            if (thisWindow.current) {
-                thisWindow.current.classList.remove(styles.active)
-                thisWindow.current.classList.add(styles.hidden)
-            }
-            if (triggerUpdate) triggerUpdate()
+            // if (thisWindow.current) {
+            //     thisWindow.current.classList.remove(styles.active)
+            //     thisWindow.current.classList.add(styles.hidden)
+            // }
+            hideThis()
         }
         else if (event.currentTarget.classList.contains(styles.close)) {
-            if (thisWindow.current) {
-                // thisWindow.current.remove()
-                const parent = thisWindow.current.parentElement
-                if (parent && parent.classList.contains(styles.windowParent)) {
-                    parent.remove()
-                }
-                else {
-                    thisWindow.current.remove()
-                }
-            }
-            if (triggerUpdate) triggerUpdate()
+            closeThis()
         }
         else if (event.currentTarget.classList.contains(styles.help)) {
             // if (triggerUpdate)
@@ -309,8 +296,9 @@ const Window = React.forwardRef((props: WindowProps, ref) => {
     }
 
 
+    if (!styles.window) return <></>
     return <>
-        <div ref={thisWindow} data-title={title} id={title} className={`${styles.window} ${isHidden ? styles.hidden : ''}`}
+        <div ref={thisWindow} data-title={thisTitle} id={thisTitle} className={`${styles.window} ${isHidden ? styles.hidden : ''}`}
             style={{ width: `${thisWidth}px`, height: `${thisHeight}px`, top: `${thisTop}px`, left: `${thisLeft}px` }}
             onMouseDown={mouseDownWindow}>
 
