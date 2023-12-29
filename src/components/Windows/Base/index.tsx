@@ -28,6 +28,7 @@ import { isElementInClass, findParentWithClass } from '@/lib/util_DOM'
 
 import { useWindowStore } from '@/stores/windowStore'
 
+// TODO: Remove the update and trigger update functions. We dont need them anymore. We should update based on the windowStore.windows list.
 const Windows = () => {
     const initialMount = useRef<Boolean>(true)
     const [update, setUpdate] = useState(false)
@@ -46,7 +47,7 @@ const Windows = () => {
             // openWindow(<CMDWindow update={update} triggerUpdate={triggerUpdate} />)
             openWindow(<WelcomeWindow update={update} triggerUpdate={triggerUpdate} />)
             // openWindow(<AboutMeWindow update={update} triggerUpdate={triggerUpdate} />)
-            // openWindow(<ContactWindow openWindow={openWindow} update={update} triggerUpdate={triggerUpdate} />)
+            // openWindow(<ContactWindow update={update} triggerUpdate={triggerUpdate} />)
             // openWindow(<ErrorWindow text='This is an error message. Wubba lubba dub dub!' update={update} triggerUpdate={triggerUpdate} />)
         }
 

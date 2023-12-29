@@ -66,21 +66,38 @@ const CMDWindow = (props: CMDWindowProps) => {
         try {
             const res = await axios.post('/api/cmd', commandItem)
             const data: Res = await res.data
-            
+
             if (data.message === "UNKNOWN_COMMAND") {
                 updateOutput(`${data.command}: command not found`)
             }
             else if (data.message === "PARSED") {
                 const cmdObj: Command = data.command as Command
                 const errors = extractErrors(cmdObj)
-    
+
                 if (errors.length > 0) {
                     const errOutput = errorsToOutputString(data.config!, cmdObj, errors[0])
                     updateOutput(errOutput)
                 }
                 else {
-                    console.log('EXECUTE COMMAND; NO ERRORS!', cmdObj)
+                    // console.log('EXECUTE COMMAND; NO ERRORS!', cmdObj)
                     // Handle command
+                    switch (cmdObj.command) {
+                        case 'cd':
+                            cd(cmdObj)
+                            break;
+                        case 'pwd':
+                            pwd(cmdObj)
+                            break;
+                        case 'clear':
+                            clear(cmdObj)
+                            break;
+                        case 'ping':
+                            ping(cmdObj)
+                            break;
+                        default:
+                            defaultCommand(cmdObj)
+                            break;
+                    }
                 }
             }
         }
@@ -90,140 +107,68 @@ const CMDWindow = (props: CMDWindowProps) => {
 
     }
 
+    const cd = (data: Command) => {
+        // TODO: Handle options for changing directory
+        // Since command was parsed successfully, we know there is a single argument in data
+        let path = data.arguments!.find(arg => arg.name === 'dir')!.value
+        const pathValid = isDirectorySyntax(path)
+        if (pathValid) {
+            if (typeof pathValid === 'string') {
+                path = pathValid
+            }
+            // Remove the ending "/" from the path if it has one
+            path = path.replace(/\/$/, '')
 
-    // const handleCommand = (data: CommandResponse) => {
-    //     const commandParsed: ParsedCommand = {
-    //         command: data.parsedCommand,
-    //         options: data.parsedOptions,
-    //         arguments: data.parsedArgs
-    //     }
-    //     switch (data.parsedCommand) {
-    //         case 'cd':
-    //             cd(commandParsed)
-    //             break;
-    //         case 'pwd':
-    //             pwd(commandParsed)
-    //             break;
-    //         case 'clear':
-    //             clear(commandParsed)
-    //             break;
-    //         case 'ping':
-    //             ping(commandParsed)
-    //             break;
-    //         default:
-    //             defaultCommand(commandParsed)
-    //             break;
-    //     }
-    // }
+            const startsWithSlash = /^\//.test(path)
+            if (startsWithSlash) { // if path starts with "/" then we want to override the currentDir with C:\${path}>
+                const finalPath = path.replace(/\//g, '\\') // Replace '/' with '\'
+                setCurrentDir(`C:${finalPath}> `)
 
-    // const showHelp = (data: CommandResponse) => {
-    //     let outputMsg: string = ''
-    //     outputMsg = `${data.parsedCommand}: ${data.usage}\n`
-    //     outputMsg += `${data.help}\n\n`
-    //     outputMsg += `\tOptions:\n`
-    //     if (data.options) {
-    //         data.options.map((option: { option: string, usage: string, description: string }) => {
-    //             outputMsg += `\t\t ${option.usage} \t ${option.description}\n`
-    //         })
-    //     }
-    //     outputMsg += `\n`
-    //     updateOutput(outputMsg)
-    // }
+            }
+            else { // if path does not start with "/" we want to add to currentDir
+                // RegEx to capture content between ":" and ">" in currentDir
+                const currentPathMatch = currentDir.match(/:(.*?)(?=>)/)
+                // Extracting the captured content or empty string
+                let finalPath = currentPathMatch ? currentPathMatch[1] : ''
+                const endsWithBackslash = /\\$/.test(finalPath)
+                if (!endsWithBackslash) {
+                    finalPath += '\\'
+                }
+                path = path.replace(/\//g, '\\') // Replace '/' with '\'
+                finalPath += path
+                setCurrentDir(`C:${finalPath}> `)
 
-    // const showError = (data: CommandResponse) => {
-    //     // const formattedInvalidOptions = data.invalidOptions.map((arg: string) => `'${arg}'`).join(', ')
-    //     // const formattedArgs = data.parsedArgs.map((arg: string) => `'${arg}'`).join(', ')
-    //     let MISSING_ARG_MSG = `${data.parsedCommand}: ${data.message}\n`
-    //     MISSING_ARG_MSG += `Usage: ${data.usage}\n\n`
-    //     if (data.options) {
-    //         MISSING_ARG_MSG += `Options:\n`
-    //         data.options.map((option: { option: string, usage: string, description: string }) => {
-    //             MISSING_ARG_MSG += `\t ${option.usage} \t ${option.description}\n`
-    //         })
-    //         MISSING_ARG_MSG += `\n`
-    //     }
-    //     if (data.arguments) {
-    //         MISSING_ARG_MSG += `Arguments:\n`
-    //         data.arguments.map((arg: { name: string, description: string, required: boolean }) => {
-    //             MISSING_ARG_MSG += `\t ${arg.name} \t ${arg.description}\n`
-    //         })
-    //         MISSING_ARG_MSG += `\n`
-    //     }
-    //     updateOutput(MISSING_ARG_MSG)
-    // }
+            }
+        }
+        else {
+            const outputMsg = `${data.command}: path invalid "${path}"\n`
+            updateOutput(outputMsg)
+        }
+    }
 
-    // const handleError = (data: CommandResponse) => {
-    //     if (data.error === 'UNKNOWN_COMMAND') {
-    //         updateOutput(`${data.parsedCommand}: command not found`)
-    //     }
-    //     else {
-    //         showError(data)
-    //     }
-    // }
+    const pwd = (data: Command) => {
+        // TODO: Handle options pwd
+        // RegEx to capture content between ":" and ">" in currentDir
+        const currentPathMatch = currentDir.match(/:(.*?)(?=>)/)
+        // Extracting the matched content or empty string
+        let currentPath = currentPathMatch ? currentPathMatch[1] : ''
+        const endsWithBackslash = /\\$/.test(currentPath)
+        if (!endsWithBackslash) {
+            currentPath += '\\'
+        }
+        const currentDrive = currentDir.charAt(0)
+        currentPath = "\\" + currentDrive + currentPath
+        currentPath = currentPath.replace(/\\/g, '/') // Replace all "\\" with "/"
+        updateOutput(currentPath)
+    }
 
-
-    // const cd = (data: ParsedCommand) => {
-    //     // TODO: Handle options and arguments for changing directory
-    //     // Since command was parsed successfully, we know there is a single argument in data
-    //     let path = data.arguments[0]
-    //     const pathValid = isDirectorySyntax(path)
-    //     if (pathValid) {
-    //         if (typeof pathValid === 'string') {
-    //             path = pathValid
-    //         }
-    //         // Remove the ending "/" from the path if it has one
-    //         path = path.replace(/\/$/, '')
-
-    //         const startsWithSlash = /^\//.test(path)
-    //         if (startsWithSlash) { // if path starts with "/" then we want to override the currentDir with C:\${path}>
-    //             const finalPath = path.replace(/\//g, '\\') // Replace '/' with '\'
-    //             setCurrentDir(`C:${finalPath}> `)
-
-    //         }
-    //         else { // if path does not start with "/" we want to add to currentDir
-    //             // RegEx to capture content between ":" and ">" in currentDir
-    //             const currentPathMatch = currentDir.match(/:(.*?)(?=>)/)
-    //             // Extracting the captured content or empty string
-    //             let finalPath = currentPathMatch ? currentPathMatch[1] : ''
-    //             const endsWithBackslash = /\\$/.test(finalPath)
-    //             if (!endsWithBackslash) {
-    //                 finalPath += '\\'
-    //             }
-    //             path = path.replace(/\//g, '\\') // Replace '/' with '\'
-    //             finalPath += path
-    //             setCurrentDir(`C:${finalPath}> `)
-
-    //         }
-    //     }
-    //     else {
-    //         const outputMsg = `${data.command}: path invalid "${path}"\n`
-    //         updateOutput(outputMsg)
-    //     }
-    // }
-
-    // const pwd = (data: ParsedCommand) => {
-    //     // TODO: Handle options and arguments for showing pwd
-    //     // RegEx to capture content between ":" and ">" in currentDir
-    //     const currentPathMatch = currentDir.match(/:(.*?)(?=>)/)
-    //     // Extracting the matched content or empty string
-    //     let currentPath = currentPathMatch ? currentPathMatch[1] : ''
-    //     const endsWithBackslash = /\\$/.test(currentPath)
-    //     if (!endsWithBackslash) {
-    //         currentPath += '\\'
-    //     }
-    //     const currentDrive = currentDir.charAt(0)
-    //     currentPath = "\\" + currentDrive + currentPath
-    //     currentPath = currentPath.replace(/\\/g, '/') // Replace all "\\" with "/"
-    //     updateOutput(currentPath)
-    // }
-
-    // const clear = (data: ParsedCommand) => {
-    //     // TODO: Handle options and arguments for clearing console
-    //     clearOutput()
-    // }
-    // const ping = (data: ParsedCommand) => {
-    //     console.log('PING TARGET!', data)
-    // }
+    const clear = (data: Command) => {
+        // TODO: Handle options and arguments for clearing console
+        clearOutput()
+    }
+    const ping = (data: Command) => {
+        console.log('PING TARGET!', data)
+    }
 
     const defaultCommand = (data: Command) => {
         console.log(`${data.command} is not a command that is handled in the frontend yet. Sorry.`)
