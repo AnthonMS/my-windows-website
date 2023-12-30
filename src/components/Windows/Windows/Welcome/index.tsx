@@ -10,11 +10,9 @@ import ContactWindow from '../Contact'
 import { useWindowStore } from '@/stores/windowStore'
 
 export interface WelcomeWindowProps {
-    update?: Boolean
-    triggerUpdate?: Function
 }
 const WelcomeWindow = (props: WelcomeWindowProps) => {
-    const { update, triggerUpdate } = props
+    const { } = props
     const { openWindow } = useWindowStore()
 
     const click = (event: React.MouseEvent<HTMLAnchorElement>) => {
@@ -22,16 +20,15 @@ const WelcomeWindow = (props: WelcomeWindowProps) => {
         if (event.button === 0 && target instanceof HTMLAnchorElement) {
             // console.log('On Click', target)
             if (target.id === 'about') {
-                openWindow(<AboutMeWindow update={update} triggerUpdate={triggerUpdate} />)
+                openWindow(<AboutMeWindow />)
             }
             if (target.id === 'contact') {
-                openWindow(<ContactWindow update={update} triggerUpdate={triggerUpdate} />)
+                openWindow(<ContactWindow />)
             }
         }
     }
-    return <Window update={update} triggerUpdate={triggerUpdate}
-        width={window.innerWidth - 25} height={window.innerHeight - 30 - 25}
-        title='Welcome' icon={welcomeIcon}>
+    return <Window title='Welcome' icon={welcomeIcon}
+        width={window.innerWidth - 25} height={window.innerHeight - 30 - 25}>
 
         <div className={styles.windowContainer}>
             <p className={styles.welcomeTitle}>
@@ -56,7 +53,7 @@ const WelcomeWindow = (props: WelcomeWindowProps) => {
                 <p className={styles.text}>
                     Got questions, feedback, or just want to say hello? The <a id='contact' className={styles.link} onClick={click}>Contact page</a> is your gateway to connecting directly. Click here to jump straight to it or locate it within the Start Menu or the Desktop.
                 </p>
-                
+
                 <p className={styles.title}>Why did I make this?</p>
                 <p className={styles.text}>
                     In a world racing towards the future, I wanted to create a cozy corner where the past meets the present. This homage to Windows 98 is my ode to the simpler days of computing – a reminder of where we&apos;ve been and how far we&apos;ve come..

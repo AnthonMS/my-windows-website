@@ -13,14 +13,12 @@ import Button from '../../UI/Button'
 // import { useWindowStore } from '@/stores/windowStore'
 
 interface PopupWindowProps {
-    update?: Boolean
-    triggerUpdate?: Function
     title: string
     text: string
     error?: boolean
 }
 const PopupWindow = (props: PopupWindowProps) => {
-    const { update, triggerUpdate, title, text, error } = props
+    const { title, text, error } = props
     // const { closeWindow } = useWindowStore()
     const windowRef = useRef<{ close?: () => void } | null>(null)
 

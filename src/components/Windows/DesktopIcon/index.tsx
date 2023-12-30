@@ -3,8 +3,6 @@ import Image, { StaticImageData } from 'next/image'
 import { useState, useEffect, useRef } from 'react'
 
 export interface DesktopIconProps {
-    update?: Boolean
-    triggerUpdate?: Function
     id: string
     text: string
     icon: StaticImageData
@@ -15,20 +13,13 @@ export interface DesktopIconProps {
 }
 
 const DesktopIcon = (props: DesktopIconProps) => {
-    const { update, triggerUpdate, id, text, icon, primaryAction, left, top } = props
+    const { id, text, icon, primaryAction, left, top } = props
     const thisIcon = useRef<HTMLDivElement | null>(null)
     const [isSelected, setIsSelected] = useState(false)
     const [lastMouseClick, setLastMouseClick] = useState<number | null>(null)
 
     const [isMouseDown, setIsMouseDown] = useState(false)
     const [prevMousePosition, setPrevMousePosition] = useState<{ x: number; y: number } | null>(null)
-
-    useEffect(() => {
-        if (thisIcon.current !== null && update !== null) {
-            setIsSelected(thisIcon.current.classList.contains(styles.selected))
-        }
-    }, [update])
-
 
     // --- Selection & Movement handling --- //
     useEffect(() => {
@@ -41,33 +32,51 @@ const DesktopIcon = (props: DesktopIconProps) => {
             window.removeEventListener('mousedown', handleClick)
         }
     }, [isSelected])
+    
 
-    // TODO: Change mouseMove listener to be attached to window on mouseDown and remove on mouseUp
-    // TODO: Change mouseUp listener to be attached to window on mouseDown with once: true
+    useEffect(() => { // Move Listeners
+        if (isMouseDown) {
+            window.addEventListener("mousemove", move)
+        }
+        else {
+            window.removeEventListener('mousemove', move)
+        }
+        return () => {
+            window.removeEventListener('mousemove', move)
+        }
+    }, [thisIcon, isMouseDown, prevMousePosition])
+
     const mouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
         if (event.button === 0) { // left
             setIsMouseDown(true)
             select(event)
+            document.addEventListener("mouseup", mouseUp, { once: true })
         }
     }
-    const mouseUp = (event: React.MouseEvent<HTMLDivElement>) => {
-        if (event.button === 0) { // left
-            setIsMouseDown(false)
-            setPrevMousePosition(null)
-        }
+    const mouseUp = () => {
+        setIsMouseDown(false)
+        setPrevMousePosition(null)
     }
-    const mouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+    const move = (event: MouseEvent) => {
+        if (event.button !== 0) { return }
         if (!isMouseDown) { return }
-        if (prevMousePosition) {
+        console.log('MOVE?')
+
+        if (prevMousePosition && thisIcon.current !== null) {
             const deltaX = event.clientX - prevMousePosition.x
             const deltaY = event.clientY - prevMousePosition.y
-            // Move this Icon
-            const newLeft = parseInt(event.currentTarget.style.left, 10) + deltaX;
-            const newTop = parseInt(event.currentTarget.style.top, 10) + deltaY;
-            event.currentTarget.style.left = `${newLeft}px`
-            event.currentTarget.style.top = `${newTop}px`
-            // Now move other icons
+
+            const computedStyles = getComputedStyle(thisIcon.current)
+            const currentLeft = parseInt(computedStyles.left, 10) || 0 // Default to 0 if left is not set
+            const currentTop = parseInt(computedStyles.top, 10) || 0 // Default to 0 if top is not set
+            const newLeft = currentLeft + deltaX
+            const newTop = currentTop + deltaY
+            thisIcon.current.style.left = `${newLeft}px`
+            thisIcon.current.style.top = `${newTop}px`
+            
             moveOtherSelectedIcons(deltaX, deltaY)
+            // setThisLeft(newLeft)
+            // setThisTop(newTop)
         }
 
         setPrevMousePosition({ x: event.clientX, y: event.clientY })
@@ -96,8 +105,11 @@ const DesktopIcon = (props: DesktopIconProps) => {
         setIsSelected(true)
     }
 
+    // TODO: Move deselect logic to base 
+    //          It should not deselect any icons on mouseDown (or mouseUp) if there are multiple selected
     const deselect = (event: any) => {
         let currentElement = event.target
+        console.log('DESELECT???')
         // Check Ctrl (Command on Mac) is held down
         const isCtrlKeyHeld = event.ctrlKey || event.metaKey;
 
@@ -145,7 +157,7 @@ const DesktopIcon = (props: DesktopIconProps) => {
         <div ref={thisIcon} id={text} data-id={id}
             className={`${styles.desktopIcon} ${isSelected ? styles.selected : ''}`} 
             style={{ left: left, top: top }}
-            onClick={click} onMouseDown={mouseDown} onMouseUp={mouseUp} onMouseMove={mouseMove}>
+            onClick={click} onMouseDown={mouseDown}>
             <Image className={styles.desktopIconImage}
                 src={icon} alt={`Icon: ${text}`} />
             <p className={styles.desktopIconText}>{text}</p>

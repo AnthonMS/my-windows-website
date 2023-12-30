@@ -28,13 +28,10 @@ import { isElementInClass, findParentWithClass } from '@/lib/util_DOM'
 
 import { useWindowStore } from '@/stores/windowStore'
 
-// TODO: Remove the update and trigger update functions. We dont need them anymore. We should update based on the windowStore.windows list.
 const Windows = () => {
-    const initialMount = useRef<Boolean>(true)
-    const [update, setUpdate] = useState(false)
-    const triggerUpdate = () => { setUpdate(prev => !prev); }
-    const windowsContainer = useRef<HTMLDivElement | null>(null)
     const { windows, openWindow, removeClass, addClass, setWindowsContainer, setStyles } = useWindowStore()
+    const initialMount = useRef<Boolean>(true)
+    const windowsContainer = useRef<HTMLDivElement | null>(null)
 
     const [isHighlighting, setIsHighlighting] = useState(false)
     const [highlightBox, setHighlightBox] = useState({ startX: 0, startY: 0, width: 0, height: 0 })
@@ -45,11 +42,11 @@ const Windows = () => {
         if (initialMount.current) {
             initialMount.current = false
             setStyles(styles)
-            openWindow(<CMDWindow />)
-            // openWindow(<WelcomeWindow update={update} triggerUpdate={triggerUpdate} />)
-            // openWindow(<AboutMeWindow update={update} triggerUpdate={triggerUpdate} />)
-            // openWindow(<ContactWindow update={update} triggerUpdate={triggerUpdate} />)
-            // openWindow(<ErrorWindow text='This is an error message. Wubba lubba dub dub!' update={update} triggerUpdate={triggerUpdate} />)
+            // openWindow(<CMDWindow />)
+            openWindow(<WelcomeWindow />)
+            // openWindow(<AboutMeWindow />)
+            // openWindow(<ContactWindow />)
+            // openWindow(<ErrorWindow text='This is an error message. Wubba lubba dub dub!' />)
         }
 
         return () => {
@@ -98,18 +95,18 @@ const Windows = () => {
                 openWindow(<Window title='Test' icon={welcomeIcon}><p style={{ color: 'black' }}>FUCKING HELL MAN!</p></Window>)
                 break;
             case 'welcome':
-                openWindow(<WelcomeWindow update={update} triggerUpdate={triggerUpdate} />)
+                openWindow(<WelcomeWindow />)
                 break;
             case 'about-me':
-                openWindow(<AboutMeWindow update={update} triggerUpdate={triggerUpdate} />)
+                openWindow(<AboutMeWindow />)
                 break;
             case 'contact':
-                openWindow(<ContactWindow update={update} triggerUpdate={triggerUpdate} />)
+                openWindow(<ContactWindow />)
                 break;
             case 'computer':
                 console.log('computer clicked!')
                 break;
-            // openWindow(<AboutMeWindow update={update} triggerUpdate={triggerUpdate} />)
+            // openWindow(<AboutMeWindow />)
             default:
                 console.error('Desktop icon click unhandled:', target)
 
@@ -137,7 +134,6 @@ const Windows = () => {
                     const clickedWindow: Element = findParentWithClass(target, styles.window) as Element
                     addClass(clickedWindow.getAttribute('data-title') as string, styles.active)
                 }
-                triggerUpdate()
             }
 
 
@@ -179,7 +175,6 @@ const Windows = () => {
                 if (overlaps) {
                     // The desktop icon is within the highlight box
                     desktopIcon.classList.add(styles.selected)
-                    setUpdate(prev => !prev)
                 }
             })
 
@@ -210,34 +205,29 @@ const Windows = () => {
             {/* TODO: Add data-window to DesktopIcon, it should equal the name of the window's folder*/}
             {/* So if we set data-window='AboutMe' it should try to import that window, so it can call openWindow directly. */}
             <DesktopIcon left='0px' top='0px' id='computer'
-                update={update} triggerUpdate={triggerUpdate}
                 text='Computer' icon={computerExplorer}
                 primaryAction={onClickDesktopIcon} />
 
             <DesktopIcon left='0px' top='100px' id='microsoft-ie'
-                update={update} triggerUpdate={triggerUpdate}
                 text='Microsoft IE' icon={msieIcon}
                 primaryAction={onClickDesktopIcon} />
 
             <DesktopIcon left='100px' top='0px' id='welcome'
-                update={update} triggerUpdate={triggerUpdate}
                 text='Welcome' icon={welcomeIcon}
                 primaryAction={onClickDesktopIcon} />
 
             <DesktopIcon left='100px' top='100px' id='about-me'
-                update={update} triggerUpdate={triggerUpdate}
                 text='About Me' icon={userCardIcon}
                 primaryAction={onClickDesktopIcon} />
 
             <DesktopIcon left='200px' top='0px' id='contact'
-                update={update} triggerUpdate={triggerUpdate}
                 text='Contact' icon={contactIcon}
                 primaryAction={onClickDesktopIcon} />
 
 
 
             <div ref={windowsContainer}>
-                {/* <WelcomeWindow update={update} triggerUpdate={triggerUpdate} /> */}
+                {/* <WelcomeWindow /> */}
             </div>
 
             <BottomBar />

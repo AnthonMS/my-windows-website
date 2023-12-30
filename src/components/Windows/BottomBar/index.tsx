@@ -120,6 +120,7 @@ const BottomBar = (props: BottomBarProps) => {
                 }
             </div>
 
+                {/* TODO: Write clock logic */}
             <div className={styles.rightContainer}>
                 <p className={styles.clock}>18:11</p>
             </div>

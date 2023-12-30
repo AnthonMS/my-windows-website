@@ -82,7 +82,6 @@ export const useWindowStore = create<WindowStore>((set: StoreApi<WindowStore>['s
         }, 10)
     },
     closeWindow: (dataTitle) => {
-        const currentStyles = get().styles
         const currentWindows = get().windows
 
         const windowToClose = currentWindows.find((win: HTMLDivElement) => win.getAttribute('data-title') === dataTitle)
@@ -115,10 +114,6 @@ export const useWindowStore = create<WindowStore>((set: StoreApi<WindowStore>['s
                 windowToHide.classList.remove(currentStyles.active)
             }
 
-            // // Replace the window in the array with the updated class
-            // const updatedWindows = [...currentWindows]
-            // updatedWindows[index] = windowToHide
-            // set({ windows: updatedWindows })
             set({ windows: [...currentWindows] })
         }
     },
@@ -139,12 +134,10 @@ export const useWindowStore = create<WindowStore>((set: StoreApi<WindowStore>['s
         }
     },
     removeClass: (windowTitle, classes) => {
-        const currentStyles = get().styles
         const currentWindows = get().windows
         const windowToUpdate = currentWindows.find((win: HTMLDivElement) => win.getAttribute('data-title') === windowTitle)
 
         if (windowToUpdate) {
-            const originalClasses = Array.from(windowToUpdate.classList)
             if (typeof classes === 'string') {
                 classes = [classes] // convert to array for consistency
             }
@@ -156,14 +149,9 @@ export const useWindowStore = create<WindowStore>((set: StoreApi<WindowStore>['s
             })
 
             set({ windows: [...currentWindows] })
-            // // Check if changes occurred before updating the state
-            // if (originalClasses.length !== windowToUpdate.classList.length) {
-            //     set({ windows: [...currentWindows] })
-            // }
         }
     },
     addClass: (windowTitle, classes) => {
-        const currentStyles = get().styles
         const currentWindows = get().windows
         const windowToUpdate = currentWindows.find((win: HTMLDivElement) => win.getAttribute('data-title') === windowTitle)
 
@@ -180,10 +168,6 @@ export const useWindowStore = create<WindowStore>((set: StoreApi<WindowStore>['s
             })
 
             set({ windows: [...currentWindows] })
-            // // Check if changes occurred before updating the state
-            // if (originalClasses.length !== windowToUpdate.classList.length) {
-            //     set({ windows: [...currentWindows] })
-            // }
         }
     },
     updateWindowStyle: (windowTitle, newStyles) => {

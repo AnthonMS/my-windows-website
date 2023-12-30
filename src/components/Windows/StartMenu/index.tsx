@@ -62,11 +62,9 @@ const StartMenu = (props: StartMenuProps) => {
                 case 'shutdown':
                     location.reload()
                     break
-
                 case 'project-ha-cards':
                     window.open('https://github.com/AnthonMS/my-cards', '_blank')
                     break
-                // openWindow(<AboutMeWindow update={update} triggerUpdate={triggerUpdate} />)
                 default:
                     console.error('Start Menu click unhandled:', target)
                     break;

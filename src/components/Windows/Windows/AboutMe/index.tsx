@@ -6,13 +6,11 @@ import Window from '@/components/Windows/Window'
 import userCardIcon from '@/assets/images/icons/user_card.png'
 
 export interface AboutMeWindowProps {
-    update?: Boolean
-    triggerUpdate?: Function
 }
 const AboutMeWindow = (props: AboutMeWindowProps) => {
-    const { update, triggerUpdate } = props
+    const {  } = props
 
-    return <Window update={update} triggerUpdate={triggerUpdate}
+    return <Window
         width={window.innerWidth - 25} height={window.innerHeight - 30 - 25}
         title='About Me' icon={userCardIcon}>
 

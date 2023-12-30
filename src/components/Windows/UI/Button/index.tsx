@@ -6,8 +6,6 @@ import React, { forwardRef, useRef, useImperativeHandle  } from 'react'
 import windowsLogo from '@/assets/images/windows92-logo.png'
 
 export interface ButtonProps {
-    update?: Boolean
-    triggerUpdate?: Function
     icon?: string | StaticImport
     text?: string
     onClick: React.MouseEventHandler<HTMLDivElement>
@@ -18,7 +16,7 @@ export interface ButtonProps {
 
 // const Button = (props: ButtonProps) => {
 const Button = forwardRef((props: ButtonProps, ref) => {
-    const { update, triggerUpdate, onClick, icon, text, className, dataTitle } = props
+    const { onClick, icon, text, className, dataTitle } = props
     const thisButton = useRef<HTMLDivElement | null>(null)
     
     useImperativeHandle(ref, () => ({

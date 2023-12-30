@@ -34,13 +34,19 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
     const [prevMousePosition, setPrevMousePosition] = useState<{ x: number; y: number } | null>(null)
 
     const [isFullscreen, setIsFullscreen] = useState(false)
-    // const [isHidden, setIsHidden] = useState(false)
     const [thisWidth, setThisWidth] = useState(width || 600)
     const [thisHeight, setThisHeight] = useState(height || 400)
     const [thisLeft, setThisLeft] = useState(left || 200)
     const [thisTop, setThisTop] = useState(top || 200)
     const [thisTitle, setThisTitle] = useState<string>(title || 'Untitled-')
-    const [thisIndex, setThisIndex] = useState(10)
+
+
+    React.useImperativeHandle(ref, () => ({
+        close: () => {
+            closeThis()
+        },
+        // expose more functions or values here if needed
+    }))
 
     const closeThis = () =>{
         if (thisWindow.current) {
@@ -53,18 +59,10 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
         }
     }
 
-    React.useImperativeHandle(ref, () => ({
-        close: () => {
-            closeThis()
-        },
-        // expose more functions or values here if needed
-    }))
-
-    useEffect(() => {
+    useEffect(() => { // Initial Mount Management
         if (initialMount.current) {
-            // console.log('INITIAL MOUNT ', title)
             initialMount.current = false
-            // Initial mount, position window in middle of screen
+            // Position window in middle of screen when first launched
             if (thisWindow.current) {
                 if (!isFullscreen) {
                     const screenWidth = window.innerWidth
@@ -74,8 +72,6 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
                     setThisLeft(left)
                     setThisTop(top)
                 }
-                // setIsHidden(false)
-
 
                 if (onActive) {
                     onActive()
@@ -84,42 +80,16 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
         }
     }, [])
 
-    useEffect(() => {
-        if (isHeaderHeld) {
-            window.addEventListener("mousemove", move)
-        }
-        else {
-            window.removeEventListener('mousemove', move)
-        }
-        return () => {
-            window.removeEventListener('mousemove', move)
-        }
-    }, [thisWindow, isHeaderHeld, prevMousePosition])
-
-    useEffect(() => {
-        if (isResizeHeld) {
-            window.addEventListener("mousemove", resize)
-        }
-        else {
-            window.removeEventListener('mousemove', resize)
-        }
-        return () => {
-            window.removeEventListener('mousemove', resize)
-        }
-    }, [thisWindow, isResizeHeld, prevMousePosition])
-
-
-    useEffect(() => {
+    useEffect(() => { // Fullscreen Management
         if (thisWindow.current) {
             if (isFullscreen) {
-                // TODO: Fix bug where bottom bar overlays window when we fullscreen. We want to take the bottomBar height into account
                 const screenWidth = window.innerWidth
                 const screenHeight = window.innerHeight
-                setThisWidth(screenWidth)
-                setThisHeight(screenHeight-30)
                 updateWindowStyle(thisWindow.current.getAttribute('data-title') as string, {
                     left: `0px`,
-                    top: `0px`
+                    top: `0px`,
+                    width: `${screenWidth}px`,
+                    height: `${screenHeight-30}px`
                 })
             }
             else {
@@ -132,18 +102,31 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
             }
         }
     }, [isFullscreen])
-
-    useEffect(() => {
-        if (thisWindow.current) {
-            updateWindowStyle(thisWindow.current.getAttribute('data-title') as string, {
-                left: `${thisLeft}px`,
-                top: `${thisTop}px`,
-                width: `${thisWidth}px`,
-                height: `${thisHeight}px`
-            })
-        }
-    }, [thisWidth, thisHeight, thisTop, thisLeft])
     
+
+    useEffect(() => { // Move Listeners
+        if (isHeaderHeld) {
+            window.addEventListener("mousemove", move)
+        }
+        else {
+            window.removeEventListener('mousemove', move)
+        }
+        return () => {
+            window.removeEventListener('mousemove', move)
+        }
+    }, [thisWindow, isHeaderHeld, prevMousePosition])
+
+    useEffect(() => { // Resize Listeners
+        if (isResizeHeld) {
+            window.addEventListener("mousemove", resize)
+        }
+        else {
+            window.removeEventListener('mousemove', resize)
+        }
+        return () => {
+            window.removeEventListener('mousemove', resize)
+        }
+    }, [thisWindow, isResizeHeld, prevMousePosition])
 
 
     const move = (event: MouseEvent) => {
@@ -206,36 +189,11 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
             setThisHeight(newHeight)
             setThisLeft(newLeft)
             setThisTop(newTop)
-            // thisWindow.current.style.left = `${newLeft}px`
-            // thisWindow.current.style.top = `${newTop}px`
 
         }
 
         setPrevMousePosition({ x: event.clientX, y: event.clientY })
     }
-
-    const clickBtn = (event: React.MouseEvent<HTMLDivElement>) => {
-        if (event.button !== 0) { return }
-
-        if (event.currentTarget.classList.contains(styles.max)) {
-            setIsFullscreen(true)
-        }
-        else if (event.currentTarget.classList.contains(styles.min)) {
-            setIsFullscreen(false)
-        }
-        else if (event.currentTarget.classList.contains(styles.hide)) {
-            // setIsHidden(true)
-            hideThis()
-        }
-        else if (event.currentTarget.classList.contains(styles.close)) {
-            closeThis()
-        }
-        else if (event.currentTarget.classList.contains(styles.help)) {
-            // if (triggerUpdate)
-            //     triggerUpdate()
-        }
-    }
-
 
 
     const mouseDownHeader = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -246,13 +204,9 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
         document.addEventListener("mouseup", mouseUpHeader, { once: true })
     }
     const mouseUpHeader = () => {
-        // if (event.button !== 0) { return }
-        // const target = event.target as HTMLElement
-        // if (target.classList.contains(styles.button)) { return }
         setIsHeaderHeld(false)
         setPrevMousePosition(null)
     }
-
 
     const mouseDownResize = (event: React.MouseEvent<HTMLDivElement>) => {
         if (event.button !== 0) { return }
@@ -300,12 +254,31 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
         setPrevMousePosition(null)
     }
 
+    const clickBtn = (event: React.MouseEvent<HTMLDivElement>) => {
+        if (event.button !== 0) { return }
+
+        if (event.currentTarget.classList.contains(styles.max)) {
+            setIsFullscreen(true)
+        }
+        else if (event.currentTarget.classList.contains(styles.min)) {
+            setIsFullscreen(false)
+        }
+        else if (event.currentTarget.classList.contains(styles.hide)) {
+            // setIsHidden(true)
+            hideThis()
+        }
+        else if (event.currentTarget.classList.contains(styles.close)) {
+            closeThis()
+        }
+        else if (event.currentTarget.classList.contains(styles.help)) {
+        }
+    }
+
     const mouseDownWindow = (event: React.MouseEvent<HTMLDivElement>) => {
         if (onActive) {
             onActive(event)
         }
     }
-
 
     if (!styles.window) return <></>
     return <>
@@ -321,20 +294,9 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
 
                 </div>
                 <div className={styles.windowButtons}>
-                    {/* <div className={`${styles.button} ${styles.windowButton} ${styles.hide}`} 
-                        onMouseDown={mouseDownBtn} onTouchStart={touchDownBtn} onClick={clickBtn}></div> */}
                     <Button className={`${styles.button} ${styles.windowButton} ${styles.hide}`} onClick={clickBtn} />
-
-                    {/* <div className={`${styles.button} ${styles.windowButton} ${isFullscreen ? styles.min : styles.max}`}
-                        onMouseDown={mouseDownBtn} onTouchStart={touchDownBtn} onClick={clickBtn}></div> */}
                     <Button className={`${styles.button} ${styles.windowButton} ${isFullscreen ? styles.min : styles.max}`} onClick={clickBtn} />
-
-                    {/* <div className={`${styles.button} ${styles.windowButton} ${styles.help}`}
-                        onMouseDown={mouseDownBtn} onTouchStart={touchDownBtn} onClick={clickBtn}></div> */}
                     <Button className={`${styles.button} ${styles.windowButton} ${styles.help}`} onClick={clickBtn} />
-
-                    {/* <div className={`${styles.button} ${styles.windowButton} ${styles.close}`}
-                        onMouseDown={mouseDownBtn} onTouchStart={touchDownBtn} onClick={clickBtn}></div> */}
                     <Button className={`${styles.button} ${styles.windowButton} ${styles.close}`} onClick={clickBtn} />
                 </div>
             </div>
