@@ -62,13 +62,22 @@ export const useWindowStore = create<WindowStore>((set: StoreApi<WindowStore>['s
             let windowOpen: Boolean = false
             currentWindows.forEach((win: Element) => {
                 if (win.getAttribute('data-title') === windowDiv.getAttribute('data-title')) {
+                    console.log('Dont open new window, just remove hidden and add active.')
                     windowOpen = true
-                    win.classList.remove(currentStyles.hidden)
-                    if (!win.classList.contains(currentStyles.active)) win.classList.add(currentStyles.active)
-                } else {
-                    if (win.classList.contains(currentStyles.active)) win.classList.remove(currentStyles.active)
-                }
+                    get().showWindow(win.getAttribute('data-title') as string)
+
+                    // win.classList.remove(currentStyles.hidden)
+                    // if (!win.classList.contains(currentStyles.active)) {
+                    //     win.classList.add(currentStyles.active)
+                    // }
+                } 
+                // else {
+                //     if (win.classList.contains(currentStyles.active)) {
+                //         win.classList.remove(currentStyles.active)
+                //     }
+                // }
             })
+            set({ windows: [...currentWindows] })
 
             if (!windowOpen) {
                 windowDiv.classList.add(currentStyles.active)

@@ -19,7 +19,6 @@
     background-color: rgba(0, 194, 194, 0.25);
 }
 
-
 .button {
     background-color: var(--windows-grey);
     border-top: 1px solid #fff;
@@ -211,7 +210,6 @@
         font-size: 13px;
     }
 }
-
 .taskbar>div {
     display: inline-block;
     position: absolute;

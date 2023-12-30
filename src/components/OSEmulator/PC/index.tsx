@@ -43,7 +43,7 @@ const PCEmulator = () => {
             initialMount.current = false
             setStyles(styles)
             // openWindow(<CMDWindow />)
-            openWindow(<WelcomeWindow />)
+            // openWindow(<WelcomeWindow />)
             // openWindow(<AboutMeWindow />)
             // openWindow(<ContactWindow />)
             // openWindow(<ErrorWindow text='This is an error message. Wubba lubba dub dub!' />)
@@ -88,30 +88,6 @@ const PCEmulator = () => {
 
     const onClickDesktopIcon = (event: React.MouseEvent<HTMLDivElement>) => {
         const target: HTMLElement = event.target as HTMLElement
-        const iconId = target.getAttribute('data-id')
-        switch (iconId) {
-            case 'test':
-                console.log('TEST CLICKED!')
-                openWindow(<Window title='Test' icon={welcomeIcon}><p style={{ color: 'black' }}>FUCKING HELL MAN!</p></Window>)
-                break;
-            case 'welcome':
-                openWindow(<WelcomeWindow />)
-                break;
-            case 'about-me':
-                openWindow(<AboutMeWindow />)
-                break;
-            case 'contact':
-                openWindow(<ContactWindow />)
-                break;
-            case 'computer':
-                console.log('computer clicked!')
-                break;
-            // openWindow(<AboutMeWindow />)
-            default:
-                console.error('Desktop icon click unhandled:', target)
-
-                break;
-        }
     }
 
     const mouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -204,23 +180,28 @@ const PCEmulator = () => {
         <div className={styles.main} onMouseDown={mouseDown} onMouseUp={mouseUp} onMouseMove={mouseMove}>
             {/* TODO: Add data-window to DesktopIcon, it should equal the name of the window's folder*/}
             {/* So if we set data-window='AboutMe' it should try to import that window, so it can call openWindow directly. */}
-            <DesktopIcon left='0px' top='0px' id='computer'
+            {/* <DesktopIcon left='0px' top='0px' id='Computer'
+                dir=''
                 text='Computer' icon={computerExplorer}
                 primaryAction={onClickDesktopIcon} />
 
-            <DesktopIcon left='0px' top='100px' id='microsoft-ie'
+            <DesktopIcon left='0px' top='100px' id='MicrosoftIE'
+                dir=''
                 text='Microsoft IE' icon={msieIcon}
-                primaryAction={onClickDesktopIcon} />
+                primaryAction={onClickDesktopIcon} /> */}
 
-            <DesktopIcon left='100px' top='0px' id='welcome'
+            <DesktopIcon left='100px' top='0px' id='Welcome'
+                dir=''
                 text='Welcome' icon={welcomeIcon}
                 primaryAction={onClickDesktopIcon} />
 
-            <DesktopIcon left='100px' top='100px' id='about-me'
+            <DesktopIcon left='100px' top='100px' id='AboutMe'
+                dir='AboutMe'
                 text='About Me' icon={userCardIcon}
                 primaryAction={onClickDesktopIcon} />
 
-            <DesktopIcon left='200px' top='0px' id='contact'
+            <DesktopIcon left='200px' top='0px' id='Contact'
+                dir='Contact'
                 text='Contact' icon={contactIcon}
                 primaryAction={onClickDesktopIcon} />
 

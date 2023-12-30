@@ -1,19 +1,26 @@
 import styles from './../styles.module.css'
 import Image, { StaticImageData } from 'next/image'
+import dynamic from 'next/dynamic'
 import { useState, useEffect, useRef } from 'react'
 
-export interface DesktopIconProps {
+import { useWindowStore } from '@/stores/windowStore'
+
+// import AboutMeWindow from '@/components/OSEmulator/PC/Windows/AboutMe'
+import AboutMeWindow from '../Windows/AboutMe'
+
+interface DesktopIconProps {
     id: string
     text: string
     icon: StaticImageData
     primaryAction?: Function
     left: string
     top: string
+    dir: string
     // click: React.MouseEventHandler<HTMLDivElement>
 }
-
 const DesktopIcon = (props: DesktopIconProps) => {
-    const { id, text, icon, primaryAction, left, top } = props
+    const { id, text, icon, primaryAction, left, top, dir } = props
+    const { windows, openWindow } = useWindowStore()
     const thisIcon = useRef<HTMLDivElement | null>(null)
     const [isSelected, setIsSelected] = useState(false)
     const [lastMouseClick, setLastMouseClick] = useState<number | null>(null)
@@ -32,7 +39,7 @@ const DesktopIcon = (props: DesktopIconProps) => {
             window.removeEventListener('mousedown', handleClick)
         }
     }, [isSelected])
-    
+
 
     useEffect(() => { // Move Listeners
         if (isMouseDown) {
@@ -45,6 +52,23 @@ const DesktopIcon = (props: DesktopIconProps) => {
             window.removeEventListener('mousemove', move)
         }
     }, [thisIcon, isMouseDown, prevMousePosition])
+
+
+
+    const loadWindow = async () => {
+        try {
+            const WindowComponent = dynamic(() => import(`../Windows/${id}`), {
+                ssr: false,
+            });
+            console.log('WindowComponent:', <WindowComponent />)
+            const windowEl = <WindowComponent />
+            // Call the openWindow function with the JSX element
+            openWindow(windowEl)
+        }
+        catch (err) {
+            console.error(err)
+        }
+    }
 
     const mouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
         if (event.button === 0) { // left
@@ -73,7 +97,7 @@ const DesktopIcon = (props: DesktopIconProps) => {
             const newTop = currentTop + deltaY
             thisIcon.current.style.left = `${newLeft}px`
             thisIcon.current.style.top = `${newTop}px`
-            
+
             moveOtherSelectedIcons(deltaX, deltaY)
             // setThisLeft(newLeft)
             // setThisTop(newTop)
@@ -86,7 +110,7 @@ const DesktopIcon = (props: DesktopIconProps) => {
         const selectedIcons = document.querySelectorAll(`.${styles.desktopIcon}.${styles.selected}`)
         // console.log('Selected icons:', selectedIcons)
         selectedIcons.forEach((icon: Element) => {
-            if (icon.id !== text) {
+            if (icon.id !== id) {
                 const iconElement = icon as HTMLElement
 
                 const iconStyles = getComputedStyle(iconElement)
@@ -122,7 +146,7 @@ const DesktopIcon = (props: DesktopIconProps) => {
             }
         }
         else {
-            while (currentElement !== null && currentElement.id !== text) {
+            while (currentElement !== null && currentElement.id !== id) {
                 currentElement = currentElement.parentElement
             }
             if (currentElement === null) {
@@ -144,8 +168,10 @@ const DesktopIcon = (props: DesktopIconProps) => {
             if (lastMouseClick !== null) {
                 const diff: number = now - lastMouseClick
                 if (diff < 200) {
+                    loadWindow()
+
                     if (primaryAction !== undefined && primaryAction !== null) {
-                        primaryAction(event)
+                        // primaryAction(event)
                     }
                 }
             }
@@ -154,8 +180,8 @@ const DesktopIcon = (props: DesktopIconProps) => {
     }
 
     return (
-        <div ref={thisIcon} id={text} data-id={id}
-            className={`${styles.desktopIcon} ${isSelected ? styles.selected : ''}`} 
+        <div ref={thisIcon} id={id} data-id={id}
+            className={`${styles.desktopIcon} ${isSelected ? styles.selected : ''}`}
             style={{ left: left, top: top }}
             onClick={click} onMouseDown={mouseDown}>
             <Image className={styles.desktopIconImage}

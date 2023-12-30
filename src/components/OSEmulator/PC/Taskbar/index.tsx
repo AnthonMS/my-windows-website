@@ -1,11 +1,10 @@
-import styles from './../styles.module.css'
+// import styles from './../styles.module.css'
 import Image, { StaticImageData } from 'next/image'
 import { useState, useEffect, useRef } from 'react'
 
 
 import windowsLogo from '@/assets/images/windows92-logo.png'
 
-import Button from '../UI/Button'
 import StartMenu from '../StartMenu'
 
 import { useWindowStore } from '@/stores/windowStore'
@@ -15,7 +14,7 @@ export interface TaskbarProps {
 }
 const Taskbar = (props: TaskbarProps) => {
     const {  } = props
-    const { windows, openWindow, closeWindow, hideWindow, showWindow, removeClass, addClass } = useWindowStore()
+    const { windows, openWindow, closeWindow, hideWindow, showWindow, removeClass, addClass, styles } = useWindowStore()
     const [showStart, setShowStart] = useState<Boolean>(false)
     const toggleStartMenu = () => { setShowStart(prev => !prev) }
 
