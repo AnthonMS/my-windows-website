@@ -34,7 +34,7 @@ const Windows = () => {
     const [update, setUpdate] = useState(false)
     const triggerUpdate = () => { setUpdate(prev => !prev); }
     const windowsContainer = useRef<HTMLDivElement | null>(null)
-    const { windows, openWindow, setWindowsContainer, setStyles } = useWindowStore()
+    const { windows, openWindow, removeClass, addClass, setWindowsContainer, setStyles } = useWindowStore()
 
     const [isHighlighting, setIsHighlighting] = useState(false)
     const [highlightBox, setHighlightBox] = useState({ startX: 0, startY: 0, width: 0, height: 0 })
@@ -44,6 +44,7 @@ const Windows = () => {
     useEffect(() => {
         if (initialMount.current) {
             initialMount.current = false
+            setStyles(styles)
             openWindow(<CMDWindow />)
             // openWindow(<WelcomeWindow update={update} triggerUpdate={triggerUpdate} />)
             // openWindow(<AboutMeWindow update={update} triggerUpdate={triggerUpdate} />)
@@ -55,12 +56,18 @@ const Windows = () => {
         }
     }, [])
 
+    useEffect(() => {
+    //   console.log('Windows Updated in base:', windows)
+    }, [windows])
+    
+
 
     useEffect(() => {
         if (windowsContainer.current) {
             setWindowsContainer(windowsContainer as MutableRefObject<HTMLDivElement>)
         }
     }, [windowsContainer, setWindowsContainer])
+
     useEffect(() => {
         setStyles(styles)
     }, [styles, setStyles])
@@ -111,6 +118,7 @@ const Windows = () => {
     }
 
     const mouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
+        // console.log('MOUSE DOWN?')
         const target = event.target
         if (event.button === 0 && target instanceof HTMLElement) {
             // Check if click is inside active window. If so, we dont need to do the rest.
@@ -120,18 +128,14 @@ const Windows = () => {
 
             // If click is not in the bottomBar -> remove active class from all windows
             if (!isElementInClass(target, styles.bottomBar)) {
-                const windowsFound = document.querySelectorAll(`.${styles.window}`)
-                windowsFound.forEach((window: Element) => {
-                    if (window.classList.contains(styles.active)) {
-                        window.classList.remove(styles.active)
-                    }
+                windows.forEach((window:HTMLDivElement) => {
+                    removeClass(window.getAttribute('data-title') as string, styles.active)
                 })
 
                 // if click is inside a window, add active to that one
                 if (isElementInClass(target, styles.window)) {
-                    const windowParent: Element = findParentWithClass(target, styles.window) as Element
-                    windowParent.classList.add(styles.active)
-                    // console.log('SET ACTIVE WINDOW!')
+                    const clickedWindow: Element = findParentWithClass(target, styles.window) as Element
+                    addClass(clickedWindow.getAttribute('data-title') as string, styles.active)
                 }
                 triggerUpdate()
             }

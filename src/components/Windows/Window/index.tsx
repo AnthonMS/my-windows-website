@@ -23,7 +23,7 @@ export interface WindowProps {
 
 const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unknown>) => {
     const { children, width, height, left, top, title, icon, onActive } = props
-    const { windows, openWindow, closeWindow, hideWindow, styles } = useWindowStore()
+    const { windows, openWindow, closeWindow, hideWindow, updateWindowStyle, styles } = useWindowStore()
     const initialMount = useRef<Boolean>(true)
     const thisWindow = useRef<HTMLDivElement | null>(null)
     const [isHeaderHeld, setIsHeaderHeld] = useState(false)
@@ -34,7 +34,7 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
     const [prevMousePosition, setPrevMousePosition] = useState<{ x: number; y: number } | null>(null)
 
     const [isFullscreen, setIsFullscreen] = useState(false)
-    const [isHidden, setIsHidden] = useState(false)
+    // const [isHidden, setIsHidden] = useState(false)
     const [thisWidth, setThisWidth] = useState(width || 600)
     const [thisHeight, setThisHeight] = useState(height || 400)
     const [thisLeft, setThisLeft] = useState(left || 200)
@@ -74,7 +74,7 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
                     setThisLeft(left)
                     setThisTop(top)
                 }
-                setIsHidden(false)
+                // setIsHidden(false)
 
 
                 if (onActive) {
@@ -115,19 +115,35 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
                 // TODO: Fix bug where bottom bar overlays window when we fullscreen. We want to take the bottomBar height into account
                 const screenWidth = window.innerWidth
                 const screenHeight = window.innerHeight
-                thisWindow.current.style.left = `0px`
-                thisWindow.current.style.top = `0px`
-                thisWindow.current.style.width = `${screenWidth}px`
-                thisWindow.current.style.height = `${screenHeight}px`
+                setThisWidth(screenWidth)
+                setThisHeight(screenHeight-30)
+                updateWindowStyle(thisWindow.current.getAttribute('data-title') as string, {
+                    left: `0px`,
+                    top: `0px`
+                })
             }
             else {
-                thisWindow.current.style.left = `${thisLeft}px`
-                thisWindow.current.style.top = `${thisTop}px`
-                thisWindow.current.style.width = `${thisWidth}px`
-                thisWindow.current.style.height = `${thisHeight}px`
+                updateWindowStyle(thisWindow.current.getAttribute('data-title') as string, {
+                    left: `${thisLeft}px`,
+                    top: `${thisTop}px`,
+                    width: `${thisWidth}px`,
+                    height: `${thisHeight}px`
+                })
             }
         }
     }, [isFullscreen])
+
+    useEffect(() => {
+        if (thisWindow.current) {
+            updateWindowStyle(thisWindow.current.getAttribute('data-title') as string, {
+                left: `${thisLeft}px`,
+                top: `${thisTop}px`,
+                width: `${thisWidth}px`,
+                height: `${thisHeight}px`
+            })
+        }
+    }, [thisWidth, thisHeight, thisTop, thisLeft])
+    
 
 
     const move = (event: MouseEvent) => {
@@ -146,14 +162,12 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
 
             setThisLeft(newLeft)
             setThisTop(newTop)
-            // thisWindow.current.style.left = `${newLeft}px`
-            // thisWindow.current.style.top = `${newTop}px`
         }
 
         setPrevMousePosition({ x: event.clientX, y: event.clientY })
     }
 
-    // TODO: Add Minimum height and width contraints
+    // TODO: Add Minimum height and width constraints
     const resize = (event: MouseEvent) => {
         if (event.button !== 0) { return }
         if (!isResizeHeld) { return }
@@ -210,11 +224,7 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
             setIsFullscreen(false)
         }
         else if (event.currentTarget.classList.contains(styles.hide)) {
-            setIsHidden(true)
-            // if (thisWindow.current) {
-            //     thisWindow.current.classList.remove(styles.active)
-            //     thisWindow.current.classList.add(styles.hidden)
-            // }
+            // setIsHidden(true)
             hideThis()
         }
         else if (event.currentTarget.classList.contains(styles.close)) {
@@ -233,11 +243,12 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
         const target = event.target as HTMLElement
         if (target.classList.contains(styles.button)) { return }
         setIsHeaderHeld(true)
+        document.addEventListener("mouseup", mouseUpHeader, { once: true })
     }
-    const mouseUpHeader = (event: React.MouseEvent<HTMLDivElement>) => {
-        if (event.button !== 0) { return }
-        const target = event.target as HTMLElement
-        if (target.classList.contains(styles.button)) { return }
+    const mouseUpHeader = () => {
+        // if (event.button !== 0) { return }
+        // const target = event.target as HTMLElement
+        // if (target.classList.contains(styles.button)) { return }
         setIsHeaderHeld(false)
         setPrevMousePosition(null)
     }
@@ -298,12 +309,12 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
 
     if (!styles.window) return <></>
     return <>
-        <div ref={thisWindow} data-title={thisTitle} id={thisTitle} className={`${styles.window} ${isHidden ? styles.hidden : ''}`}
+        <div ref={thisWindow} data-title={thisTitle} id={thisTitle} className={`${styles.window}`}
             style={{ width: `${thisWidth}px`, height: `${thisHeight}px`, top: `${thisTop}px`, left: `${thisLeft}px` }}
             onMouseDown={mouseDownWindow}>
 
 
-            <div className={styles.windowHeader} onMouseDown={mouseDownHeader} onMouseUp={mouseUpHeader}>
+            <div className={styles.windowHeader} onMouseDown={mouseDownHeader}>
                 <div className={styles.windowTitle}>
                     {icon !== null ? <Image className={styles.windowIcon} width={48} height={48} src={icon as string | StaticImport} alt={`icon`} data-icon={true} /> : <></>}
                     <p className={styles.windowTitleText}>{thisTitle}</p>
@@ -340,12 +351,6 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
             <div className={`${styles.dragToResize} ${styles.bottom}`} onMouseDown={mouseDownResize}></div>
             <div className={`${styles.dragToResize} ${styles.left}`} onMouseDown={mouseDownResize}></div>
             <div className={`${styles.dragToResize} ${styles.right}`} onMouseDown={mouseDownResize}></div>
-
-            {
-                isHidden || <>
-                </>
-
-            }
         </div>
     </>
 

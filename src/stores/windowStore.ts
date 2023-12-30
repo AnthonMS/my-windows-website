@@ -12,13 +12,25 @@ interface WindowStore {
         window: JSX.Element
     ) => void
     closeWindow: (
-        window: string
+        windowTitle: string
     ) => void
     hideWindow: (
-        window: string
+        windowTitle: string
     ) => void
     showWindow: (
-        window: string
+        windowTitle: string
+    ) => void
+    removeClass: (
+        windowTitle: string,
+        classes: string | string[]
+    ) => void
+    addClass: (
+        windowTitle: string,
+        classes: string | string[]
+    ) => void
+    updateWindowStyle: (
+        windowTitle: string,
+        newStyles: any
     ) => void
 }
 
@@ -46,7 +58,7 @@ export const useWindowStore = create<WindowStore>((set: StoreApi<WindowStore>['s
                 setTimeout(waitForRender, 10)
                 return
             }
-            
+
             let windowOpen: Boolean = false
             currentWindows.forEach((win: Element) => {
                 if (win.getAttribute('data-title') === windowDiv.getAttribute('data-title')) {
@@ -65,6 +77,7 @@ export const useWindowStore = create<WindowStore>((set: StoreApi<WindowStore>['s
                     currentWindowsContainer.current.appendChild(portalContainer)
                 }
                 set((state) => ({ windows: [...state.windows, windowDiv] }))
+                get().addClass(windowDiv.getAttribute('data-title') as string, currentStyles.active)
             }
         }, 10)
     },
@@ -73,18 +86,18 @@ export const useWindowStore = create<WindowStore>((set: StoreApi<WindowStore>['s
         const currentWindows = get().windows
 
         const windowToClose = currentWindows.find((win: HTMLDivElement) => win.getAttribute('data-title') === dataTitle)
-        
+
         if (windowToClose) {
             // Remove the window from the list
-            const updatedWindows = currentWindows.filter((win: HTMLDivElement) => win !== windowToClose);
-            set({ windows: updatedWindows });
+            const updatedWindows = currentWindows.filter((win: HTMLDivElement) => win !== windowToClose)
+            set({ windows: updatedWindows })
 
             // Remove the window from the DOM
             const parent = windowToClose.parentElement;
             if (parent && parent.classList.contains('window')) {
-                parent.remove();
+                parent.remove()
             } else {
-                windowToClose.remove();
+                windowToClose.remove()
             }
         }
     },
@@ -93,35 +106,99 @@ export const useWindowStore = create<WindowStore>((set: StoreApi<WindowStore>['s
         const currentWindows = get().windows
 
         const windowToHide = currentWindows.find((win: HTMLDivElement) => win.getAttribute('data-title') === dataTitle)
-        
-        if (windowToHide && !windowToHide.classList.contains(currentStyles.hidden)) {
-            const index = currentWindows.indexOf(windowToHide)
-            windowToHide.classList.remove(currentStyles.active)
-            windowToHide.classList.add(currentStyles.hidden)
-            
-            // Replace the window in the array with the updated class
-            const updatedWindows = [...currentWindows]
-            updatedWindows[index] = windowToHide
-            set({ windows: updatedWindows })
+
+        if (windowToHide) {
+            if (!windowToHide.classList.contains(currentStyles.hidden)) {
+                windowToHide.classList.add(currentStyles.hidden)
+            }
+            if (windowToHide.classList.contains(currentStyles.active)) {
+                windowToHide.classList.remove(currentStyles.active)
+            }
+
+            // // Replace the window in the array with the updated class
+            // const updatedWindows = [...currentWindows]
+            // updatedWindows[index] = windowToHide
+            // set({ windows: updatedWindows })
+            set({ windows: [...currentWindows] })
         }
     },
     showWindow: (dataTitle) => {
         const currentStyles = get().styles
         const currentWindows = get().windows
+        const windowToShow = currentWindows.find((win: HTMLDivElement) => win.getAttribute('data-title') === dataTitle)
 
-        const windowToshow = currentWindows.find((win: HTMLDivElement) => win.getAttribute('data-title') === dataTitle)
-        
-        if (windowToshow && windowToshow.classList.contains(currentStyles.hidden)) {
-            const index = currentWindows.indexOf(windowToshow)
-            windowToshow.classList.remove(currentStyles.hidden)
-            if (!windowToshow.classList.contains(currentStyles.active)) {
-                windowToshow.classList.add(currentStyles.active)
+        if (windowToShow) {
+            if (windowToShow.classList.contains(currentStyles.hidden)) {
+                windowToShow.classList.remove(currentStyles.hidden)
             }
-            
-            // Replace the window in the array with the updated class
-            const updatedWindows = [...currentWindows]
-            updatedWindows[index] = windowToshow
-            set({ windows: updatedWindows })
+            if (!windowToShow.classList.contains(currentStyles.active)) {
+                windowToShow.classList.add(currentStyles.active)
+            }
+
+            set({ windows: [...currentWindows] })
+        }
+    },
+    removeClass: (windowTitle, classes) => {
+        const currentStyles = get().styles
+        const currentWindows = get().windows
+        const windowToUpdate = currentWindows.find((win: HTMLDivElement) => win.getAttribute('data-title') === windowTitle)
+
+        if (windowToUpdate) {
+            const originalClasses = Array.from(windowToUpdate.classList)
+            if (typeof classes === 'string') {
+                classes = [classes] // convert to array for consistency
+            }
+
+            classes.forEach((cls) => {
+                if (windowToUpdate.classList.contains(cls)) {
+                    windowToUpdate.classList.remove(cls)
+                }
+            })
+
+            set({ windows: [...currentWindows] })
+            // // Check if changes occurred before updating the state
+            // if (originalClasses.length !== windowToUpdate.classList.length) {
+            //     set({ windows: [...currentWindows] })
+            // }
+        }
+    },
+    addClass: (windowTitle, classes) => {
+        const currentStyles = get().styles
+        const currentWindows = get().windows
+        const windowToUpdate = currentWindows.find((win: HTMLDivElement) => win.getAttribute('data-title') === windowTitle)
+
+        if (windowToUpdate) {
+            const originalClasses = Array.from(windowToUpdate.classList)
+            if (typeof classes === 'string') {
+                classes = [classes] // convert to array for consistency
+            }
+
+            classes.forEach((cls) => {
+                if (!windowToUpdate.classList.contains(cls)) {
+                    windowToUpdate.classList.add(cls)
+                }
+            })
+
+            set({ windows: [...currentWindows] })
+            // // Check if changes occurred before updating the state
+            // if (originalClasses.length !== windowToUpdate.classList.length) {
+            //     set({ windows: [...currentWindows] })
+            // }
+        }
+    },
+    updateWindowStyle: (windowTitle, newStyles) => {
+        const currentWindows = get().windows
+        const windowToUpdate = currentWindows.find((win) => win.getAttribute('data-title') === windowTitle)
+
+        if (windowToUpdate) {
+            // Iterate over the properties in newStyles and update each property
+            for (const property in newStyles) {
+                if (newStyles.hasOwnProperty(property)) {
+                    windowToUpdate.style.setProperty(property, newStyles[property])
+                }
+            }
+
+            set({ windows: [...currentWindows] })
         }
     }
 }))

@@ -15,14 +15,14 @@ export interface BottomBarProps {
 }
 const BottomBar = (props: BottomBarProps) => {
     const {  } = props
-    const { windows, openWindow, closeWindow, hideWindow, showWindow, styles } = useWindowStore()
+    const { windows, openWindow, closeWindow, hideWindow, showWindow, removeClass, addClass, styles } = useWindowStore()
     const [showStart, setShowStart] = useState<Boolean>(false)
     const toggleStartMenu = () => { setShowStart(prev => !prev) }
 
     const startBtn = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
-        console.log('Windows Updated in BottomBar:', windows)
+        // console.log('Windows Updated in BottomBar:', windows)
     }, [windows])
     
 
@@ -51,10 +51,9 @@ const BottomBar = (props: BottomBarProps) => {
         }
     }
 
-    const click = async (event: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
+    const clickStart = async (event: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
         const target = event.currentTarget
         if (target.classList.contains(styles.bottomButton)) {
-
             if (!target.classList.contains(styles.selected)) {
                 target.classList.add(styles.selected)
                 setShowStart(true)
@@ -62,46 +61,6 @@ const BottomBar = (props: BottomBarProps) => {
             else {
                 target.classList.remove(styles.selected)
                 setShowStart(false)
-            }
-
-            if (target.classList.contains(styles.bottomButtonStart)) {
-                setShowStart(target.classList.contains(styles.selected)) // If start is selected, its true.
-            }
-            else if (target.classList.contains(styles.bottomButtonWindow)) {
-                // remove active class from active window(s) (there should only be 1)
-                const foundWindows = document.querySelectorAll(`.${styles.window}.${styles.active}`)
-                const activeWindows = windows.filter((win: HTMLDivElement) => win.classList.contains(styles.active))
-                foundWindows.forEach((window: Element) => {
-                    window.classList.remove(styles.active)
-                })
-
-                let btnTitle: string = target.getAttribute('data-title') as string
-                const elementOld: Element | null = document.querySelector(`[data-title="${btnTitle}"]`)
-                const element: HTMLDivElement|undefined = windows.find((win: HTMLDivElement) => win.getAttribute('data-title') === btnTitle)
-                if (element !== undefined) {
-                    if (target.classList.contains(styles.selected)) {
-                        // Hide
-                        console.log('HIDE')
-                        hideWindow(btnTitle)
-                        // if (!element.classList.contains(styles.hidden)) {
-                        //     element.classList.add(styles.hidden)
-                        // }
-                        // if (element.classList.contains(styles.active)) {
-                        //     element.classList.remove(styles.active)
-                        // }
-                    }
-                    else {
-                        // Show
-                        console.log('SHOW')
-                        showWindow(btnTitle)
-                        // if (element.classList.contains(styles.hidden)) {
-                        //     element.classList.remove(styles.hidden)
-                        // }
-                        // if (!element.classList.contains(styles.active)) {
-                        //     element.classList.add(styles.active)
-                        // }
-                    }
-                }
             }
         }
     }
@@ -111,36 +70,18 @@ const BottomBar = (props: BottomBarProps) => {
 
         // remove active class from active window(s) (there should only be 1)
         const activeWindows = windows.filter((win: HTMLDivElement) => win.classList.contains(styles.active))
-        const foundWindows = document.querySelectorAll(`.${styles.window}.${styles.active}`)
-        foundWindows.forEach((window: Element) => {
-            window.classList.remove(styles.active)
+        activeWindows.forEach((window: Element) => {
+            removeClass(window.getAttribute('data-title') as string, styles.active)
         })
 
         let btnTitle: string = target.getAttribute('data-window') as string
-        const elementOld: Element | null = document.querySelector(`[data-title="${btnTitle}"]`)
         const element: HTMLDivElement|undefined = windows.find((win: HTMLDivElement) => win.getAttribute('data-title') === btnTitle)
         if (element !== undefined) {
             if (target.classList.contains(styles.selected)) {
-                // Hide
-                console.log('HIDE')
                 hideWindow(btnTitle)
-                // if (!element.classList.contains(styles.hidden)) {
-                //     element.classList.add(styles.hidden)
-                // }
-                // if (element.classList.contains(styles.active)) {
-                //     element.classList.remove(styles.active)
-                // }
             }
             else {
-                // Show
-                console.log('SHOW')
                 showWindow(btnTitle)
-                // if (element.classList.contains(styles.hidden)) {
-                //     element.classList.remove(styles.hidden)
-                // }
-                // if (!element.classList.contains(styles.active)) {
-                //     element.classList.add(styles.active)
-                // }
             }
         }
     }
@@ -151,7 +92,7 @@ const BottomBar = (props: BottomBarProps) => {
         <div className={styles.bottomBar}>
             <div className={styles.leftContainer}>
                 <div ref={startBtn} className={`${styles.button} ${styles.bottomButton} ${styles.bottomButtonStart} ${showStart ? styles.selected : ''}`}
-                    onClick={click}>
+                    onClick={clickStart}>
                     <div className={styles.buttonContent}>
                         <Image className={styles.image} src={windowsLogo} width={48} height={48} alt={`windows-logo`} />
                         <p className={styles.text}>Start</p>
@@ -160,10 +101,8 @@ const BottomBar = (props: BottomBarProps) => {
             </div>
 
             <div className={styles.middleContainer}>
-
                 {
                     windows.map((window: Element, index: number) => {
-                        
                         const iconElement = window.querySelector('[data-icon="true"]')
                         const iconSrc = iconElement ? iconElement.getAttribute('src') : null
 
@@ -179,7 +118,6 @@ const BottomBar = (props: BottomBarProps) => {
                         )
                     })
                 }
-
             </div>
 
             <div className={styles.rightContainer}>
