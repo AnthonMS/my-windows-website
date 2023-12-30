@@ -3,12 +3,14 @@
 export const isElementInClass = (element: Element | null, classname: string | string[]) => {
     const classArray = Array.isArray(classname) ? classname : [classname]
     let el = element
+
     while (el !== null) {
-        if (el.classList.contains(classArray[0]) && classArray.every(className => el!.classList.contains(className))) {
+        if (classArray.every(className => el!.classList.contains(className))) {
             return true
         }
         el = el.parentElement
     }
+
     return false
 }
 export const findParentWithClass = (element: Element | null, classname: string | string[]): Element | null => {

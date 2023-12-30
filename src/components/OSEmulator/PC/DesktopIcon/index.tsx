@@ -7,6 +7,7 @@ import { useWindowStore } from '@/stores/windowStore'
 
 // import AboutMeWindow from '@/components/OSEmulator/PC/Windows/AboutMe'
 import AboutMeWindow from '../Windows/AboutMe'
+import { findParentWithClass } from '@/lib/util_DOM'
 
 interface DesktopIconProps {
     id: string
@@ -22,23 +23,23 @@ const DesktopIcon = (props: DesktopIconProps) => {
     const { id, text, icon, primaryAction, left, top, dir } = props
     const { windows, openWindow } = useWindowStore()
     const thisIcon = useRef<HTMLDivElement | null>(null)
-    const [isSelected, setIsSelected] = useState(false)
+    // const [isSelected, setIsSelected] = useState(false)
     const [lastMouseClick, setLastMouseClick] = useState<number | null>(null)
 
     const [isMouseDown, setIsMouseDown] = useState(false)
     const [prevMousePosition, setPrevMousePosition] = useState<{ x: number; y: number } | null>(null)
 
-    // --- Selection & Movement handling --- //
-    useEffect(() => {
-        const handleClick = (event: any) => {
-            deselect(event)
-        }
-        window.addEventListener('mousedown', handleClick)
+    // // --- Selection & Movement handling --- //
+    // useEffect(() => {
+    //     const handleClick = (event: any) => {
+    //         deselect(event)
+    //     }
+    //     window.addEventListener('mousedown', handleClick)
 
-        return () => {
-            window.removeEventListener('mousedown', handleClick)
-        }
-    }, [isSelected])
+    //     return () => {
+    //         window.removeEventListener('mousedown', handleClick)
+    //     }
+    // }, [isSelected])
 
 
     useEffect(() => { // Move Listeners
@@ -72,8 +73,20 @@ const DesktopIcon = (props: DesktopIconProps) => {
 
     const mouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
         if (event.button === 0) { // left
+            const target = event.target as HTMLElement
             setIsMouseDown(true)
-            select(event)
+            const clickedDesktopIcon: Element = findParentWithClass(target, styles.desktopIcon) as Element
+            if (!clickedDesktopIcon.classList.contains(styles.selected)) {
+                clickedDesktopIcon.classList.add(styles.selected)
+            }
+            
+            const isCtrlKeyHeld = event.ctrlKey || event.metaKey
+            if (!isCtrlKeyHeld) {
+                Array.from(document.querySelectorAll(`.${styles.desktopIcon}.${styles.selected}`))
+                    .filter(icon => clickedDesktopIcon && icon.id !== clickedDesktopIcon.id)
+                    .forEach(icon => icon.classList.remove(styles.selected))
+            }
+            
             document.addEventListener("mouseup", mouseUp, { once: true })
         }
     }
@@ -84,7 +97,6 @@ const DesktopIcon = (props: DesktopIconProps) => {
     const move = (event: MouseEvent) => {
         if (event.button !== 0) { return }
         if (!isMouseDown) { return }
-        console.log('MOVE?')
 
         if (prevMousePosition && thisIcon.current !== null) {
             const deltaX = event.clientX - prevMousePosition.x
@@ -98,9 +110,8 @@ const DesktopIcon = (props: DesktopIconProps) => {
             thisIcon.current.style.left = `${newLeft}px`
             thisIcon.current.style.top = `${newTop}px`
 
+            // Check if ctrl is held, otherwise remove selected from other icons
             moveOtherSelectedIcons(deltaX, deltaY)
-            // setThisLeft(newLeft)
-            // setThisTop(newTop)
         }
 
         setPrevMousePosition({ x: event.clientX, y: event.clientY })
@@ -108,7 +119,6 @@ const DesktopIcon = (props: DesktopIconProps) => {
 
     const moveOtherSelectedIcons = (deltaX: number, deltaY: number) => {
         const selectedIcons = document.querySelectorAll(`.${styles.desktopIcon}.${styles.selected}`)
-        // console.log('Selected icons:', selectedIcons)
         selectedIcons.forEach((icon: Element) => {
             if (icon.id !== id) {
                 const iconElement = icon as HTMLElement
@@ -125,10 +135,6 @@ const DesktopIcon = (props: DesktopIconProps) => {
         })
     }
 
-    const select = (event: any) => {
-        setIsSelected(true)
-    }
-
     // TODO: Move deselect logic to base 
     //          It should not deselect any icons on mouseDown (or mouseUp) if there are multiple selected
     const deselect = (event: any) => {
@@ -142,7 +148,7 @@ const DesktopIcon = (props: DesktopIconProps) => {
                 currentElement = currentElement.parentElement
             }
             if (currentElement === null) {
-                setIsSelected(false)
+                // setIsSelected(false)
             }
         }
         else {
@@ -150,7 +156,7 @@ const DesktopIcon = (props: DesktopIconProps) => {
                 currentElement = currentElement.parentElement
             }
             if (currentElement === null) {
-                setIsSelected(false)
+                // setIsSelected(false)
                 if (thisIcon.current !== null &&
                     thisIcon.current.classList.contains(styles.selected)) {
                     thisIcon.current.classList.remove(styles.selected)
@@ -181,7 +187,7 @@ const DesktopIcon = (props: DesktopIconProps) => {
 
     return (
         <div ref={thisIcon} id={id} data-id={id}
-            className={`${styles.desktopIcon} ${isSelected ? styles.selected : ''}`}
+            className={`${styles.desktopIcon}`}
             style={{ left: left, top: top }}
             onClick={click} onMouseDown={mouseDown}>
             <Image className={styles.desktopIconImage}

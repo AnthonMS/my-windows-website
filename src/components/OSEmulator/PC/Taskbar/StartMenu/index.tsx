@@ -16,9 +16,9 @@ import minesGameIcon from '@/assets/images/icons/game_mine_1-0.png'
 
 import { useWindowStore } from '@/stores/windowStore'
 
-import WelcomeWindow from '../Windows/Welcome'
-import AboutMeWindow from '../Windows/AboutMe'
-import ContactWindow from '../Windows/Contact'
+import WelcomeWindow from '../../Windows/Welcome'
+import AboutMeWindow from '../../Windows/AboutMe'
+import ContactWindow from '../../Windows/Contact'
 
 export interface StartMenuProps {
     toggleStartMenu: Function

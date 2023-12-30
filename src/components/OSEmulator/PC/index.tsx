@@ -54,9 +54,9 @@ const PCEmulator = () => {
     }, [])
 
     useEffect(() => {
-    //   console.log('Windows Updated:', windows)
+        //   console.log('Windows Updated:', windows)
     }, [windows])
-    
+
 
 
     useEffect(() => {
@@ -86,22 +86,21 @@ const PCEmulator = () => {
     }, [highlightBox])
 
 
-    const onClickDesktopIcon = (event: React.MouseEvent<HTMLDivElement>) => {
-        const target: HTMLElement = event.target as HTMLElement
+    const highlight = (event: MouseEvent) => {
+        const { clientX, clientY } = event
+        setHighlightBox((prevBox) => ({
+            ...prevBox,
+            width: clientX - prevBox.startX,
+            height: clientY - prevBox.startY,
+        }))
     }
 
-    const mouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
-        // console.log('MOUSE DOWN?')
-        const target = event.target
-        if (event.button === 0 && target instanceof HTMLElement) {
-            // Check if click is inside active window. If so, we dont need to do the rest.
-            if (isElementInClass(target, [styles.window, styles.active])) {
-                return
-            }
-
+    const handleActiveWindowsOnClick = (event: React.MouseEvent<HTMLDivElement>) => {
+        const target = event.target as HTMLElement
+        if (!isElementInClass(target, [styles.window, styles.active])) {
             // If click is not in the bottomBar -> remove active class from all windows
-            if (!isElementInClass(target, styles.taskbar)) {
-                windows.forEach((window:HTMLDivElement) => {
+            if (!isElementInClass(target, styles.windowBtn)) {
+                windows.forEach((window: HTMLDivElement) => {
                     removeClass(window.getAttribute('data-title') as string, styles.active)
                 })
 
@@ -110,23 +109,69 @@ const PCEmulator = () => {
                     const clickedWindow: Element = findParentWithClass(target, styles.window) as Element
                     addClass(clickedWindow.getAttribute('data-title') as string, styles.active)
                 }
+                else if (target.classList.contains(styles.main)) {
+
+                    // document.addEventListener("mouseup", mouseUp, { once: true })
+                    setIsHighlighting(true)
+                    setHighlightBox({
+                        startX: event.nativeEvent.offsetX,
+                        startY: event.nativeEvent.offsetY,
+                        width: 0,
+                        height: 0,
+                    })
+                }
             }
+        }
+    }
 
+    const handleSelectedIconsOnClick = (event: React.MouseEvent<HTMLDivElement>) => {
+        // If click is inside a desktopIcon AND if ctrl is held down
+        //      if desktopIcon has selected class
+        //          remove it
 
-            if (target.classList.contains(styles.main)) {
-                setIsHighlighting(true)
-                setHighlightBox({
-                    startX: event.nativeEvent.offsetX,
-                    startY: event.nativeEvent.offsetY,
-                    width: 0,
-                    height: 0,
+        // If click is inside desktopIcon and ctrl is not held down
+        //      remove selected class from all desktopIcons in DOM except the one we are clicking
+
+        // If click is not in desktopIcon and ctrl is not held down, we want to deselect all desktopicons in DOM
+
+        const target = event.target as HTMLElement
+        // const clickedDesktopIcon: Element = findParentWithClass(target, styles.desktopIcon) as Element
+        const isCtrlKeyHeld = event.ctrlKey || event.metaKey
+        if (event.type === 'mousedown' && !target.classList.contains(styles.desktopIcon)) {
+            if (!isCtrlKeyHeld) {
+                const selectedIcons = document.querySelectorAll(`.${styles.desktopIcon}.${styles.selected}`)
+                selectedIcons.forEach((icon: Element) => {
+                    icon.classList.remove(styles.selected)
                 })
             }
         }
     }
+
+
+    const onClickDesktopIcon = (event: React.MouseEvent<HTMLDivElement>) => {
+        const target: HTMLElement = event.target as HTMLElement
+    }
+
+    const mouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+        if (isHighlighting) {
+            const nativeEvent = event.nativeEvent as MouseEvent
+            highlight(nativeEvent)
+        }
+    }
+    const mouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
+        const target = event.target
+        if (event.button === 0 && target instanceof HTMLElement) {
+            handleActiveWindowsOnClick(event)
+            handleSelectedIconsOnClick(event)
+        }
+    }
     const mouseUp = (event: React.MouseEvent<HTMLDivElement>) => {
+        const target = event.target
+        if (event.button === 0 && target instanceof HTMLElement) {
+            handleSelectedIconsOnClick(event)
+        }
+
         if (event.button === 0 && isHighlighting) { // left
-            setIsHighlighting(false)
             // Here we check all elements that are within the highlight box' position and dimensions
             const desktopIcons = document.querySelectorAll(`.${styles.desktopIcon}`)
 
@@ -154,20 +199,17 @@ const PCEmulator = () => {
                 }
             })
 
-            setHighlightBoxRendered({ startX: 0, startY: 0, width: 0, height: 0 })
-        }
-    }
-    const mouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
-        if (isHighlighting) {
-            const { clientX, clientY } = event
-            setHighlightBox((prevBox) => ({
-                ...prevBox,
-                width: clientX - prevBox.startX,
-                height: clientY - prevBox.startY,
-            }))
-        }
-    }
 
+            setIsHighlighting(false)
+            const { clientX, clientY } = event
+            setHighlightBox({
+                startX: clientX,
+                startY: clientY,
+                width: 0,
+                height: 0,
+            })
+        }
+    }
 
 
     return <>

@@ -1,17 +1,12 @@
 // import styles from './../styles.module.css'
-import Image, { StaticImageData } from 'next/image'
+import Image from 'next/image'
 import { useState, useEffect, useRef } from 'react'
 
-
 import windowsLogo from '@/assets/images/windows92-logo.png'
-
-import StartMenu from '../StartMenu'
-
+import StartMenu from './StartMenu'
 import { useWindowStore } from '@/stores/windowStore'
 
-// TODO: Update to use new windowStore: openWindow, windows, styles
-export interface TaskbarProps {
-}
+interface TaskbarProps {}
 const Taskbar = (props: TaskbarProps) => {
     const {  } = props
     const { windows, openWindow, closeWindow, hideWindow, showWindow, removeClass, addClass, styles } = useWindowStore()
