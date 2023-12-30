@@ -19,11 +19,12 @@ export interface WindowProps {
     title?: string
     icon?: string | StaticImport
     onActive?: Function
+    fullscreen?: Boolean
 }
 
 const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unknown>) => {
-    const { children, width, height, left, top, title, icon, onActive } = props
-    const { windows, openWindow, closeWindow, hideWindow, updateWindowStyle, styles } = useWindowStore()
+    const { children, width, height, left, top, title, icon, onActive, fullscreen } = props
+    const { windows, openWindow, closeWindow, hideWindow, updateWindowStyle, removeClass, styles } = useWindowStore()
     const initialMount = useRef<Boolean>(true)
     const thisWindow = useRef<HTMLDivElement | null>(null)
     const [isHeaderHeld, setIsHeaderHeld] = useState(false)
@@ -33,11 +34,14 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
 
     const [prevMousePosition, setPrevMousePosition] = useState<{ x: number; y: number } | null>(null)
 
-    const [isFullscreen, setIsFullscreen] = useState(false)
-    const [thisWidth, setThisWidth] = useState(width || 600)
-    const [thisHeight, setThisHeight] = useState(height || 400)
-    const [thisLeft, setThisLeft] = useState(left || 200)
-    const [thisTop, setThisTop] = useState(top || 200)
+    const [isFullscreen, setIsFullscreen] = useState(fullscreen || false)
+
+    // Update code so these values are stored on HTMLDivElements as data attributes instead. This will be easier to handle and debug. We dont want to change styles directly
+    // const [thisWidth, setThisWidth] = useState(width || 600)
+    // const [thisHeight, setThisHeight] = useState(height || 400)
+    // const [thisLeft, setThisLeft] = useState(left || 200)
+    // const [thisTop, setThisTop] = useState(top || 200)
+
     const [thisTitle, setThisTitle] = useState<string>(title || 'Untitled-')
 
 
@@ -48,61 +52,39 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
         // expose more functions or values here if needed
     }))
 
-    const closeThis = () =>{
+    const closeThis = () => {
         if (thisWindow.current) {
             closeWindow(thisWindow.current!.getAttribute('data-title') as string)
         }
     }
-    const hideThis = () =>{
+    const hideThis = () => {
         if (thisWindow.current) {
             hideWindow(thisWindow.current!.getAttribute('data-title') as string)
         }
     }
 
-    useEffect(() => { // Initial Mount Management
-        if (initialMount.current) {
-            initialMount.current = false
-            // Position window in middle of screen when first launched
-            if (thisWindow.current) {
-                if (!isFullscreen) {
-                    const screenWidth = window.innerWidth
-                    const screenHeight = window.innerHeight - 30
-                    const left = (screenWidth - thisWidth) / 2
-                    const top = ((screenHeight - thisHeight) / 2)
-                    setThisLeft(left)
-                    setThisTop(top)
+    useEffect(() => {
+        if (thisWindow.current) {
+            if (initialMount.current) {
+                initialMount.current = false
+
+                if (isFullscreen) {
+                    goFullscreen()
                 }
+                else {
+                    positionMiddle()
+                }
+
+                // Here we should remove hidden class
+                removeClass(thisTitle, styles.hidden)
 
                 if (onActive) {
                     onActive()
                 }
             }
         }
-    }, [])
+    }, [thisWindow])
 
-    useEffect(() => { // Fullscreen Management
-        if (thisWindow.current) {
-            if (isFullscreen) {
-                const screenWidth = window.innerWidth
-                const screenHeight = window.innerHeight
-                updateWindowStyle(thisWindow.current.getAttribute('data-title') as string, {
-                    left: `0px`,
-                    top: `0px`,
-                    width: `${screenWidth}px`,
-                    height: `${screenHeight-30}px`
-                })
-            }
-            else {
-                updateWindowStyle(thisWindow.current.getAttribute('data-title') as string, {
-                    left: `${thisLeft}px`,
-                    top: `${thisTop}px`,
-                    width: `${thisWidth}px`,
-                    height: `${thisHeight}px`
-                })
-            }
-        }
-    }, [isFullscreen])
-    
 
     useEffect(() => { // Move Listeners
         if (isHeaderHeld) {
@@ -129,10 +111,97 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
     }, [thisWindow, isResizeHeld, prevMousePosition])
 
 
+
+    const goFullscreen = () => {
+        if (thisWindow.current) {
+            setIsFullscreen(true)
+            const computedStyles = getComputedStyle(thisWindow.current)
+            const currentWidth = parseInt(computedStyles.width, 10) || 0 // Default to 0
+            const currentHeight = parseInt(computedStyles.height, 10) || 0 // Default to 0
+            const currentLeft = parseInt(computedStyles.left, 10) || 0 // Default to 0 if left is not set
+            const currentTop = parseInt(computedStyles.top, 10) || 0 // Default to 0 if top is not set
+            // Save these values in windows data attributes
+            thisWindow.current.setAttribute('data-width', currentWidth.toString())
+            thisWindow.current.setAttribute('data-height', currentHeight.toString())
+            thisWindow.current.setAttribute('data-left', currentLeft.toString())
+            thisWindow.current.setAttribute('data-top', currentTop.toString())
+
+            const screenWidth = window.innerWidth
+            const screenHeight = window.innerHeight - 30
+            const screenMiddleHor = (screenWidth - currentWidth) / 2
+            const screenMiddleVer = ((screenHeight - currentHeight) / 2)
+
+            updateWindowStyle(thisTitle, {
+                left: `0px`,
+                top: `0px`,
+                width: `${screenWidth}px`,
+                height: `${screenHeight}px`
+            })
+        }
+    }
+    const goWindowMode = () => {
+        if (thisWindow.current) {
+            setIsFullscreen(false)
+            const oldWidth = thisWindow.current.getAttribute('data-width')
+            const oldHeight = thisWindow.current.getAttribute('data-height')
+            const oldLeft = thisWindow.current.getAttribute('data-left')
+            const oldTop = thisWindow.current.getAttribute('data-top')
+
+
+            updateWindowStyle(thisTitle, {
+                left: `${oldLeft}px`,
+                top: `${oldTop}px`,
+                width: `${oldWidth}px`,
+                height: `${oldHeight}px`
+            })
+        }
+    }
+    const positionMiddle = () => {
+        // Position at given coords or default to middle:
+        const styleObject: { left?: string, top?: string, width?: string, height?: string } = {}
+        if (width !== undefined) {
+            styleObject.width = `${width}px`
+        }
+        if (height !== undefined) {
+            styleObject.height = `${height}px`
+        }
+        if (left !== undefined) {
+            styleObject.left = `${left}px`
+        }
+        if (top !== undefined) {
+            styleObject.top = `${top}px`
+        }
+
+        const screenWidth = window.innerWidth
+        const screenHeight = window.innerHeight - 30
+
+        const computedStyles = getComputedStyle(thisWindow.current!)
+        const widthString: string = styleObject.width ?? computedStyles.width ?? '0' // Default to 0
+        const heightString: string = styleObject.height ?? computedStyles.height ?? '0' // Default to 0
+        const currentWidth: number = parseInt(widthString.match(/\d+/)?.[0] ?? '0', 10)
+        const currentHeight: number = parseInt(heightString.match(/\d+/)?.[0] ?? '0', 10);
+
+        const screenMiddleHor = (screenWidth - currentWidth) / 2
+        const screenMiddleVer = (screenHeight - currentHeight) / 2
+
+        if (styleObject.left === undefined) {
+            styleObject.left = `${screenMiddleHor}px`
+        }
+        if (styleObject.top === undefined) {
+            styleObject.top = `${screenMiddleVer}px`
+        }
+
+        updateWindowStyle(thisTitle, styleObject)
+    }
+
     const move = (event: MouseEvent) => {
         if (event.button !== 0) { return }
         if (!isHeaderHeld) { return }
 
+        if (isFullscreen) {
+            // setIsFullscreen(false)
+            goWindowMode()
+        }
         if (prevMousePosition && thisWindow.current !== null) {
             const deltaX = event.clientX - prevMousePosition.x
             const deltaY = event.clientY - prevMousePosition.y
@@ -142,19 +211,22 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
             const currentTop = parseInt(computedStyles.top, 10) || 0 // Default to 0 if top is not set
             const newLeft = currentLeft + deltaX
             const newTop = currentTop + deltaY
-
-            setThisLeft(newLeft)
-            setThisTop(newTop)
+            updateWindowStyle(thisTitle, {
+                left: `${newLeft}px`,
+                top: `${newTop}px`,
+            })
         }
 
         setPrevMousePosition({ x: event.clientX, y: event.clientY })
     }
-
     // TODO: Add Minimum height and width constraints
     const resize = (event: MouseEvent) => {
         if (event.button !== 0) { return }
         if (!isResizeHeld) { return }
 
+        if (isFullscreen) {
+            setIsFullscreen(false)
+        }
         if (prevMousePosition && thisWindow.current !== null) {
             const deltaX = event.clientX - prevMousePosition.x
             const deltaY = event.clientY - prevMousePosition.y
@@ -162,7 +234,6 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
             const computedStyles = getComputedStyle(thisWindow.current)
             const currentWidth = parseInt(computedStyles.width, 10) || 0 // Default to 0
             const currentHeight = parseInt(computedStyles.height, 10) || 0 // Default to 0
-
             const currentLeft = parseInt(computedStyles.left, 10) || 0 // Default to 0 if left is not set
             const currentTop = parseInt(computedStyles.top, 10) || 0 // Default to 0 if top is not set
 
@@ -185,16 +256,18 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
             else if (resizeY === 1) {
                 newHeight = currentHeight + deltaY
             }
-            setThisWidth(newWidth)
-            setThisHeight(newHeight)
-            setThisLeft(newLeft)
-            setThisTop(newTop)
+
+            updateWindowStyle(thisTitle, {
+                left: `${newLeft}px`,
+                top: `${newTop}px`,
+                width: `${newWidth}px`,
+                height: `${newHeight}px`
+            })
 
         }
 
         setPrevMousePosition({ x: event.clientX, y: event.clientY })
     }
-
 
     const mouseDownHeader = (event: React.MouseEvent<HTMLDivElement>) => {
         if (event.button !== 0) { return }
@@ -207,7 +280,6 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
         setIsHeaderHeld(false)
         setPrevMousePosition(null)
     }
-
     const mouseDownResize = (event: React.MouseEvent<HTMLDivElement>) => {
         if (event.button !== 0) { return }
         setIsResizeHeld(true)
@@ -258,10 +330,10 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
         if (event.button !== 0) { return }
 
         if (event.currentTarget.classList.contains(styles.max)) {
-            setIsFullscreen(true)
+            goFullscreen()
         }
         else if (event.currentTarget.classList.contains(styles.min)) {
-            setIsFullscreen(false)
+            goWindowMode()
         }
         else if (event.currentTarget.classList.contains(styles.hide)) {
             // setIsHidden(true)
@@ -271,6 +343,8 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
             closeThis()
         }
         else if (event.currentTarget.classList.contains(styles.help)) {
+            console.log('HELP?')
+            goFullscreen()
         }
     }
 
@@ -282,8 +356,8 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
 
     if (!styles.window) return <></>
     return <>
-        <div ref={thisWindow} data-title={thisTitle} id={thisTitle} className={`${styles.window}`}
-            style={{ width: `${thisWidth}px`, height: `${thisHeight}px`, top: `${thisTop}px`, left: `${thisLeft}px` }}
+        <div ref={thisWindow} data-title={thisTitle} id={thisTitle} className={`${styles.window} ${styles.hidden}`}
+            // style={{ width: `${thisWidth}px`, height: `${thisHeight}px`, top: `${thisTop}px`, left: `${thisLeft}px` }}
             onMouseDown={mouseDownWindow}>
 
 

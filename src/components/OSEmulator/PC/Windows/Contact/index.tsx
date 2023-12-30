@@ -68,7 +68,7 @@ const ContactWindow = (props: ContactWindowProps) => {
     }
 
     return <Window title='Contact' icon={contactIcon}
-        width={window.innerWidth - 25} height={window.innerHeight - 30 - 25}>
+        width={600} height={810}>
 
         <div className={styles.windowContainer}>
             <p className={styles.mainTitle}>

@@ -54,7 +54,7 @@ const PCEmulator = () => {
     }, [])
 
     useEffect(() => {
-    //   console.log('Windows Updated in base:', windows)
+    //   console.log('Windows Updated:', windows)
     }, [windows])
     
 

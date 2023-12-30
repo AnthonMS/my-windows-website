@@ -59,8 +59,8 @@ const DesktopIcon = (props: DesktopIconProps) => {
         try {
             const WindowComponent = dynamic(() => import(`../Windows/${id}`), {
                 ssr: false,
-            });
-            console.log('WindowComponent:', <WindowComponent />)
+            })
+            // console.log('WindowComponent:', <WindowComponent />)
             const windowEl = <WindowComponent />
             // Call the openWindow function with the JSX element
             openWindow(windowEl)

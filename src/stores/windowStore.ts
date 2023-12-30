@@ -62,20 +62,9 @@ export const useWindowStore = create<WindowStore>((set: StoreApi<WindowStore>['s
             let windowOpen: Boolean = false
             currentWindows.forEach((win: Element) => {
                 if (win.getAttribute('data-title') === windowDiv.getAttribute('data-title')) {
-                    console.log('Dont open new window, just remove hidden and add active.')
                     windowOpen = true
                     get().showWindow(win.getAttribute('data-title') as string)
-
-                    // win.classList.remove(currentStyles.hidden)
-                    // if (!win.classList.contains(currentStyles.active)) {
-                    //     win.classList.add(currentStyles.active)
-                    // }
-                } 
-                // else {
-                //     if (win.classList.contains(currentStyles.active)) {
-                //         win.classList.remove(currentStyles.active)
-                //     }
-                // }
+                }
             })
             set({ windows: [...currentWindows] })
 
@@ -90,108 +79,184 @@ export const useWindowStore = create<WindowStore>((set: StoreApi<WindowStore>['s
             }
         }, 10)
     },
-    closeWindow: (dataTitle) => {
-        const currentWindows = get().windows
+    closeWindow: (windowTitle) => {
+        const maxAttempts = 20
+        const retryInterval = 100
 
-        const windowToClose = currentWindows.find((win: HTMLDivElement) => win.getAttribute('data-title') === dataTitle)
+        const tryToUpdate = (attempts: number) => {
+            const currentStyles = get().styles
+            const currentWindows = get().windows
+            const windowToUpdate = currentWindows.find((win) => win.getAttribute('data-title') === windowTitle)
 
-        if (windowToClose) {
-            // Remove the window from the list
-            const updatedWindows = currentWindows.filter((win: HTMLDivElement) => win !== windowToClose)
-            set({ windows: updatedWindows })
+            if (windowToUpdate) {
+                // Remove the window from the list
+                const updatedWindows = currentWindows.filter((win: HTMLDivElement) => win !== windowToUpdate)
+                set({ windows: updatedWindows })
 
-            // Remove the window from the DOM
-            const parent = windowToClose.parentElement;
-            if (parent && parent.classList.contains('window')) {
-                parent.remove()
-            } else {
-                windowToClose.remove()
+                // Remove the window from the DOM
+                const parent = windowToUpdate.parentElement
+                if (parent && parent.classList.contains('window')) {
+                    parent.remove()
+                } else {
+                    windowToUpdate.remove()
+                }
+            }
+            else if (attempts < maxAttempts) {
+                console.warn('Retry removeClass:', windowTitle)
+                setTimeout(() => tryToUpdate(attempts + 1), retryInterval)
+            }
+            else {
+                console.error(`Window with title ${windowTitle} not found after ${maxAttempts} attempts`)
             }
         }
+        tryToUpdate(0)
     },
-    hideWindow: (dataTitle) => {
-        const currentStyles = get().styles
-        const currentWindows = get().windows
+    hideWindow: (windowTitle) => {
+        const maxAttempts = 20
+        const retryInterval = 100
 
-        const windowToHide = currentWindows.find((win: HTMLDivElement) => win.getAttribute('data-title') === dataTitle)
+        const tryToUpdate = (attempts: number) => {
+            const currentStyles = get().styles
+            const currentWindows = get().windows
+            const windowToUpdate = currentWindows.find((win) => win.getAttribute('data-title') === windowTitle)
 
-        if (windowToHide) {
-            if (!windowToHide.classList.contains(currentStyles.hidden)) {
-                windowToHide.classList.add(currentStyles.hidden)
+            if (windowToUpdate) {
+                if (!windowToUpdate.classList.contains(currentStyles.hidden)) {
+                    windowToUpdate.classList.add(currentStyles.hidden)
+                }
+                if (windowToUpdate.classList.contains(currentStyles.active)) {
+                    windowToUpdate.classList.remove(currentStyles.active)
+                }
+
+                set({ windows: [...currentWindows] })
             }
-            if (windowToHide.classList.contains(currentStyles.active)) {
-                windowToHide.classList.remove(currentStyles.active)
+            else if (attempts < maxAttempts) {
+                console.warn('Retry removeClass:', windowTitle)
+                setTimeout(() => tryToUpdate(attempts + 1), retryInterval)
             }
-
-            set({ windows: [...currentWindows] })
+            else {
+                console.error(`Window with title ${windowTitle} not found after ${maxAttempts} attempts`)
+            }
         }
+        tryToUpdate(0)
     },
-    showWindow: (dataTitle) => {
-        const currentStyles = get().styles
-        const currentWindows = get().windows
-        const windowToShow = currentWindows.find((win: HTMLDivElement) => win.getAttribute('data-title') === dataTitle)
+    showWindow: (windowTitle) => {
+        const maxAttempts = 20
+        const retryInterval = 100
 
-        if (windowToShow) {
-            if (windowToShow.classList.contains(currentStyles.hidden)) {
-                windowToShow.classList.remove(currentStyles.hidden)
-            }
-            if (!windowToShow.classList.contains(currentStyles.active)) {
-                windowToShow.classList.add(currentStyles.active)
-            }
+        const tryToUpdate = (attempts: number) => {
+            const currentStyles = get().styles
+            const currentWindows = get().windows
+            const windowToUpdate = currentWindows.find((win) => win.getAttribute('data-title') === windowTitle)
 
-            set({ windows: [...currentWindows] })
+            if (windowToUpdate) {
+                if (windowToUpdate.classList.contains(currentStyles.hidden)) {
+                    windowToUpdate.classList.remove(currentStyles.hidden)
+                }
+                if (!windowToUpdate.classList.contains(currentStyles.active)) {
+                    windowToUpdate.classList.add(currentStyles.active)
+                }
+
+                set({ windows: [...currentWindows] })
+            }
+            else if (attempts < maxAttempts) {
+                console.warn('Retry removeClass:', windowTitle)
+                setTimeout(() => tryToUpdate(attempts + 1), retryInterval)
+            }
+            else {
+                console.error(`Window with title ${windowTitle} not found after ${maxAttempts} attempts`)
+            }
         }
+        tryToUpdate(0)
     },
     removeClass: (windowTitle, classes) => {
-        const currentWindows = get().windows
-        const windowToUpdate = currentWindows.find((win: HTMLDivElement) => win.getAttribute('data-title') === windowTitle)
+        const maxAttempts = 20
+        const retryInterval = 100
 
-        if (windowToUpdate) {
-            if (typeof classes === 'string') {
-                classes = [classes] // convert to array for consistency
-            }
+        const tryToUpdate = (attempts: number) => {
+            const currentWindows = get().windows
+            const windowToUpdate = currentWindows.find((win) => win.getAttribute('data-title') === windowTitle)
 
-            classes.forEach((cls) => {
-                if (windowToUpdate.classList.contains(cls)) {
-                    windowToUpdate.classList.remove(cls)
+            if (windowToUpdate) {
+                if (typeof classes === 'string') {
+                    classes = [classes] // convert to array for consistency
                 }
-            })
 
-            set({ windows: [...currentWindows] })
+                classes.forEach((cls) => {
+                    if (windowToUpdate.classList.contains(cls)) {
+                        windowToUpdate.classList.remove(cls)
+                    }
+                })
+
+                set({ windows: [...currentWindows] })
+            }
+            else if (attempts < maxAttempts) {
+                console.warn('Retry removeClass:', windowTitle)
+                setTimeout(() => tryToUpdate(attempts + 1), retryInterval)
+            }
+            else {
+                console.error(`Window with title ${windowTitle} not found after ${maxAttempts} attempts`)
+            }
         }
+        tryToUpdate(0)
     },
     addClass: (windowTitle, classes) => {
-        const currentWindows = get().windows
-        const windowToUpdate = currentWindows.find((win: HTMLDivElement) => win.getAttribute('data-title') === windowTitle)
+        const maxAttempts = 20
+        const retryInterval = 100
 
-        if (windowToUpdate) {
-            const originalClasses = Array.from(windowToUpdate.classList)
-            if (typeof classes === 'string') {
-                classes = [classes] // convert to array for consistency
-            }
+        const tryToUpdate = (attempts: number) => {
+            const currentWindows = get().windows
+            const windowToUpdate = currentWindows.find((win) => win.getAttribute('data-title') === windowTitle)
 
-            classes.forEach((cls) => {
-                if (!windowToUpdate.classList.contains(cls)) {
-                    windowToUpdate.classList.add(cls)
+            if (windowToUpdate) {
+                if (typeof classes === 'string') {
+                    classes = [classes] // convert to array for consistency
                 }
-            })
 
-            set({ windows: [...currentWindows] })
+                classes.forEach((cls) => {
+                    if (!windowToUpdate.classList.contains(cls)) {
+                        windowToUpdate.classList.add(cls)
+                    }
+                })
+
+                set({ windows: [...currentWindows] })
+            }
+            else if (attempts < maxAttempts) {
+                console.warn('Retry addClass:', windowTitle)
+                setTimeout(() => tryToUpdate(attempts + 1), retryInterval)
+            }
+            else {
+                console.error(`Window with title ${windowTitle} not found after ${maxAttempts} attempts`)
+            }
         }
+        tryToUpdate(0)
     },
     updateWindowStyle: (windowTitle, newStyles) => {
-        const currentWindows = get().windows
-        const windowToUpdate = currentWindows.find((win) => win.getAttribute('data-title') === windowTitle)
+        const maxAttempts = 20
+        const retryInterval = 100
 
-        if (windowToUpdate) {
-            // Iterate over the properties in newStyles and update each property
-            for (const property in newStyles) {
-                if (newStyles.hasOwnProperty(property)) {
+        const tryToUpdate = (attempts: number) => {
+            const currentWindows = get().windows
+            const windowToUpdate = currentWindows.find((win) => win.getAttribute('data-title') === windowTitle)
+
+
+            if (windowToUpdate) {
+                // Iterate over the properties in newStyles and update each property
+                for (const property in newStyles) {
                     windowToUpdate.style.setProperty(property, newStyles[property])
                 }
-            }
 
-            set({ windows: [...currentWindows] })
+                set({ windows: [...currentWindows] })
+            }
+            else if (attempts < maxAttempts) {
+                // console.warn('Retry updateWindowStyle:', windowTitle)
+                setTimeout(() => tryToUpdate(attempts + 1), retryInterval)
+            }
+            else {
+                console.error(`Window with title ${windowTitle} not found after ${maxAttempts} attempts`)
+            }
         }
+        // Start the update attempt
+        tryToUpdate(0)
     }
 }))

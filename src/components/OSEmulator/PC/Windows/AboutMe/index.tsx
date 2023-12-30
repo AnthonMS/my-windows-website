@@ -12,7 +12,7 @@ const AboutMeWindow = (props: AboutMeWindowProps) => {
     const {  } = props
 
     return <Window
-        width={window.innerWidth - 25} height={window.innerHeight - 30 - 25}
+        fullscreen={true}
         title='About Me' icon={userCardIcon}>
 
         <div className={styles.aboutMeContainer}>
