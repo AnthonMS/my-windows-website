@@ -1,4 +1,4 @@
-// import styles from './../styles.module.css'
+import styles from './../styles.module.css'
 import Image, { StaticImageData } from 'next/image'
 import { useState, useEffect, useRef } from 'react'
 
@@ -11,18 +11,18 @@ import StartMenu from '../StartMenu'
 import { useWindowStore } from '@/stores/windowStore'
 
 // TODO: Update to use new windowStore: openWindow, windows, styles
-export interface BottomBarProps {
+export interface TaskbarProps {
 }
-const BottomBar = (props: BottomBarProps) => {
+const Taskbar = (props: TaskbarProps) => {
     const {  } = props
-    const { windows, openWindow, closeWindow, hideWindow, showWindow, removeClass, addClass, styles } = useWindowStore()
+    const { windows, openWindow, closeWindow, hideWindow, showWindow, removeClass, addClass } = useWindowStore()
     const [showStart, setShowStart] = useState<Boolean>(false)
     const toggleStartMenu = () => { setShowStart(prev => !prev) }
 
     const startBtn = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
-        // console.log('Windows Updated in BottomBar:', windows)
+        // console.log('Windows Updated in Taskbar:', windows)
     }, [windows])
     
 
@@ -41,7 +41,7 @@ const BottomBar = (props: BottomBarProps) => {
     const closeStart = (event: any) => {
         let currentElement = event.target
         // Traverse the DOM hierarchy manually
-        while (currentElement !== null && !currentElement.classList.contains(styles.startMenu) && !currentElement.classList.contains(styles.bottomButtonStart)) {
+        while (currentElement !== null && !currentElement.classList.contains(styles.startMenu) && !currentElement.classList.contains(styles.startBtn)) {
             currentElement = currentElement.parentElement
         }
 
@@ -53,7 +53,7 @@ const BottomBar = (props: BottomBarProps) => {
 
     const clickStart = async (event: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
         const target = event.currentTarget
-        if (target.classList.contains(styles.bottomButton)) {
+        if (target.classList.contains(styles.taskbarButton)) {
             if (!target.classList.contains(styles.selected)) {
                 target.classList.add(styles.selected)
                 setShowStart(true)
@@ -67,7 +67,7 @@ const BottomBar = (props: BottomBarProps) => {
 
     const clickWindow = async (event: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
         const target = event.currentTarget
-
+        
         // remove active class from active window(s) (there should only be 1)
         const activeWindows = windows.filter((win: HTMLDivElement) => win.classList.contains(styles.active))
         activeWindows.forEach((window: Element) => {
@@ -87,11 +87,11 @@ const BottomBar = (props: BottomBarProps) => {
     }
 
 
-    if (!styles.bottomBar) return <></>
+    if (!styles.taskbar) return <></>
     return <>
-        <div className={styles.bottomBar}>
+        <div className={styles.taskbar}>
             <div className={styles.leftContainer}>
-                <div ref={startBtn} className={`${styles.button} ${styles.bottomButton} ${styles.bottomButtonStart} ${showStart ? styles.selected : ''}`}
+                <div ref={startBtn} className={`${styles.button} ${styles.taskbarButton} ${styles.startBtn} ${showStart ? styles.selected : ''}`}
                     onClick={clickStart}>
                     <div className={styles.buttonContent}>
                         <Image className={styles.image} src={windowsLogo} width={48} height={48} alt={`windows-logo`} />
@@ -108,7 +108,7 @@ const BottomBar = (props: BottomBarProps) => {
 
                         return (
                             <div key={`window-${index}`} data-window={window.getAttribute('data-title')} 
-                                className={`${styles.button} ${styles.bottomButton} ${styles.bottomButtonWindow} ${window.classList.contains(styles.active) ? styles.selected : ''}`}
+                                className={`${styles.button} ${styles.taskbarButton} ${styles.windowBtn} ${window.classList.contains(styles.active) ? styles.selected : ''}`}
                                 onClick={clickWindow}>
                                 <div className={styles.buttonContent}>
                                     <Image className={styles.image} width={48} height={48} src={iconSrc ? iconSrc : windowsLogo} alt={`window-icon`} />
@@ -135,4 +135,4 @@ const BottomBar = (props: BottomBarProps) => {
 
 }
 
-export default BottomBar
+export default Taskbar

@@ -2,7 +2,8 @@
 import type { Metadata } from 'next'
 
 // import Windows from '@/components/Windows/Base'
-import Windows from '../components/Windows/Base'
+// import Windows from '../components/Windows'
+import PCEmulator from '@/components/OSEmulator/PC'
 
 export const metadata:Metadata = {
     title: "Anthon's Windows98",
@@ -16,7 +17,7 @@ export const metadata:Metadata = {
 
 export default function Home() {
     return <>
-        <Windows />
+        <PCEmulator />
     </>
 
 }

@@ -1,7 +1,8 @@
 import globalStyles from './../../styles.module.css'
 import styles from './styles.module.css'
 
-import Window from '@/components/Windows/Window'
+// import Window from '@/components/Windows/Window'
+import Window from '@/components/OSEmulator/PC/Window'
 
 import welcomeIcon from '@/assets/images/icons/welcome_icon.png'
 import AboutMeWindow from '../AboutMe'

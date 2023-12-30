@@ -5,10 +5,10 @@ import ReactDOM from 'react-dom'
 import { Root, createRoot } from 'react-dom/client'
 import Head from 'next/head'
 
-import styles from './../styles.module.css'
+import styles from './styles.module.css'
 
-import BottomBar from '../BottomBar'
-import DesktopIcon from '../DesktopIcon'
+import Taskbar from './Taskbar'
+import DesktopIcon from './DesktopIcon'
 import computerExplorer from '@/assets/images/icons/computer_explorer.png'
 import msieIcon from '@/assets/images/icons/msie.png'
 import welcomeIcon from '@/assets/images/icons/welcome_icon.png'
@@ -16,19 +16,19 @@ import aboutMeIcon from '@/assets/images/icons/aboutme_icon.png'
 import contactIcon from '@/assets/images/icons/contact_icon.png'
 import userCardIcon from '@/assets/images/icons/user_card.png'
 
-import Window from '../Window'
-import WelcomeWindow from '../Windows/Welcome'
-import AboutMeWindow from '../Windows/AboutMe'
-import ContactWindow from '../Windows/Contact'
-import ErrorWindow from '../Windows/Popup'
-import CMDWindow from '../Windows/CMD'
+import Window from './Window'
+import WelcomeWindow from './Windows/Welcome'
+import AboutMeWindow from './Windows/AboutMe'
+import ContactWindow from './Windows/Contact'
+import ErrorWindow from './Windows/Popup'
+import CMDWindow from './Windows/CMD'
 
 import { isElementInClass, findParentWithClass } from '@/lib/util_DOM'
 
 
 import { useWindowStore } from '@/stores/windowStore'
 
-const Windows = () => {
+const PCEmulator = () => {
     const { windows, openWindow, removeClass, addClass, setWindowsContainer, setStyles } = useWindowStore()
     const initialMount = useRef<Boolean>(true)
     const windowsContainer = useRef<HTMLDivElement | null>(null)
@@ -124,7 +124,7 @@ const Windows = () => {
             }
 
             // If click is not in the bottomBar -> remove active class from all windows
-            if (!isElementInClass(target, styles.bottomBar)) {
+            if (!isElementInClass(target, styles.taskbar)) {
                 windows.forEach((window:HTMLDivElement) => {
                     removeClass(window.getAttribute('data-title') as string, styles.active)
                 })
@@ -230,7 +230,7 @@ const Windows = () => {
                 {/* <WelcomeWindow /> */}
             </div>
 
-            <BottomBar />
+            <Taskbar />
 
             {isHighlighting && (
                 <div
@@ -248,4 +248,4 @@ const Windows = () => {
     </>
 }
 
-export default Windows
+export default PCEmulator

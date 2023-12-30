@@ -3,7 +3,8 @@ import { useRef } from 'react'
 import globalStyles from './../../styles.module.css'
 import styles from './styles.module.css'
 
-import Window from '@/components/Windows/Window'
+// import Window from '@/components/Windows/Window'
+import Window from '@/components/OSEmulator/PC/Window'
 
 import errorIcon from '@/assets/images/icons/msg_error-0.png'
 import successIcon from '@/assets/images/icons/check-0.png'

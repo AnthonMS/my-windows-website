@@ -1,7 +1,8 @@
 import globalStyles from './../../styles.module.css'
 import styles from './styles.module.css'
 
-import Window from '@/components/Windows/Window'
+// import Window from '@/components/Windows/Window'
+import Window from '@/components/OSEmulator/PC/Window'
 
 import userCardIcon from '@/assets/images/icons/user_card.png'
 

@@ -3,7 +3,7 @@ import { useState } from 'react'
 import globalStyles from './../../styles.module.css'
 import styles from './styles.module.css'
 
-import Window from '@/components/Windows/Window'
+import Window from '@/components/OSEmulator/PC/Window'
 
 import contactIcon from '@/assets/images/icons/contact_icon.png'
 import sendmailIcon from '@/assets/images/icons/sendmail_icon.png'

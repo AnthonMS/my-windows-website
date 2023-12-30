@@ -132,7 +132,7 @@
 
 
 
-.bottomBar {
+.taskbar {
     position: absolute;
     bottom: 0;
     left: 0;
@@ -149,9 +149,70 @@
     /* flex: 0 0 auto; */
 
     z-index: 100;
+
+    
+    .leftContainer {
+        left: 0px;
+    }
+    .middleContainer {
+        left: 80px;
+        right: 50px;
+    }
+    .rightContainer {
+        right: 0px;
+    }
+    .clock {
+        color: black;
+        margin: 0px 3px;
+        padding: 0 6px;
+    
+        border-right: 1px solid #fff;
+        border-bottom: 1px solid #fff;
+        border-left: 1px solid gray;
+        border-top: 1px solid gray;
+        box-shadow: inset -1px -1px #dfdfdf, -1px 0 #000, 0 -1px #000, -1px -1px #000;
+    }
+
+    .taskbarButton {
+        padding-left: 2px;
+        padding-right: 2px;
+        margin-left: 3px;
+        margin-right: 2px;
+        height: 22px;
+    
+        display: flex;
+        justify-content: center;
+    
+        flex-shrink: 1;
+        box-sizing: border-box;
+        max-width: 200px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .startBtn {
+        width: 70px;
+        height: 24px;
+        font-weight: bold;
+        font-size: 14px;
+    }
+    .windowBtn {
+        font-size: 13px;
+        font-weight: bold;
+    }
+    
+    .startBtn.selected .buttonContent img {
+        width: 18px;
+        height: 13px;
+    }
+
+    .startBtn.selected .buttonContent p {
+        font-size: 13px;
+    }
 }
 
-.bottomBar>div {
+.taskbar>div {
     display: inline-block;
     position: absolute;
     top: 0px;
@@ -160,70 +221,6 @@
     align-items: center;
 }
 
-.bottomBar .leftContainer {
-    left: 0px;
-}
-
-.bottomBar .middleContainer {
-    left: 80px;
-    right: 50px;
-}
-
-.bottomBar .rightContainer {
-    right: 0px;
-}
-
-.bottomBar .clock {
-    color: black;
-    margin: 0px 3px;
-    padding: 0 6px;
-
-    border-right: 1px solid #fff;
-    border-bottom: 1px solid #fff;
-    border-left: 1px solid gray;
-    border-top: 1px solid gray;
-    box-shadow: inset -1px -1px #dfdfdf, -1px 0 #000, 0 -1px #000, -1px -1px #000;
-}
-
-
-.bottomButton {
-    padding-left: 2px;
-    padding-right: 2px;
-    margin-left: 3px;
-    margin-right: 2px;
-    height: 22px;
-
-    display: flex;
-    justify-content: center;
-
-    flex-shrink: 1;
-    box-sizing: border-box;
-    max-width: 200px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.bottomButtonWindow {
-    font-size: 13px;
-    font-weight: bold;
-}
-
-.bottomButtonStart {
-    width: 70px;
-    height: 24px;
-    font-weight: bold;
-    font-size: 14px;
-}
-
-.bottomButtonStart.selected .buttonContent img {
-    width: 18px;
-    height: 13px;
-}
-
-.bottomButtonStart.selected .buttonContent p {
-    font-size: 13px;
-}
 
 
 

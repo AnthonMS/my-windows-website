@@ -1,7 +1,7 @@
 import globalStyles from './../../styles.module.css'
 import styles from './styles.module.css'
 
-import Window from '@/components/Windows/Window'
+import Window from '@/components/OSEmulator/PC/Window'
 
 import cmdIcon from '@/assets/images/icons/console_prompt-0.png'
 import { KeyboardEventHandler, useRef, useState, useEffect } from 'react'
