@@ -109,7 +109,7 @@ const DesktopIcon = (props: DesktopIconProps) => {
     //          It should not deselect any icons on mouseDown (or mouseUp) if there are multiple selected
     const deselect = (event: any) => {
         let currentElement = event.target
-        console.log('DESELECT???')
+        // console.log('DESELECT???')
         // Check Ctrl (Command on Mac) is held down
         const isCtrlKeyHeld = event.ctrlKey || event.metaKey;
 
