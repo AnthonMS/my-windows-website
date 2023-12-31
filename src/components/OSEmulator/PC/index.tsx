@@ -125,25 +125,18 @@ const PCEmulator = () => {
     }
 
     const handleSelectedIconsOnClick = (event: React.MouseEvent<HTMLDivElement>) => {
-        // If click is inside a desktopIcon AND if ctrl is held down
-        //      if desktopIcon has selected class
-        //          remove it
-
-        // If click is inside desktopIcon and ctrl is not held down
-        //      remove selected class from all desktopIcons in DOM except the one we are clicking
-
-        // If click is not in desktopIcon and ctrl is not held down, we want to deselect all desktopicons in DOM
 
         const target = event.target as HTMLElement
         // const clickedDesktopIcon: Element = findParentWithClass(target, styles.desktopIcon) as Element
         const isCtrlKeyHeld = event.ctrlKey || event.metaKey
-        if (event.type === 'mousedown' && !target.classList.contains(styles.desktopIcon)) {
-            if (!isCtrlKeyHeld) {
-                const selectedIcons = document.querySelectorAll(`.${styles.desktopIcon}.${styles.selected}`)
-                selectedIcons.forEach((icon: Element) => {
-                    icon.classList.remove(styles.selected)
-                })
-            }
+        if (event.type === 'mousedown' &&
+            !target.classList.contains(styles.desktopIcon) &&
+            !isCtrlKeyHeld) {
+
+            const selectedIcons = document.querySelectorAll(`.${styles.desktopIcon}.${styles.selected}`)
+            selectedIcons.forEach((icon: Element) => {
+                icon.classList.remove(styles.selected)
+            })
         }
     }
 

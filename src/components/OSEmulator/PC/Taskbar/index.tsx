@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from 'react'
 import windowsLogo from '@/assets/images/windows92-logo.png'
 import StartMenu from './StartMenu'
 import { useWindowStore } from '@/stores/windowStore'
+import Time from '../UI/Time'
 
 interface TaskbarProps {}
 const Taskbar = (props: TaskbarProps) => {
@@ -116,7 +117,7 @@ const Taskbar = (props: TaskbarProps) => {
 
                 {/* TODO: Write clock logic */}
             <div className={styles.rightContainer}>
-                <p className={styles.clock}>18:11</p>
+                <p className={styles.clock}><Time /></p>
             </div>
 
         </div>

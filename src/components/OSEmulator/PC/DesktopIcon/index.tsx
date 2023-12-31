@@ -74,13 +74,21 @@ const DesktopIcon = (props: DesktopIconProps) => {
     const mouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
         if (event.button === 0) { // left
             const target = event.target as HTMLElement
+            const isCtrlKeyHeld = event.ctrlKey || event.metaKey
             setIsMouseDown(true)
+            // If ctrl is held down
+            //      if desktopIcon has selected class
+            //          remove it
+            // If ctrl is not held down
+            //      remove selected class from all desktopIcons in DOM except the one we are clicking. 
+            //          UNLESS WE WANT TO MOVE THEM????????
+            // 
+
             const clickedDesktopIcon: Element = findParentWithClass(target, styles.desktopIcon) as Element
             if (!clickedDesktopIcon.classList.contains(styles.selected)) {
                 clickedDesktopIcon.classList.add(styles.selected)
             }
             
-            const isCtrlKeyHeld = event.ctrlKey || event.metaKey
             if (!isCtrlKeyHeld) {
                 Array.from(document.querySelectorAll(`.${styles.desktopIcon}.${styles.selected}`))
                     .filter(icon => clickedDesktopIcon && icon.id !== clickedDesktopIcon.id)
