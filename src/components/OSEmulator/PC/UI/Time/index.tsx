@@ -97,4 +97,5 @@ const Time = React.forwardRef((props: TimeProps, ref: React.ForwardedRef<unknown
     </>
 })
 
+Time.displayName = 'Time'
 export default Time

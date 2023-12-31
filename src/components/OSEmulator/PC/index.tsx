@@ -43,7 +43,7 @@ const PCEmulator = () => {
             initialMount.current = false
             setStyles(styles)
             // openWindow(<CMDWindow />)
-            // openWindow(<WelcomeWindow />)
+            openWindow(<WelcomeWindow />)
             // openWindow(<AboutMeWindow />)
             // openWindow(<ContactWindow />)
             // openWindow(<ErrorWindow text='This is an error message. Wubba lubba dub dub!' />)
@@ -85,15 +85,6 @@ const PCEmulator = () => {
         setHighlightBoxRendered(highlightBoxCopy)
     }, [highlightBox])
 
-
-    const highlight = (event: MouseEvent) => {
-        const { clientX, clientY } = event
-        setHighlightBox((prevBox) => ({
-            ...prevBox,
-            width: clientX - prevBox.startX,
-            height: clientY - prevBox.startY,
-        }))
-    }
 
     const handleActiveWindowsOnClick = (event: React.MouseEvent<HTMLDivElement>) => {
         const target = event.target as HTMLElement
@@ -140,6 +131,46 @@ const PCEmulator = () => {
         }
     }
 
+    const handleSelectedIconsWhileHighlighting = () => {
+        const desktopIcons = document.querySelectorAll(`.${styles.desktopIcon}`)
+
+        const highlightBoxRect = {
+            left: highlightBoxRendered.startX,
+            top: highlightBoxRendered.startY,
+            right: highlightBoxRendered.startX + highlightBoxRendered.width,
+            bottom: highlightBoxRendered.startY + highlightBoxRendered.height,
+        }
+
+        desktopIcons.forEach((desktopIcon: Element) => {
+            const iconRect = desktopIcon.getBoundingClientRect()
+
+            // Check if the icon's rectangle overlaps with the highlight box
+            const overlaps = !(
+                highlightBoxRect.right < iconRect.left ||
+                highlightBoxRect.left > iconRect.right ||
+                highlightBoxRect.bottom < iconRect.top ||
+                highlightBoxRect.top > iconRect.bottom
+            )
+
+            if (overlaps) {
+                // The desktop icon is within the highlight box
+                if (!desktopIcon.classList.contains(styles.selected)) {
+                    desktopIcon.classList.add(styles.selected)
+                }
+            }
+        })
+    }
+
+
+    const highlight = (event: MouseEvent) => {
+        handleSelectedIconsWhileHighlighting()
+        const { clientX, clientY } = event
+        setHighlightBox((prevBox) => ({
+            ...prevBox,
+            width: clientX - prevBox.startX,
+            height: clientY - prevBox.startY,
+        }))
+    }
 
     const onClickDesktopIcon = (event: React.MouseEvent<HTMLDivElement>) => {
         const target: HTMLElement = event.target as HTMLElement
@@ -165,32 +196,7 @@ const PCEmulator = () => {
         }
 
         if (event.button === 0 && isHighlighting) { // left
-            // Here we check all elements that are within the highlight box' position and dimensions
-            const desktopIcons = document.querySelectorAll(`.${styles.desktopIcon}`)
-
-            const highlightBoxRect = {
-                left: highlightBoxRendered.startX,
-                top: highlightBoxRendered.startY,
-                right: highlightBoxRendered.startX + highlightBoxRendered.width,
-                bottom: highlightBoxRendered.startY + highlightBoxRendered.height,
-            }
-
-            desktopIcons.forEach((desktopIcon: Element) => {
-                const iconRect = desktopIcon.getBoundingClientRect()
-
-                // Check if the icon's rectangle overlaps with the highlight box
-                const overlaps = !(
-                    highlightBoxRect.right < iconRect.left ||
-                    highlightBoxRect.left > iconRect.right ||
-                    highlightBoxRect.bottom < iconRect.top ||
-                    highlightBoxRect.top > iconRect.bottom
-                )
-
-                if (overlaps) {
-                    // The desktop icon is within the highlight box
-                    desktopIcon.classList.add(styles.selected)
-                }
-            })
+            handleSelectedIconsWhileHighlighting()
 
 
             setIsHighlighting(false)
@@ -213,30 +219,23 @@ const PCEmulator = () => {
         </Head>
 
         <div className={styles.main} onMouseDown={mouseDown} onMouseUp={mouseUp} onMouseMove={mouseMove}>
-            {/* TODO: Add data-window to DesktopIcon, it should equal the name of the window's folder*/}
-            {/* So if we set data-window='AboutMe' it should try to import that window, so it can call openWindow directly. */}
-            {/* <DesktopIcon left='0px' top='0px' id='Computer'
-                dir=''
+            <DesktopIcon left='0px' top='0px' id='Computer'
                 text='Computer' icon={computerExplorer}
                 primaryAction={onClickDesktopIcon} />
 
             <DesktopIcon left='0px' top='100px' id='MicrosoftIE'
-                dir=''
                 text='Microsoft IE' icon={msieIcon}
-                primaryAction={onClickDesktopIcon} /> */}
+                primaryAction={onClickDesktopIcon} />
 
             <DesktopIcon left='100px' top='0px' id='Welcome'
-                dir=''
                 text='Welcome' icon={welcomeIcon}
                 primaryAction={onClickDesktopIcon} />
 
             <DesktopIcon left='100px' top='100px' id='AboutMe'
-                dir='AboutMe'
                 text='About Me' icon={userCardIcon}
                 primaryAction={onClickDesktopIcon} />
 
             <DesktopIcon left='200px' top='0px' id='Contact'
-                dir='Contact'
                 text='Contact' icon={contactIcon}
                 primaryAction={onClickDesktopIcon} />
 
