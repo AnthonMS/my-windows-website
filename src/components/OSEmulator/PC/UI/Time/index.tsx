@@ -13,6 +13,12 @@ const Time = React.forwardRef((props: TimeProps, ref: React.ForwardedRef<unknown
     const [second, setSecond] = useState<number>(0)
     const [lastUpdate, setLastUpdate] = useState<number>(0)
 
+    React.useImperativeHandle(ref, () => ({
+        hour: hour,
+        minute: minute,
+        second: second
+    }))
+
     useEffect(() => {
         if (initialMount.current) {
             initialMount.current = false
