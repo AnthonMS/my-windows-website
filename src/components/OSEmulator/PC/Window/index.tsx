@@ -20,10 +20,20 @@ export interface WindowProps {
     icon?: string | StaticImport
     onActive?: Function
     fullscreen?: Boolean
+
+    hideBtn?: Boolean
+    maximizeBtn?: Boolean
+    helpBtn?: Boolean
+    closeBtn?: Boolean
 }
 
 const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unknown>) => {
     const { children, width, height, left, top, title, icon, onActive, fullscreen } = props
+    let { hideBtn, maximizeBtn, helpBtn, closeBtn } = props
+    if (hideBtn === null || hideBtn === undefined) { hideBtn = true }
+    if (maximizeBtn === null || maximizeBtn === undefined) { maximizeBtn = true }
+    if (helpBtn === null || helpBtn === undefined) { helpBtn = false }
+    if (closeBtn === null || closeBtn === undefined) { closeBtn = true }
     const { windows, openWindow, closeWindow, hideWindow, updateWindowStyle, removeClass, styles } = useWindowStore()
     const initialMount = useRef<Boolean>(true)
     const thisWindow = useRef<HTMLDivElement | null>(null)
@@ -343,8 +353,8 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
             closeThis()
         }
         else if (event.currentTarget.classList.contains(styles.help)) {
-            console.log('HELP?')
-            goFullscreen()
+            console.log('help?')
+            // goFullscreen()
         }
     }
 
@@ -368,10 +378,10 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
 
                 </div>
                 <div className={styles.windowButtons}>
-                    <Button className={`${styles.button} ${styles.windowButton} ${styles.hide}`} onClick={clickBtn} />
-                    <Button className={`${styles.button} ${styles.windowButton} ${isFullscreen ? styles.min : styles.max}`} onClick={clickBtn} />
-                    <Button className={`${styles.button} ${styles.windowButton} ${styles.help}`} onClick={clickBtn} />
-                    <Button className={`${styles.button} ${styles.windowButton} ${styles.close}`} onClick={clickBtn} />
+                    { hideBtn ? <Button className={`${styles.button} ${styles.windowButton} ${styles.hide}`} onClick={clickBtn} /> : '' }
+                    { maximizeBtn ? <Button className={`${styles.button} ${styles.windowButton} ${isFullscreen ? styles.min : styles.max}`} onClick={clickBtn} /> : '' }
+                    { helpBtn ? <Button className={`${styles.button} ${styles.windowButton} ${styles.help}`} onClick={clickBtn} /> : '' }
+                    { closeBtn ? <Button className={`${styles.button} ${styles.windowButton} ${styles.close}`} onClick={clickBtn} /> : '' }
                 </div>
             </div>
 

@@ -40,7 +40,7 @@ const PopupWindow = (props: PopupWindowProps) => {
 
     return <Window ref={windowRef}
         width={width} height={height}
-        title={title} icon={error ? errorIcon : successIcon}>
+        title={title} icon={error ? errorIcon : successIcon} helpBtn={true} maximizeBtn={false} hideBtn={false}>
 
         <div className={styles.errorContainer}>
             <p className={styles.text}>
