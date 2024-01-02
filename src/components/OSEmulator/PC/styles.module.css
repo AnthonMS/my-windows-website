@@ -55,6 +55,7 @@
         display: inline;
         pointer-events: none;
     }
+
     .text {
         color: black;
         font-size: inherit;
@@ -62,7 +63,7 @@
         margin-right: 4px;
         font-family: 'Windows95', sans-serif;
         letter-spacing: 1px;
-    
+
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -81,16 +82,19 @@
 .divider {
     height: 10px;
 }
+
 .input {
     background-color: white;
     color: black;
     border: none;
     padding: 2px;
 }
+
 .input:focus {
     /* border: none; */
     outline: none;
 }
+
 .textarea {
     background-color: white;
     color: black;
@@ -98,9 +102,11 @@
     padding: 2px;
     resize: vertical;
 }
+
 .textarea:focus {
     outline: none;
 }
+
 .inverseBoxShadow {
     border-right: 1px solid #fff;
     border-bottom: 1px solid #fff;
@@ -149,22 +155,25 @@
 
     z-index: 100;
 
-    
+
     .leftContainer {
         left: 0px;
     }
+
     .middleContainer {
         left: 80px;
         right: 50px;
     }
+
     .rightContainer {
         right: 0px;
     }
+
     .clock {
         color: black;
         margin: 0px 3px;
         padding: 0 6px;
-    
+
         border-right: 1px solid #fff;
         border-bottom: 1px solid #fff;
         border-left: 1px solid gray;
@@ -178,10 +187,10 @@
         margin-left: 3px;
         margin-right: 2px;
         height: 22px;
-    
+
         display: flex;
         justify-content: center;
-    
+
         flex-shrink: 1;
         box-sizing: border-box;
         max-width: 200px;
@@ -189,18 +198,19 @@
         overflow: hidden;
         text-overflow: ellipsis;
     }
-    
+
     .startBtn {
         width: 70px;
         height: 24px;
         font-weight: bold;
         font-size: 14px;
     }
+
     .windowBtn {
         font-size: 13px;
         font-weight: bold;
     }
-    
+
     .startBtn.selected .buttonContent img {
         width: 18px;
         height: 13px;
@@ -210,6 +220,7 @@
         font-size: 13px;
     }
 }
+
 .taskbar>div {
     display: inline-block;
     position: absolute;
@@ -237,41 +248,72 @@
 
     position: absolute;
     z-index: 5;
+
+    .imgWrapper {
+        width: 45px;
+        height: 45px;
+        pointer-events: none;
+        user-select: none;
+        position: relative;
+        /* background-color: red; */
+    }
+    .desktopIconImage {
+        width: 45px;
+        height: 45px;
+        filter: none;
+    }
+
+    .desktopIconText {
+        padding: 1px 2px;
+        word-wrap: break-word;
+        margin-top: 5px;
+        flex-grow: 1;
+        /* Allow the text to expand downward */
+        font-size: 14px;
+        line-height: 16px;
+        max-height: 32px;
+        pointer-events: none;
+        user-select: none;
+
+        font-family: 'Windows95', sans-serif;
+        /* font-weight: bold; */
+        letter-spacing: 1px;
+
+        /* Limit to 2 lines by default */
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+
+        /* Ensure text doesn't overflow */
+        overflow: hidden;
+
+        
+    }
+
+
+    &.selected {
+        /* background-color: var(--grey-light-hover); */
+        height: auto;
+        z-index: 6;
+
+        .desktopIconImage {
+            -webkit-filter: url(#blueoverlay);
+            filter:  url(#blueoverlay);
+        }
+        
+        .desktopIconText {
+            -webkit-line-clamp: unset;
+            max-height: none;
+            background-color: rgba(0,0,255,0.65);
+        }
+    }
 }
-
-.desktopIcon.selected {
-    background-color: var(--grey-light-hover);
-}
-
-.desktopIconImage {
-    max-width: 100%;
-    max-height: 100%;
-    width: 65%;
-    height: auto;
-    pointer-events: none;
-    user-select: none;
-}
-
-.desktopIconText {
-    word-wrap: break-word;
-    margin-top: 5px;
-    flex-grow: 1;
-    /* Allow the text to expand downward */
-    font-size: 14px;
-    pointer-events: none;
-    user-select: none;
-
-    font-family: 'Windows95', sans-serif;
-    /* font-weight: bold; */
-    letter-spacing: 1px;
-}
-
 
 /* Enable hover only on non-touch devices */
 @media (hover: hover) and (pointer: fine) {
-    .desktopIcon:hover {
+    /* .desktopIcon:hover {
         background-color: var(--grey-hover);
-    }
+    } */
 }
 
 
@@ -450,7 +492,7 @@
     margin: 3px;
     overflow: hidden;
 
-    
+
     /* border-right: 1px solid #fff;
     border-bottom: 1px solid #fff;
     border-left: 1px solid gray;

@@ -28,7 +28,6 @@ const ContactWindow = (props: ContactWindowProps) => {
     const [content, setContent] = useState<string>('')
 
     const click = async (event: React.MouseEvent<HTMLDivElement>) => {
-        console.log('SEND EMAIL!')
         if (name === '') {
             openWindow(<PopupWindow error={true} title='Name missing' text='Your name is required.' />)
             return

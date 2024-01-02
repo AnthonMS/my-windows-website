@@ -13,6 +13,7 @@ import welcomeIcon from '@/assets/images/icons/welcome_icon.png'
 import aboutMeIcon from '@/assets/images/icons/aboutme_icon.png'
 import contactIcon from '@/assets/images/icons/contact_icon.png'
 import userCardIcon from '@/assets/images/icons/user_card.png'
+import cmdIcon from '@/assets/images/icons/console_prompt-0.png'
 
 // import Window from './Window'
 import WelcomeWindow from './Windows/Welcome'
@@ -41,7 +42,7 @@ const PCEmulator = () => {
             initialMount.current = false
             setStyles(styles)
             // openWindow(<CMDWindow />)
-            // openWindow(<WelcomeWindow />)
+            openWindow(<WelcomeWindow />)
             // openWindow(<AboutMeWindow />)
             // openWindow(<ContactWindow />)
             // openWindow(<ErrorWindow text='This is an error message. Wubba lubba dub dub!' />)
@@ -218,10 +219,14 @@ const PCEmulator = () => {
 
         <div className={styles.main} onMouseDown={mouseDown} onMouseUp={mouseUp} onMouseMove={mouseMove}>
             <DesktopIcon left='0px' top='0px' id='Computer'
-                text='Computer' icon={computerExplorer}
+                text='Computer Program 123 (Testname)' icon={computerExplorer}
                 primaryAction={onClickDesktopIcon} />
 
-            <DesktopIcon left='0px' top='100px' id='MicrosoftIE'
+            <DesktopIcon left='0px' top='100px' id='CMD'
+                text='Command Prompt' icon={cmdIcon}
+                primaryAction={onClickDesktopIcon} />
+
+            <DesktopIcon left='0px' top='200px' id='MicrosoftIE'
                 text='Microsoft IE' icon={msieIcon}
                 primaryAction={onClickDesktopIcon} />
 

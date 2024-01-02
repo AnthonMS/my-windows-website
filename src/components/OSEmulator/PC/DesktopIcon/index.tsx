@@ -151,39 +151,6 @@ const DesktopIcon = (props: DesktopIconProps) => {
         })
     }
 
-    // TODO: Move deselect logic to base 
-    //          It should not deselect any icons on mouseDown (or mouseUp) if there are multiple selected
-    const deselect = (event: any) => {
-        let currentElement = event.target
-        // console.log('DESELECT???')
-        // Check Ctrl (Command on Mac) is held down
-        const isCtrlKeyHeld = event.ctrlKey || event.metaKey;
-
-        if (isCtrlKeyHeld) {
-            while (currentElement !== null && !currentElement.classList.contains(styles.desktopIcon)) {
-                currentElement = currentElement.parentElement
-            }
-            if (currentElement === null) {
-                // setIsSelected(false)
-            }
-        }
-        else {
-            while (currentElement !== null && currentElement.id !== id) {
-                currentElement = currentElement.parentElement
-            }
-            if (currentElement === null) {
-                // setIsSelected(false)
-                if (thisIcon.current !== null &&
-                    thisIcon.current.classList.contains(styles.selected)) {
-                    thisIcon.current.classList.remove(styles.selected)
-                }
-            }
-        }
-
-    }
-    // --- End --- //
-
-
     const click = (event: React.MouseEvent<HTMLDivElement>) => {
         if (event.button === 0) { // left
             const now: number = Date.now()
@@ -206,9 +173,26 @@ const DesktopIcon = (props: DesktopIconProps) => {
             className={`${styles.desktopIcon}`}
             style={{ left: left, top: top }}
             onClick={click} onMouseDown={mouseDown}>
-            <Image className={styles.desktopIconImage}
-                src={icon} alt={`Icon: ${text}`} />
+
+            <div className={styles.imgWrapper}>
+                <Image className={styles.desktopIconImage}
+                    src={icon} alt={`Icon: ${text}`} />
+                <svg>
+                    <filter id="blueoverlay" type="matrix" color-interpolation-filters="sRGB">
+                        {/* <!-- change last value of first row to r/255 -->
+                        <!-- change last value of second row to g/255 -->
+                        <!-- change last value of third row to b/255 --> */}
+                        <feColorMatrix type="matrix"
+                            values="0 0 0.5 0 0
+                                    0 0 0.5 0 0
+                                    0 0 1 0.75 0
+                                    0 0 0 1 0" />
+                    </filter>
+                </svg>
+            </div>
+
             <p className={styles.desktopIconText}>{text}</p>
+
         </div>
     )
 }
