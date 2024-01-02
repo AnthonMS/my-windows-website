@@ -1,8 +1,6 @@
 'use client'
 
 import { useEffect, useState, useRef, MutableRefObject } from 'react'
-import ReactDOM from 'react-dom'
-import { Root, createRoot } from 'react-dom/client'
 import Head from 'next/head'
 
 import styles from './styles.module.css'
@@ -16,12 +14,12 @@ import aboutMeIcon from '@/assets/images/icons/aboutme_icon.png'
 import contactIcon from '@/assets/images/icons/contact_icon.png'
 import userCardIcon from '@/assets/images/icons/user_card.png'
 
-import Window from './Window'
+// import Window from './Window'
 import WelcomeWindow from './Windows/Welcome'
-import AboutMeWindow from './Windows/AboutMe'
-import ContactWindow from './Windows/Contact'
-import ErrorWindow from './Windows/Popup'
-import CMDWindow from './Windows/CMD'
+// import AboutMeWindow from './Windows/AboutMe'
+// import ContactWindow from './Windows/Contact'
+// import ErrorWindow from './Windows/Popup'
+// import CMDWindow from './Windows/CMD'
 
 import { isElementInClass, findParentWithClass } from '@/lib/util_DOM'
 
@@ -43,7 +41,7 @@ const PCEmulator = () => {
             initialMount.current = false
             setStyles(styles)
             // openWindow(<CMDWindow />)
-            openWindow(<WelcomeWindow />)
+            // openWindow(<WelcomeWindow />)
             // openWindow(<AboutMeWindow />)
             // openWindow(<ContactWindow />)
             // openWindow(<ErrorWindow text='This is an error message. Wubba lubba dub dub!' />)

@@ -8,6 +8,7 @@ import { useWindowStore } from '@/stores/windowStore'
 // import AboutMeWindow from '@/components/OSEmulator/PC/Windows/AboutMe'
 import AboutMeWindow from '../Windows/AboutMe'
 import { findParentWithClass } from '@/lib/util_DOM'
+import PopupWindow from '../Windows/Popup'
 
 interface DesktopIconProps {
     id: string
@@ -57,13 +58,23 @@ const DesktopIcon = (props: DesktopIconProps) => {
 
     const loadWindow = async () => {
         try {
-            const WindowComponent = dynamic(() => import(`../Windows/${id}`), {
-                ssr: false,
-            })
-            const windowEl = <WindowComponent />
-            openWindow(windowEl)
+            const moduleExists = await import(`../Windows/${id}`)
+                .then(() => true)
+                .catch(() => false)
+
+            if (moduleExists) {
+                const WindowComponent = dynamic(() => import(`../Windows/${id}`), {
+                    ssr: false,
+                })
+                const windowEl = <WindowComponent />
+                openWindow(windowEl)
+            }
+            else {
+                openWindow(<PopupWindow width={300} height={150} error={true} title='Program not found' text='The requested program could not be found.' />)
+            }
         }
         catch (err) {
+            openWindow(<PopupWindow error={true} title='Error' text='An error occurred while loading the program.' />)
             console.warn(err)
         }
     }
@@ -85,13 +96,13 @@ const DesktopIcon = (props: DesktopIconProps) => {
             if (!clickedDesktopIcon.classList.contains(styles.selected)) {
                 clickedDesktopIcon.classList.add(styles.selected)
             }
-            
+
             if (!isCtrlKeyHeld) {
                 Array.from(document.querySelectorAll(`.${styles.desktopIcon}.${styles.selected}`))
                     .filter(icon => clickedDesktopIcon && icon.id !== clickedDesktopIcon.id)
                     .forEach(icon => icon.classList.remove(styles.selected))
             }
-            
+
             document.addEventListener("mouseup", mouseUp, { once: true })
         }
     }

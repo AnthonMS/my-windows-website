@@ -17,9 +17,18 @@ interface PopupWindowProps {
     title: string
     text: string
     error?: boolean
+    width?: number
+    height?: number
 }
 const PopupWindow = (props: PopupWindowProps) => {
     const { title, text, error } = props
+    let { width, height } = props
+    if (width === null ||width === undefined) {
+        width = 250
+    }
+    if (height === null || height === undefined) {
+        height = 150
+    }
     // const { closeWindow } = useWindowStore()
     const windowRef = useRef<{ close?: () => void } | null>(null)
 
@@ -30,7 +39,7 @@ const PopupWindow = (props: PopupWindowProps) => {
     }
 
     return <Window ref={windowRef}
-        width={250} height={150}
+        width={width} height={height}
         title={title} icon={error ? errorIcon : successIcon}>
 
         <div className={styles.errorContainer}>
