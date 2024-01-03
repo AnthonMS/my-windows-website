@@ -85,18 +85,12 @@ const PCEmulator = () => {
     }, [highlightBox])
 
 
+    const onClickDesktopIcon = (event: React.MouseEvent<HTMLDivElement>) => {
+        const target: HTMLElement = event.target as HTMLElement
+    }
+
     const handleActiveWindowsOnClick = (event: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
         const target = event.target as HTMLElement
-        let clientX, clientY;
-
-        if ('clientX' in event) {
-            clientX = event.clientX;
-            clientY = event.clientY;
-        } else {
-            clientX = event.touches[0].clientX;
-            clientY = event.touches[0].clientY;
-        }
-
         if (!isElementInClass(target, [styles.window, styles.active])) {
             // If click is not in the bottomBar -> remove active class from all windows
             if (!isElementInClass(target, styles.windowBtn)) {
@@ -109,22 +103,12 @@ const PCEmulator = () => {
                     const clickedWindow: Element = findParentWithClass(target, styles.window) as Element
                     addClass(clickedWindow.getAttribute('data-title') as string, styles.active)
                 }
-                else if (target.classList.contains(styles.main)) {
-                    setIsHighlighting(true)
-                    setHighlightBox({
-                        startX: clientX,
-                        startY: clientY,
-                        width: 0,
-                        height: 0,
-                    })
-                }
             }
         }
     }
-
     const handleSelectedIconsOnClick = (event: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
         const target = event.target as HTMLElement
-        const isCtrlKeyHeld = 'ctrlKey' in event && (event.ctrlKey || event.metaKey)
+        const isCtrlKeyHeld = event.ctrlKey || event.metaKey || false
         if ((event.type === 'mousedown' || event.type === 'touchstart') &&
             !target.classList.contains(styles.desktopIcon) &&
             !isCtrlKeyHeld) {
@@ -135,7 +119,6 @@ const PCEmulator = () => {
             })
         }
     }
-
     const handleSelectedIconsWhileHighlighting = () => {
         const desktopIcons = document.querySelectorAll(`.${styles.desktopIcon}`)
 
@@ -166,10 +149,33 @@ const PCEmulator = () => {
         })
     }
 
+    const handleHighlight = (event: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
+        const target = event.target as HTMLElement
+        if (target.classList.contains(styles.main)) {
+            setIsHighlighting(true)
+            let offsetX: number, offsetY: number;
+
+            if ('offsetX' in event.nativeEvent) {
+                offsetX = event.nativeEvent.offsetX;
+                offsetY = event.nativeEvent.offsetY;
+            } else {
+                const rect = target.getBoundingClientRect();
+                offsetX = event.nativeEvent.touches[0].clientX - rect.left;
+                offsetY = event.nativeEvent.touches[0].clientY - rect.top;
+            }
+
+            setHighlightBox({
+                startX: offsetX,
+                startY: offsetY,
+                width: 0,
+                height: 0,
+            })
+        }
+    }
     const highlight = (event: MouseEvent | TouchEvent) => {
         handleSelectedIconsWhileHighlighting()
         let clientX: number, clientY: number;
-
+    
         if ('clientX' in event) {
             clientX = event.clientX;
             clientY = event.clientY;
@@ -177,7 +183,7 @@ const PCEmulator = () => {
             clientX = event.touches[0].clientX;
             clientY = event.touches[0].clientY;
         }
-
+    
         setHighlightBox((prevBox) => ({
             ...prevBox,
             width: clientX - prevBox.startX,
@@ -185,22 +191,22 @@ const PCEmulator = () => {
         }))
     }
 
-    const inputMove = (event: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
-        if (isHighlighting) {
-            const nativeEvent = event.nativeEvent as MouseEvent | TouchEvent
-            highlight(nativeEvent)
-        }
-    }
-
-
     const inputStart = (event: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
         const target = event.target
         if (target instanceof HTMLElement) {
             if ('button' in event && event.button !== 0) {
                 return;
             }
-            handleActiveWindowsOnClick(event)
-            handleSelectedIconsOnClick(event)
+            if ('button' in event) {
+                handleActiveWindowsOnClick(event)
+                handleSelectedIconsOnClick(event)
+                handleHighlight(event)
+            }
+            else {
+                handleActiveWindowsOnClick(event)
+                handleSelectedIconsOnClick(event)
+                handleHighlight(event)
+            }
         }
     }
     const inputEnd = (event: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
@@ -209,15 +215,20 @@ const PCEmulator = () => {
             if ('button' in event && event.button !== 0) {
                 return;
             }
-            handleSelectedIconsOnClick(event)
+            if ('button' in event) {
+                handleSelectedIconsOnClick(event)
+            }
+            else {
+                handleSelectedIconsOnClick(event)
+            }
         }
-    
+
         if (isHighlighting) {
             handleSelectedIconsWhileHighlighting()
-    
+
             setIsHighlighting(false)
             let clientX: number, clientY: number;
-    
+
             if ('clientX' in event) {
                 clientX = event.clientX;
                 clientY = event.clientY;
@@ -225,7 +236,7 @@ const PCEmulator = () => {
                 clientX = event.changedTouches[0].clientX;
                 clientY = event.changedTouches[0].clientY;
             }
-    
+
             setHighlightBox({
                 startX: clientX,
                 startY: clientY,
@@ -234,10 +245,19 @@ const PCEmulator = () => {
             })
         }
     }
-
-    const onClickDesktopIcon = (event: React.MouseEvent<HTMLDivElement>) => {
-        const target: HTMLElement = event.target as HTMLElement
+    const inputMove = (event: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
+        if (isHighlighting) {
+            if ('button' in event) {
+                const nativeEvent = event.nativeEvent as MouseEvent
+                highlight(nativeEvent)
+            }
+            else {
+                const nativeEvent = event.nativeEvent as TouchEvent
+                highlight(nativeEvent)
+            }
+        }
     }
+
     return <>
         <Head>
             <title>Your Custom Title</title>
