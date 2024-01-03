@@ -3,7 +3,7 @@ import Image from 'next/image'
 import { StaticImport } from 'next/dist/shared/lib/get-img-props'
 import React, { forwardRef, useRef, useImperativeHandle  } from 'react'
 
-import windowsLogo from '@/assets/images/windows92-logo.png'
+import { isTouch } from '@/lib/utils'
 
 export interface ButtonProps {
     icon?: string | StaticImport
@@ -23,23 +23,16 @@ const Button = forwardRef((props: ButtonProps, ref) => {
         thisButton,
     }))
 
-    const mouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
-        if (event.button !== 0) { return }
-
-        const target = event.currentTarget
+    const inputStart = (event: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
+        if ('button' in event && event.button !== 0) { return }
+    
+        const target = event.currentTarget;
         if (!target.classList.contains(styles.selected)) {
-            target.classList.add(styles.selected)
+            target.classList.add(styles.selected);
         }
-
-        document.addEventListener("mouseup", inputUp, { once: true })
-    }
-    const touchStart = (event: React.TouchEvent<HTMLDivElement>) => {
-        const target = event.currentTarget
-        if (!target.classList.contains(styles.selected)) {
-            target.classList.add(styles.selected)
-        }
-
-        document.addEventListener("touchend", inputUp, { once: true })
+    
+        const upEvent = 'changedTouches' in event ? "touchend" : "mouseup";
+        document.addEventListener(upEvent, inputUp, { once: true });
     }
     const inputUp = () => {
         if (thisButton.current !== null) {
@@ -49,11 +42,18 @@ const Button = forwardRef((props: ButtonProps, ref) => {
         }
     }
 
+    const buttonMouseEvents = !isTouch() ? {
+        onMouseDown: inputStart
+    } : {}
+    const buttonTouchEvents = isTouch() ? {
+        onTouchStart: inputStart
+    } : {}
+
     return (
         <div ref={thisButton} 
             className={`${styles.button} ${className ? className : ''}`}
-            data-title={dataTitle ? dataTitle : 'empty'}
-            onMouseDown={mouseDown} onTouchStart={touchStart} onClick={onClick}>
+            data-title={dataTitle ? dataTitle : 'empty'} onClick={onClick}
+            {...buttonMouseEvents} {...buttonTouchEvents} >
             <div className={styles.buttonContent}>
                 { icon ? <Image className={styles.image} src={icon} alt={`windows-logo`} /> : <></>}
                 { text ? <p className={styles.text}>{text}</p> : <></>}

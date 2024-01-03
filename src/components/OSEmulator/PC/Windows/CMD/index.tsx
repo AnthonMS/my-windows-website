@@ -10,7 +10,7 @@ import { getNumberOfLinesInTextArea } from '@/lib/util_textarea'
 import { isElementInClass } from '@/lib/util_DOM'
 import axios from 'axios'
 
-import { isDirectorySyntax } from '@/lib/utils'
+import { isDirectorySyntax, isTouch } from '@/lib/utils'
 
 import * as commandsJson from '@/services/cmd_new/commands.json'
 type Commands = Record<string, Command>
@@ -245,7 +245,7 @@ const CMDWindow = (props: CMDWindowProps) => {
     }
 
     return <Window ref={windowRef}
-        width={550} height={300}
+        width={550} height={300} fullscreen={isTouch()}
         title='Command Prompt' icon={cmdIcon}
         onActive={focusInputOnEvent}>
 

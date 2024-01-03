@@ -9,6 +9,7 @@ import AboutMeWindow from '../AboutMe'
 import ContactWindow from '../Contact'
 
 import { useWindowStore } from '@/stores/windowStore'
+import { isTouch } from '@/lib/utils'
 
 export interface WelcomeWindowProps {
 }
@@ -28,7 +29,7 @@ const WelcomeWindow = (props: WelcomeWindowProps) => {
             }
         }
     }
-    return <Window title='Welcome' icon={welcomeIcon}
+    return <Window title='Welcome' icon={welcomeIcon} fullscreen={isTouch()}
         width={window.innerWidth - 25} height={window.innerHeight - 30 - 25}>
 
         <div className={styles.windowContainer}>
@@ -41,6 +42,19 @@ const WelcomeWindow = (props: WelcomeWindowProps) => {
                 <p className={styles.text}>
                     Hey there, digital time traveler!
                 </p>
+
+                {
+                    isTouch() ? <>
+                        <p className={styles.title}>Mobile device detected!</p>
+                        <p className={styles.text}>
+                            I see you are visiting from a mobile device. I welcome all visitors. But the state of the website means that it is best experienced on a desktop computer.
+                        </p>
+                        <p className={styles.text}>
+                            You&apos;re welcome to continue exploring. But I recommend coming back on a desktop computer to get the full experience.
+                        </p>
+                    </>
+                        : <></>
+                }
 
                 <p className={styles.title}>What is this?</p>
                 <p className={styles.text}>

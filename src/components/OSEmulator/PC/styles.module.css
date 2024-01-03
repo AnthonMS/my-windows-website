@@ -28,6 +28,7 @@
     box-shadow: inset 1px 1px #dfdfdf, 1px 0 #000, 0 1px #000, 1px 1px #000;
     margin-right: 2px;
     margin-bottom: 2px;
+    touch-action: manipulation;
 }
 
 .button.selected {

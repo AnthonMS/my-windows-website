@@ -4,11 +4,12 @@ import React, { useRef, useState, useEffect } from 'react'
 import Image, { StaticImageData } from 'next/image'
 import { StaticImport } from 'next/dist/shared/lib/get-img-props'
 
-import { isElementInClass, findParentWithClass } from '@/lib/util_DOM'
+import { isElementInClass, findParentWithClass, getClientCoordinates } from '@/lib/util_DOM'
 
 import Button from '../UI/Button'
 
 import { useWindowStore } from '@/stores/windowStore'
+import { isTouch } from '@/lib/utils'
 
 export interface WindowProps {
     children?: React.ReactNode
@@ -98,25 +99,39 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
 
     useEffect(() => { // Move Listeners
         if (isHeaderHeld) {
-            window.addEventListener("mousemove", move)
+            if (!isTouch()) {
+                window.addEventListener("mousemove", move)
+            }
+            else {
+                window.addEventListener("touchmove", move)
+            }
         }
         else {
             window.removeEventListener('mousemove', move)
+            window.removeEventListener('touchmove', move)
         }
         return () => {
             window.removeEventListener('mousemove', move)
+            window.removeEventListener('touchmove', move)
         }
     }, [thisWindow, isHeaderHeld, prevMousePosition])
 
     useEffect(() => { // Resize Listeners
         if (isResizeHeld) {
-            window.addEventListener("mousemove", resize)
+            if (!isTouch()) {
+                window.addEventListener("mousemove", resize)
+            }
+            else {
+                window.addEventListener("touchmove", resize)
+            }
         }
         else {
             window.removeEventListener('mousemove', resize)
+            window.removeEventListener('touchmove', resize)
         }
         return () => {
             window.removeEventListener('mousemove', resize)
+            window.removeEventListener('touchmove', resize)
         }
     }, [thisWindow, isResizeHeld, prevMousePosition])
 
@@ -204,17 +219,20 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
         updateWindowStyle(thisTitle, styleObject)
     }
 
-    const move = (event: MouseEvent) => {
-        if (event.button !== 0) { return }
+    const move = (event: MouseEvent | TouchEvent) => {
+        if ('button' in event && event.button !== 0) { return }
         if (!isHeaderHeld) { return }
 
         if (isFullscreen) {
             // setIsFullscreen(false)
             goWindowMode()
         }
+
+        const { clientX, clientY } = getClientCoordinates(event)
+
         if (prevMousePosition && thisWindow.current !== null) {
-            const deltaX = event.clientX - prevMousePosition.x
-            const deltaY = event.clientY - prevMousePosition.y
+            const deltaX = clientX - prevMousePosition.x
+            const deltaY = clientY - prevMousePosition.y
 
             const computedStyles = getComputedStyle(thisWindow.current)
             const currentLeft = parseInt(computedStyles.left, 10) || 0 // Default to 0 if left is not set
@@ -227,19 +245,23 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
             })
         }
 
-        setPrevMousePosition({ x: event.clientX, y: event.clientY })
+        setPrevMousePosition({ x: clientX, y: clientY })
     }
+
     // TODO: Add Minimum height and width constraints
-    const resize = (event: MouseEvent) => {
-        if (event.button !== 0) { return }
+    const resize = (event: MouseEvent | TouchEvent) => {
+        if ('button' in event && event.button !== 0) { return }
         if (!isResizeHeld) { return }
 
         if (isFullscreen) {
             setIsFullscreen(false)
         }
+
+        const { clientX, clientY } = getClientCoordinates(event)
+
         if (prevMousePosition && thisWindow.current !== null) {
-            const deltaX = event.clientX - prevMousePosition.x
-            const deltaY = event.clientY - prevMousePosition.y
+            const deltaX = clientX - prevMousePosition.x
+            const deltaY = clientY - prevMousePosition.y
 
             const computedStyles = getComputedStyle(thisWindow.current)
             const currentWidth = parseInt(computedStyles.width, 10) || 0 // Default to 0
@@ -276,25 +298,35 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
 
         }
 
-        setPrevMousePosition({ x: event.clientX, y: event.clientY })
+        setPrevMousePosition({ x: clientX, y: clientY })
     }
 
-    const mouseDownHeader = (event: React.MouseEvent<HTMLDivElement>) => {
-        if (event.button !== 0) { return }
+    const inputStartHeader = (event: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
+        if ('button' in event && event.button !== 0) { return }
         const target = event.target as HTMLElement
         if (target.classList.contains(styles.button)) { return }
         setIsHeaderHeld(true)
-        document.addEventListener("mouseup", mouseUpHeader, { once: true })
+        if ('button' in event) {
+            document.addEventListener("mouseup", inputEndHeader, { once: true })
+        } else {
+            document.addEventListener("touchend", inputEndHeader, { once: true })
+        }
     }
-    const mouseUpHeader = () => {
+
+    const inputEndHeader = () => {
         setIsHeaderHeld(false)
         setPrevMousePosition(null)
     }
-    const mouseDownResize = (event: React.MouseEvent<HTMLDivElement>) => {
-        if (event.button !== 0) { return }
+
+    const inputStartResize = (event: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
+        if ('button' in event && event.button !== 0) { return }
         setIsResizeHeld(true)
 
-        document.addEventListener("mouseup", mouseUpResize, { once: true })
+        if ('button' in event) {
+            document.addEventListener("mouseup", inputEndResize, { once: true })
+        } else {
+            document.addEventListener("touchend", inputEndResize, { once: true })
+        }
 
         const target = event.target as HTMLElement
 
@@ -331,7 +363,7 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
             setResizeY(0)
         }
     }
-    const mouseUpResize = () => {
+    const inputEndResize = () => {
         setIsResizeHeld(false)
         setPrevMousePosition(null)
     }
@@ -358,30 +390,47 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
         }
     }
 
-    const mouseDownWindow = (event: React.MouseEvent<HTMLDivElement>) => {
+    const mouseDownWindow = (event: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
         if (onActive) {
             onActive(event)
         }
     }
 
+    const windowMouseEvents = !isTouch() ? {
+        onMouseDown: mouseDownWindow
+    } : {}
+    const windowTouchEvents = isTouch() ? {
+        onTouchStart: mouseDownWindow
+    } : {}
+    const headerMouseEvents = !isTouch() ? {
+        onMouseDown: inputStartHeader
+    } : {}
+    const headerTouchEvents = isTouch() ? {
+        onTouchStart: inputStartHeader
+    } : {}
+    const resizeMouseEvents = !isTouch() ? {
+        onMouseDown: inputStartResize
+    } : {}
+    const resizeTouchEvents = isTouch() ? {
+        onTouchStart: inputStartResize
+    } : {}
     if (!styles.window) return <></>
     return <>
         <div ref={thisWindow} data-title={thisTitle} id={thisTitle} className={`${styles.window} ${styles.hidden}`}
-            // style={{ width: `${thisWidth}px`, height: `${thisHeight}px`, top: `${thisTop}px`, left: `${thisLeft}px` }}
-            onMouseDown={mouseDownWindow}>
+            {...windowMouseEvents} {...windowTouchEvents}>
 
 
-            <div className={styles.windowHeader} onMouseDown={mouseDownHeader}>
+            <div className={styles.windowHeader} {...headerMouseEvents} {...headerTouchEvents}>
                 <div className={styles.windowTitle}>
                     {icon !== null ? <Image className={styles.windowIcon} width={48} height={48} src={icon as string | StaticImport} alt={`icon`} data-icon={true} /> : <></>}
                     <p className={styles.windowTitleText}>{thisTitle}</p>
 
                 </div>
                 <div className={styles.windowButtons}>
-                    { hideBtn ? <Button className={`${styles.button} ${styles.windowButton} ${styles.hide}`} onClick={clickBtn} /> : '' }
-                    { maximizeBtn ? <Button className={`${styles.button} ${styles.windowButton} ${isFullscreen ? styles.min : styles.max}`} onClick={clickBtn} /> : '' }
-                    { helpBtn ? <Button className={`${styles.button} ${styles.windowButton} ${styles.help}`} onClick={clickBtn} /> : '' }
-                    { closeBtn ? <Button className={`${styles.button} ${styles.windowButton} ${styles.close}`} onClick={clickBtn} /> : '' }
+                    {hideBtn ? <Button className={`${styles.button} ${styles.windowButton} ${styles.hide}`} onClick={clickBtn} /> : ''}
+                    {maximizeBtn ? <Button className={`${styles.button} ${styles.windowButton} ${isFullscreen ? styles.min : styles.max}`} onClick={clickBtn} /> : ''}
+                    {helpBtn ? <Button className={`${styles.button} ${styles.windowButton} ${styles.help}`} onClick={clickBtn} /> : ''}
+                    {closeBtn ? <Button className={`${styles.button} ${styles.windowButton} ${styles.close}`} onClick={clickBtn} /> : ''}
                 </div>
             </div>
 
@@ -389,14 +438,14 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
                 {children}
             </div>
 
-            <div className={`${styles.dragToResize} ${styles.topRight}`} onMouseDown={mouseDownResize}></div>
-            <div className={`${styles.dragToResize} ${styles.topLeft}`} onMouseDown={mouseDownResize}></div>
-            <div className={`${styles.dragToResize} ${styles.bottomRight}`} onMouseDown={mouseDownResize}></div>
-            <div className={`${styles.dragToResize} ${styles.bottomLeft}`} onMouseDown={mouseDownResize}></div>
-            <div className={`${styles.dragToResize} ${styles.top}`} onMouseDown={mouseDownResize}></div>
-            <div className={`${styles.dragToResize} ${styles.bottom}`} onMouseDown={mouseDownResize}></div>
-            <div className={`${styles.dragToResize} ${styles.left}`} onMouseDown={mouseDownResize}></div>
-            <div className={`${styles.dragToResize} ${styles.right}`} onMouseDown={mouseDownResize}></div>
+            <div className={`${styles.dragToResize} ${styles.topRight}`} {...resizeMouseEvents} {...resizeTouchEvents}></div>
+            <div className={`${styles.dragToResize} ${styles.topLeft}`} {...resizeMouseEvents} {...resizeTouchEvents}></div>
+            <div className={`${styles.dragToResize} ${styles.bottomRight}`} {...resizeMouseEvents} {...resizeTouchEvents}></div>
+            <div className={`${styles.dragToResize} ${styles.bottomLeft}`} {...resizeMouseEvents} {...resizeTouchEvents}></div>
+            <div className={`${styles.dragToResize} ${styles.top}`} {...resizeMouseEvents} {...resizeTouchEvents}></div>
+            <div className={`${styles.dragToResize} ${styles.bottom}`} {...resizeMouseEvents} {...resizeTouchEvents}></div>
+            <div className={`${styles.dragToResize} ${styles.left}`} {...resizeMouseEvents} {...resizeTouchEvents}></div>
+            <div className={`${styles.dragToResize} ${styles.right}`} {...resizeMouseEvents} {...resizeTouchEvents}></div>
         </div>
     </>
 

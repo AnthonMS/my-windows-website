@@ -7,8 +7,9 @@ import { useWindowStore } from '@/stores/windowStore'
 
 // import AboutMeWindow from '@/components/OSEmulator/PC/Windows/AboutMe'
 import AboutMeWindow from '../Windows/AboutMe'
-import { findParentWithClass } from '@/lib/util_DOM'
+import { findParentWithClass, getClientCoordinates } from '@/lib/util_DOM'
 import PopupWindow from '../Windows/Popup'
+import { isTouch } from '@/lib/utils'
 
 interface DesktopIconProps {
     id: string
@@ -29,28 +30,30 @@ const DesktopIcon = (props: DesktopIconProps) => {
     const [isMouseDown, setIsMouseDown] = useState(false)
     const [prevMousePosition, setPrevMousePosition] = useState<{ x: number; y: number } | null>(null)
 
-    // // --- Selection & Movement handling --- //
-    // useEffect(() => {
-    //     const handleClick = (event: any) => {
-    //         deselect(event)
-    //     }
-    //     window.addEventListener('mousedown', handleClick)
-
-    //     return () => {
-    //         window.removeEventListener('mousedown', handleClick)
-    //     }
-    // }, [isSelected])
-
-
     useEffect(() => { // Move Listeners
-        if (isMouseDown) {
-            window.addEventListener("mousemove", move)
+        if (!isTouch()) {
+            if (isMouseDown) {
+                window.addEventListener("mousemove", move)
+            }
+            else {
+                window.removeEventListener('mousemove', move)
+            }
         }
         else {
-            window.removeEventListener('mousemove', move)
+            if (isMouseDown) {
+                window.addEventListener("touchmove", move)
+            }
+            else {
+                window.removeEventListener('touchmove', move)
+            }
         }
         return () => {
-            window.removeEventListener('mousemove', move)
+            if (!isTouch()) {
+                window.removeEventListener('mousemove', move)
+            }
+            else {
+                window.removeEventListener('touchmove', move)
+            }
         }
     }, [thisIcon, isMouseDown, prevMousePosition])
 
@@ -79,18 +82,15 @@ const DesktopIcon = (props: DesktopIconProps) => {
         }
     }
 
-    const mouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
-        if (event.button === 0) { // left
-            const target = event.target as HTMLElement
-            const isCtrlKeyHeld = event.ctrlKey || event.metaKey
+    const inputStart = (event: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
+        const target = event.target
+        if (target instanceof HTMLElement) {
+            if ('button' in event && event.button !== 0) {
+                return;
+            }
+
+            const isCtrlKeyHeld = event.ctrlKey || event.metaKey || false
             setIsMouseDown(true)
-            // If ctrl is held down
-            //      if desktopIcon has selected class
-            //          remove it
-            // If ctrl is not held down
-            //      remove selected class from all desktopIcons in DOM except the one we are clicking. 
-            //          UNLESS WE WANT TO MOVE THEM????????
-            // 
 
             const clickedDesktopIcon: Element = findParentWithClass(target, styles.desktopIcon) as Element
             if (!clickedDesktopIcon.classList.contains(styles.selected)) {
@@ -103,20 +103,30 @@ const DesktopIcon = (props: DesktopIconProps) => {
                     .forEach(icon => icon.classList.remove(styles.selected))
             }
 
-            document.addEventListener("mouseup", mouseUp, { once: true })
+            const { clientX, clientY } = getClientCoordinates(event.nativeEvent)
+            setPrevMousePosition({ x: clientX, y: clientY })
+            click(event)
+
+            if ('button' in event) {
+                document.addEventListener("mouseup", inputEnd, { once: true })
+            }
+            else {
+                document.addEventListener("touchend", inputEnd, { once: true })
+            }
         }
     }
-    const mouseUp = () => {
+    const inputEnd = () => {
         setIsMouseDown(false)
         setPrevMousePosition(null)
     }
-    const move = (event: MouseEvent) => {
-        if (event.button !== 0) { return }
+    const move = (event: MouseEvent | TouchEvent) => {
+        if ('button' in event && event.button !== 0) { return }
         if (!isMouseDown) { return }
 
+        const { clientX, clientY } = getClientCoordinates(event)
         if (prevMousePosition && thisIcon.current !== null) {
-            const deltaX = event.clientX - prevMousePosition.x
-            const deltaY = event.clientY - prevMousePosition.y
+            const deltaX = clientX - prevMousePosition.x
+            const deltaY = clientY - prevMousePosition.y
 
             const computedStyles = getComputedStyle(thisIcon.current)
             const currentLeft = parseInt(computedStyles.left, 10) || 0 // Default to 0 if left is not set
@@ -126,11 +136,10 @@ const DesktopIcon = (props: DesktopIconProps) => {
             thisIcon.current.style.left = `${newLeft}px`
             thisIcon.current.style.top = `${newTop}px`
 
-            // Check if ctrl is held, otherwise remove selected from other icons
             moveOtherSelectedIcons(deltaX, deltaY)
         }
 
-        setPrevMousePosition({ x: event.clientX, y: event.clientY })
+        setPrevMousePosition({ x: clientX, y: clientY })
     }
 
     const moveOtherSelectedIcons = (deltaX: number, deltaY: number) => {
@@ -151,28 +160,30 @@ const DesktopIcon = (props: DesktopIconProps) => {
         })
     }
 
-    const click = (event: React.MouseEvent<HTMLDivElement>) => {
-        if (event.button === 0) { // left
-            const now: number = Date.now()
-            if (lastMouseClick !== null) {
-                const diff: number = now - lastMouseClick
-                if (diff < 200) {
-                    loadWindow()
+    const click = (event: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
+        if ('button' in event && event.button !== 0) {
+            return;
+        }
 
-                    if (primaryAction !== undefined && primaryAction !== null) {
-                        // primaryAction(event)
-                    }
+        const now: number = Date.now()
+        if (lastMouseClick !== null) {
+            const diff: number = now - lastMouseClick
+            if (diff < 200) {
+                loadWindow()
+
+                if (primaryAction !== undefined && primaryAction !== null) {
+                    primaryAction(event)
                 }
             }
-            setLastMouseClick(now)
         }
+        setLastMouseClick(now)
     }
 
     return (
         <div ref={thisIcon} id={id} data-id={id}
             className={`${styles.desktopIcon}`}
             style={{ left: left, top: top }}
-            onClick={click} onMouseDown={mouseDown}>
+            onMouseDown={!isTouch() ? inputStart : undefined} onTouchStart={isTouch() ? inputStart : undefined}>
 
             <div className={styles.imgWrapper}>
                 <Image className={styles.desktopIconImage}

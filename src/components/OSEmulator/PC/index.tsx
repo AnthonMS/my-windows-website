@@ -20,12 +20,13 @@ import WelcomeWindow from './Windows/Welcome'
 // import AboutMeWindow from './Windows/AboutMe'
 // import ContactWindow from './Windows/Contact'
 // import ErrorWindow from './Windows/Popup'
-// import CMDWindow from './Windows/CMD'
+import CMDWindow from './Windows/CMD'
 
 import { isElementInClass, findParentWithClass } from '@/lib/util_DOM'
 
 
 import { useWindowStore } from '@/stores/windowStore'
+import { isTouch } from '@/lib/utils'
 
 const PCEmulator = () => {
     const { windows, openWindow, removeClass, addClass, setWindowsContainer, setStyles } = useWindowStore()
@@ -42,7 +43,7 @@ const PCEmulator = () => {
             initialMount.current = false
             setStyles(styles)
             // openWindow(<CMDWindow />)
-            // openWindow(<WelcomeWindow />)
+            openWindow(<WelcomeWindow />)
             // openWindow(<AboutMeWindow />)
             // openWindow(<ContactWindow />)
             // openWindow(<ErrorWindow text='This is an error message. Wubba lubba dub dub!' />)
@@ -197,16 +198,9 @@ const PCEmulator = () => {
             if ('button' in event && event.button !== 0) {
                 return;
             }
-            if ('button' in event) {
-                handleActiveWindowsOnClick(event)
-                handleSelectedIconsOnClick(event)
-                handleHighlight(event)
-            }
-            else {
-                handleActiveWindowsOnClick(event)
-                handleSelectedIconsOnClick(event)
-                handleHighlight(event)
-            }
+            handleActiveWindowsOnClick(event)
+            handleSelectedIconsOnClick(event)
+            handleHighlight(event)
         }
     }
     const inputEnd = (event: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
@@ -215,12 +209,7 @@ const PCEmulator = () => {
             if ('button' in event && event.button !== 0) {
                 return;
             }
-            if ('button' in event) {
-                handleSelectedIconsOnClick(event)
-            }
-            else {
-                handleSelectedIconsOnClick(event)
-            }
+            handleSelectedIconsOnClick(event)
         }
 
         if (isHighlighting) {
@@ -247,17 +236,21 @@ const PCEmulator = () => {
     }
     const inputMove = (event: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
         if (isHighlighting) {
-            if ('button' in event) {
-                const nativeEvent = event.nativeEvent as MouseEvent
-                highlight(nativeEvent)
-            }
-            else {
-                const nativeEvent = event.nativeEvent as TouchEvent
-                highlight(nativeEvent)
-            }
+            const nativeEvent = event.nativeEvent as MouseEvent | TouchEvent
+            highlight(nativeEvent)
         }
     }
 
+    const mainMouseEvents = isTouch() ? {} : {
+        onMouseDown: inputStart,
+        onMouseUp: inputEnd,
+        onMouseMove: inputMove
+    }
+    const mainTouchEvents = !isTouch() ? {} : {
+        onTouchStart: inputStart,
+        onTouchEnd: inputEnd,
+        onTouchMove: inputMove
+    }
     return <>
         <Head>
             <title>Your Custom Title</title>
@@ -265,9 +258,7 @@ const PCEmulator = () => {
             {/* Add more meta tags as needed */}
         </Head>
 
-        <div className={styles.main}
-            onMouseDown={inputStart} onMouseUp={inputEnd} onMouseMove={inputMove}
-            onTouchStart={inputStart} onTouchEnd={inputEnd} onTouchMove={inputMove}>
+        <div className={styles.main} { ...mainMouseEvents } { ...mainTouchEvents }>
             <DesktopIcon left='0px' top='0px' id='Computer'
                 text='Computer Program 123 (Testname)' icon={computerExplorer}
                 primaryAction={onClickDesktopIcon} />

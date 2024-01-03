@@ -24,3 +24,17 @@ export const findParentWithClass = (element: Element | null, classname: string |
     }
     return null
 }
+
+
+export const getClientCoordinates = (event: MouseEvent | TouchEvent) => {
+    let clientX: number, clientY: number;
+    if ('clientX' in event) {
+        clientX = event.clientX;
+        clientY = event.clientY;
+    } else {
+        clientX = event.touches[0].clientX;
+        clientY = event.touches[0].clientY;
+    }
+
+    return { clientX, clientY };
+}

@@ -6,6 +6,7 @@ import windowsLogo from '@/assets/images/windows92-logo.png'
 import StartMenu from './StartMenu'
 import { useWindowStore } from '@/stores/windowStore'
 import Time from '../UI/Time'
+import { isTouch } from '@/lib/utils'
 
 interface TaskbarProps {}
 const Taskbar = (props: TaskbarProps) => {
@@ -26,10 +27,15 @@ const Taskbar = (props: TaskbarProps) => {
             if (!showStart) return // Dont handle close if it's not open
             closeStart(event)
         }
-
-        window.addEventListener('mousedown', handleWindowClick)
+        if (!isTouch()) {
+            window.addEventListener('mousedown', handleWindowClick)
+        }
+        else {
+            window.addEventListener('touchstart', handleWindowClick)
+        }
         return () => {
             window.removeEventListener('mousedown', handleWindowClick)
+            window.removeEventListener('touchstart', handleWindowClick)
         }
     }, [showStart])
 
