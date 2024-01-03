@@ -178,7 +178,7 @@ const DesktopIcon = (props: DesktopIconProps) => {
                 <Image className={styles.desktopIconImage}
                     src={icon} alt={`Icon: ${text}`} />
                 <svg>
-                    <filter id="blueoverlay" type="matrix" color-interpolation-filters="sRGB">
+                    <filter id="blueoverlay" type="matrix" colorInterpolationFilters="sRGB">
                         {/* <!-- change last value of first row to r/255 -->
                         <!-- change last value of second row to g/255 -->
                         <!-- change last value of third row to b/255 --> */}
