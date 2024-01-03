@@ -332,132 +332,142 @@
     border-top: 2px solid white;
     border-right: 2px solid grey;
     border-bottom: 2px solid grey;
+
+    .blueBar {
+        background: linear-gradient(to bottom, #000080, #1084d0);
+        display: inline-block;
+        width: 25px;
+        position: absolute;
+        top: 0px;
+        bottom: 0px;
+        left: 0px;
+    }
+
+    .headline {
+        transform: rotate(-90deg);
+        transform-origin: 0% 0%;
+        width: 150%;
+        padding-top: 4px;
+        padding-bottom: 3px;
+        padding-left: 0px;
+        color: white;
+        position: absolute;
+        bottom: 0;
+        text-align: left;
+        margin-bottom: -15px;
+    
+        font-weight: bold;
+    }
+    .headline span {
+        font-weight: normal;
+    }
+    
+    .menuContent {
+        .item {
+            margin-left: 25px;
+            display: flex;
+            align-items: center;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            color: black;
+
+            .itemIcon {
+                width: 25px;
+                height: 25px;
+                margin-left: 6px;
+                pointer-events: none;
+            }
+            .itemText {
+                margin-left: 6px;
+                user-select: none;
+                pointer-events: none;
+            }
+
+            &.more::after {
+                content: "►";
+                position: absolute;
+                right: 7px;
+            }
+            &.more {
+                position: relative;
+
+                .dropdownContent {
+                    display: none;
+                    position: absolute;
+                    list-style: none;
+                    background-color: #bdbebd;
+                    color: black;
+                    border-left: 2px solid white;
+                    border-top: 2px solid white;
+                    border-right: 2px solid grey;
+                    border-bottom: 2px solid grey;
+                    box-sizing: border-box;
+
+                    .dropdownItem {
+                        display: flex;
+                        align-items: center;
+                        padding-top: 3px;
+                        padding-bottom: 3px;
+                        color: black;
+                        font-size: 15px;
+                        white-space: nowrap;
+
+                        &.active {
+                            background-color: var(--blue-dark);
+                            color: white;
+                        }
+                        .dropdownItemIcon {
+                            width: 15px;
+                            height: 15px;
+                            margin-left: 5px;
+                            pointer-events: none;
+                        }
+                        .dropdownItemText {
+                            user-select: none;
+                            margin-left: 7px;
+                            margin-right: 5px;
+                            pointer-events: none;
+                        }
+                    }
+                }
+
+                &.active {
+                    background-color: var(--blue-dark);
+                    color: white;
+                    .dropdownContent {
+                        display: block;
+                        top: -2px;
+                        left: 100%;
+                        min-width: 100%;
+                    }
+                }
+            }
+        }
+    }
 }
 
-.startMenu .blueBar {
-    background: linear-gradient(to bottom, #000080, #1084d0);
-    display: inline-block;
-    width: 25px;
-    position: absolute;
-    top: 0px;
-    bottom: 0px;
-    left: 0px;
-}
-
-.startMenu .headline {
-    transform: rotate(-90deg);
-    transform-origin: 0% 0%;
-    width: 150%;
-    padding-top: 4px;
-    padding-bottom: 3px;
-    padding-left: 0px;
-    color: white;
-    position: absolute;
-    bottom: 0;
-    text-align: left;
-    margin-bottom: -15px;
-
-    font-weight: bold;
-}
-
-.startMenu .headline span {
-    font-weight: normal;
-}
-
-.startMenu .menuContent .item {
-    margin-left: 25px;
-    display: flex;
-    align-items: center;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    color: black;
-}
-
-.startMenu .menuContent .item.more {
-    position: relative;
-}
-
-.startMenu .menuContent .item.more::after {
-    content: "►";
-    position: absolute;
-    right: 7px;
-}
-
-.startMenu .menuContent .item .itemIcon {
-    width: 25px;
-    height: 25px;
-    margin-left: 6px;
-    pointer-events: none;
-}
-
-.startMenu .menuContent .item .itemText {
-    margin-left: 6px;
-    user-select: none;
-    pointer-events: none;
-}
 
 
-.startMenu .menuContent .item.more .dropdownContent {
-    display: none;
-    position: absolute;
-    list-style: none;
-    background-color: #bdbebd;
-    color: black;
-    border-left: 2px solid white;
-    border-top: 2px solid white;
-    border-right: 2px solid grey;
-    border-bottom: 2px solid grey;
-    box-sizing: border-box;
-}
-
-.dropdownContent .dropdownItem {
-    display: flex;
-    align-items: center;
-    padding-top: 3px;
-    padding-bottom: 3px;
-    color: black;
-    font-size: 15px;
-    white-space: nowrap;
-}
-
-.dropdownContent .dropdownItem .dropdownItemIcon {
-    width: 15px;
-    height: 15px;
-    margin-left: 5px;
-    pointer-events: none;
-}
-
-.dropdownContent .dropdownItem .dropdownItemText {
-    user-select: none;
-    margin-left: 7px;
-    margin-right: 5px;
-    pointer-events: none;
-}
 
 
 /* Enable hover only on non-touch devices */
 @media (hover: hover) and (pointer: fine) {
-    .startMenu .menuContent .item:hover {
-        background-color: var(--blue-dark);
-        color: white;
+    .startMenu {
+        .menuContent {
+            .item:hover {
+                background-color: var(--blue-dark);
+                color: white;
+            }
+            .item.more {
+                .dropdownContent .dropdownItem:hover {
+                    color: white;
+                    background-color: var(--blue-dark);
+                }
+            }
+
+            
+        }
     }
-
-    .startMenu .menuContent .item.more:hover .dropdownContent {
-        display: block;
-        top: -2px;
-        left: 100%;
-        min-width: 100%;
-    }
-
-    .dropdownContent .dropdownItem:hover {
-        color: white;
-        background-color: var(--blue-dark);
-    }
-}
-
-
-.windowParent {
-    /* pointer-events: none; */
 }
 
 .window {

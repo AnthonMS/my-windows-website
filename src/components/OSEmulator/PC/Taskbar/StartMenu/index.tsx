@@ -19,6 +19,8 @@ import { useWindowStore } from '@/stores/windowStore'
 import WelcomeWindow from '../../Windows/Welcome'
 import AboutMeWindow from '../../Windows/AboutMe'
 import ContactWindow from '../../Windows/Contact'
+import { isTouch } from '@/lib/utils'
+import { findParentWithClass } from '@/lib/util_DOM'
 
 export interface StartMenuProps {
     toggleStartMenu: Function
@@ -32,7 +34,6 @@ const StartMenu = (props: StartMenuProps) => {
     }
     const click = (event: React.MouseEvent<HTMLLIElement> | React.TouchEvent<HTMLLIElement>) => {
         const target = event.target
-        console.log('CLICK', target)
         if (target instanceof HTMLLIElement) {
             const btnItem: string = target.getAttribute('data-item') as string
 
@@ -72,6 +73,38 @@ const StartMenu = (props: StartMenuProps) => {
         }
     }
 
+    const handleStartMenuInput = (event: React.MouseEvent<HTMLLIElement> | React.TouchEvent<HTMLLIElement>) => {
+        const target = event.target
+        console.log('target:', target)
+        if (target instanceof HTMLLIElement) {
+            const clickedMenuItem: Element = findParentWithClass(target, styles.item) as Element
+            const activeBtns = document.querySelectorAll(`.${styles.item}.${styles.active}, .${styles.dropdownItem}.${styles.active}`)
+            activeBtns.forEach(element => {
+                if (element !== clickedMenuItem) {
+                    element.classList.remove(styles.active)
+                }
+            })
+
+            if (!target.classList.contains(styles.active)) {
+                target.classList.add(styles.active)
+            }
+            else {
+                target.classList.remove(styles.active)
+            }
+
+            if (!target.classList.contains(styles.more)) {
+                click(event)
+            }
+        }
+    }
+
+    
+    const startmenuMouseEvents = !isTouch() ? {
+        onMouseDown: handleStartMenuInput
+    } : {}
+    const startmenuTouchEvents = isTouch() ? {
+        onTouchStart: handleStartMenuInput
+    } : {}
     if (!styles.startMenu) return <></>
     return (
         <div className={styles.startMenu}>
@@ -80,7 +113,7 @@ const StartMenu = (props: StartMenuProps) => {
 
             <ul className={styles.menuContent}>
 
-                <li className={`${styles.item} ${styles.more}`} onClick={click} data-item='projects'>
+                <li className={`${styles.item} ${styles.more}`} data-item='projects' {...startmenuMouseEvents} {...startmenuTouchEvents}>
                     <Image className={styles.itemIcon} src={gamesIcon} alt={`projects-icon`} />
                     <p className={styles.itemText}>Projects</p>
 
@@ -96,7 +129,7 @@ const StartMenu = (props: StartMenuProps) => {
                     </ul>
                 </li>
 
-                <li className={`${styles.item} ${styles.more}`} onClick={click} data-item='games'>
+                <li className={`${styles.item} ${styles.more}`} data-item='games' {...startmenuMouseEvents} {...startmenuTouchEvents}>
                     <Image className={styles.itemIcon} src={gamesIcon} alt='icon' />
                     <p className={styles.itemText}>Games</p>
 
@@ -109,17 +142,17 @@ const StartMenu = (props: StartMenuProps) => {
                 </li>
 
 
-                <li className={styles.item} onClick={click} data-item='about'>
+                <li className={styles.item} data-item='about' {...startmenuMouseEvents} {...startmenuTouchEvents}>
                     <Image className={styles.itemIcon} src={aboutMeIcon} alt='icon' />
                     <p className={styles.itemText}>About</p>
                 </li>
 
-                <li className={styles.item} onClick={click} data-item='contact'>
+                <li className={styles.item} data-item='contact' {...startmenuMouseEvents} {...startmenuTouchEvents}>
                     <Image className={styles.itemIcon} src={contactIcon} alt='icon' />
                     <p className={styles.itemText}>Contact</p>
                 </li>
 
-                <li className={styles.item} onClick={click} data-item='welcome'>
+                <li className={styles.item} data-item='welcome' {...startmenuMouseEvents} {...startmenuTouchEvents}>
                     <Image className={styles.itemIcon} src={welcomeIcon} alt='icon' />
                     <p className={styles.itemText}>Welcome</p>
                 </li>
@@ -139,7 +172,7 @@ const StartMenu = (props: StartMenuProps) => {
                     <p className={styles.itemText}>Help</p>
                 </li> */}
 
-                <li className={styles.item} onClick={click} data-item='shutdown'>
+                <li className={styles.item} data-item='shutdown' {...startmenuMouseEvents} {...startmenuTouchEvents}>
                     <Image className={styles.itemIcon} src={shutdownIcon} alt='icon' />
                     <p className={styles.itemText}>Shutdown</p>
                 </li>
