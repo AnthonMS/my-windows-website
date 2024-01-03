@@ -89,6 +89,7 @@ a {
 
 @media (pointer:none), (pointer:coarse) {
   body {
-    height: -webkit-fill-available;
+    /* height: -webkit-fill-available; */
+    padding-bottom: env(safe-area-inset-bottom);
   }
 }

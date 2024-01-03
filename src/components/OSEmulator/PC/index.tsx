@@ -42,7 +42,7 @@ const PCEmulator = () => {
             initialMount.current = false
             setStyles(styles)
             // openWindow(<CMDWindow />)
-            openWindow(<WelcomeWindow />)
+            // openWindow(<WelcomeWindow />)
             // openWindow(<AboutMeWindow />)
             // openWindow(<ContactWindow />)
             // openWindow(<ErrorWindow text='This is an error message. Wubba lubba dub dub!' />)
@@ -85,8 +85,18 @@ const PCEmulator = () => {
     }, [highlightBox])
 
 
-    const handleActiveWindowsOnClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    const handleActiveWindowsOnClick = (event: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
         const target = event.target as HTMLElement
+        let clientX, clientY;
+
+        if ('clientX' in event) {
+            clientX = event.clientX;
+            clientY = event.clientY;
+        } else {
+            clientX = event.touches[0].clientX;
+            clientY = event.touches[0].clientY;
+        }
+
         if (!isElementInClass(target, [styles.window, styles.active])) {
             // If click is not in the bottomBar -> remove active class from all windows
             if (!isElementInClass(target, styles.windowBtn)) {
@@ -100,12 +110,10 @@ const PCEmulator = () => {
                     addClass(clickedWindow.getAttribute('data-title') as string, styles.active)
                 }
                 else if (target.classList.contains(styles.main)) {
-
-                    // document.addEventListener("mouseup", mouseUp, { once: true })
                     setIsHighlighting(true)
                     setHighlightBox({
-                        startX: event.nativeEvent.offsetX,
-                        startY: event.nativeEvent.offsetY,
+                        startX: clientX,
+                        startY: clientY,
                         width: 0,
                         height: 0,
                     })
@@ -114,12 +122,10 @@ const PCEmulator = () => {
         }
     }
 
-    const handleSelectedIconsOnClick = (event: React.MouseEvent<HTMLDivElement>) => {
-
+    const handleSelectedIconsOnClick = (event: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
         const target = event.target as HTMLElement
-        // const clickedDesktopIcon: Element = findParentWithClass(target, styles.desktopIcon) as Element
-        const isCtrlKeyHeld = event.ctrlKey || event.metaKey
-        if (event.type === 'mousedown' &&
+        const isCtrlKeyHeld = 'ctrlKey' in event && (event.ctrlKey || event.metaKey)
+        if ((event.type === 'mousedown' || event.type === 'touchstart') &&
             !target.classList.contains(styles.desktopIcon) &&
             !isCtrlKeyHeld) {
 
@@ -160,10 +166,18 @@ const PCEmulator = () => {
         })
     }
 
-
-    const highlight = (event: MouseEvent) => {
+    const highlight = (event: MouseEvent | TouchEvent) => {
         handleSelectedIconsWhileHighlighting()
-        const { clientX, clientY } = event
+        let clientX: number, clientY: number;
+
+        if ('clientX' in event) {
+            clientX = event.clientX;
+            clientY = event.clientY;
+        } else {
+            clientX = event.touches[0].clientX;
+            clientY = event.touches[0].clientY;
+        }
+
         setHighlightBox((prevBox) => ({
             ...prevBox,
             width: clientX - prevBox.startX,
@@ -171,35 +185,47 @@ const PCEmulator = () => {
         }))
     }
 
-    const onClickDesktopIcon = (event: React.MouseEvent<HTMLDivElement>) => {
-        const target: HTMLElement = event.target as HTMLElement
-    }
-
-    const mouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+    const inputMove = (event: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
         if (isHighlighting) {
-            const nativeEvent = event.nativeEvent as MouseEvent
+            const nativeEvent = event.nativeEvent as MouseEvent | TouchEvent
             highlight(nativeEvent)
         }
     }
-    const mouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
+
+
+    const inputStart = (event: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
         const target = event.target
-        if (event.button === 0 && target instanceof HTMLElement) {
+        if (target instanceof HTMLElement) {
+            if ('button' in event && event.button !== 0) {
+                return;
+            }
             handleActiveWindowsOnClick(event)
             handleSelectedIconsOnClick(event)
         }
     }
-    const mouseUp = (event: React.MouseEvent<HTMLDivElement>) => {
+    const inputEnd = (event: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
         const target = event.target
-        if (event.button === 0 && target instanceof HTMLElement) {
+        if (target instanceof HTMLElement) {
+            if ('button' in event && event.button !== 0) {
+                return;
+            }
             handleSelectedIconsOnClick(event)
         }
-
-        if (event.button === 0 && isHighlighting) { // left
+    
+        if (isHighlighting) {
             handleSelectedIconsWhileHighlighting()
-
-
+    
             setIsHighlighting(false)
-            const { clientX, clientY } = event
+            let clientX: number, clientY: number;
+    
+            if ('clientX' in event) {
+                clientX = event.clientX;
+                clientY = event.clientY;
+            } else {
+                clientX = event.changedTouches[0].clientX;
+                clientY = event.changedTouches[0].clientY;
+            }
+    
             setHighlightBox({
                 startX: clientX,
                 startY: clientY,
@@ -209,7 +235,9 @@ const PCEmulator = () => {
         }
     }
 
-
+    const onClickDesktopIcon = (event: React.MouseEvent<HTMLDivElement>) => {
+        const target: HTMLElement = event.target as HTMLElement
+    }
     return <>
         <Head>
             <title>Your Custom Title</title>
@@ -217,7 +245,9 @@ const PCEmulator = () => {
             {/* Add more meta tags as needed */}
         </Head>
 
-        <div className={styles.main} onMouseDown={mouseDown} onMouseUp={mouseUp} onMouseMove={mouseMove}>
+        <div className={styles.main}
+            onMouseDown={inputStart} onMouseUp={inputEnd} onMouseMove={inputMove}
+            onTouchStart={inputStart} onTouchEnd={inputEnd} onTouchMove={inputMove}>
             <DesktopIcon left='0px' top='0px' id='Computer'
                 text='Computer Program 123 (Testname)' icon={computerExplorer}
                 primaryAction={onClickDesktopIcon} />

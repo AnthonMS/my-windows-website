@@ -15,6 +15,8 @@ import { useWindowStore } from '@/stores/windowStore'
 
 import axios from 'axios'
 
+import { isMobile, isTouch } from '@/lib/utils'
+
 export interface ContactWindowProps {
 }
 const ContactWindow = (props: ContactWindowProps) => {
@@ -26,6 +28,9 @@ const ContactWindow = (props: ContactWindowProps) => {
     const [phone, setPhone] = useState<string>('')
     const [subject, setSubject] = useState<string>('')
     const [content, setContent] = useState<string>('')
+
+    // console.log('ContactMe isMobile:', isMobile())
+    // console.log('ContactMe isTouch:', isTouch())
 
     const click = async (event: React.MouseEvent<HTMLDivElement>) => {
         if (name === '') {
@@ -66,7 +71,8 @@ const ContactWindow = (props: ContactWindowProps) => {
         }
     }
 
-    return <Window title='Contact' icon={contactIcon}
+    // TODO: Create logic to see if mobile or not and set width/height based on that.
+    return <Window title='Contact' icon={contactIcon} fullscreen={isTouch()}
         width={600} height={810}>
 
         <div className={styles.windowContainer}>
