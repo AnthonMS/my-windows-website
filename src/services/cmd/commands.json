@@ -335,6 +335,31 @@
                 "description": "\t\t\t\t\t\tForce using IPv6."
             }
         ]
+    },
+
+
+    "ipconfig": {
+        "command": "ipconfig",
+        "usage": "ipconfig [/allcompartments] [/? | /all | \n\t\t/renew [adapter] | /release [adapter] |\n\t\t/renew6 [adapter] | /release6 [adapter] |\n\t\t/flushdns | /displaydns | /registerdns |\n\t\t/showclassid adapter |\n\t\t/setclassid adapter [classidtoset] |\n\t\t/showclassid6 adapter |\n\t\t/setclassid6 adapter [classidtoset]]",
+        "help": "ipconfig help...",
+        "arguments": [],
+        "options": [
+            {
+                "option": "--help",
+                "usage": "--help",
+                "description": "\t\t Display help message"
+            },
+            {
+                "option": "-all",
+                "usage": "-all",
+                "description": "\t\t Display full configuration information."
+            },
+            {
+                "option": "-release",
+                "usage": "-release",
+                "description": "\t\t Release the IPv4 address for the specified adapter"
+            }
+        ]
     }
 
 

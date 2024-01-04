@@ -390,17 +390,19 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
         }
     }
 
-    const mouseDownWindow = (event: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
+    const onEventWindow = (event: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
         if (onActive) {
             onActive(event)
         }
     }
 
     const windowMouseEvents = !isTouch() ? {
-        onMouseDown: mouseDownWindow
+        onMouseDown: onEventWindow,
+        onMouseUp: onEventWindow
     } : {}
     const windowTouchEvents = isTouch() ? {
-        onTouchStart: mouseDownWindow
+        onTouchStart: onEventWindow,
+        onTouchEnd: onEventWindow
     } : {}
     const headerMouseEvents = !isTouch() ? {
         onMouseDown: inputStartHeader

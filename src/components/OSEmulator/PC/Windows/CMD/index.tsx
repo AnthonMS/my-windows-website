@@ -10,7 +10,7 @@ import { getNumberOfLinesInTextArea } from '@/lib/util_textarea'
 import { isElementInClass } from '@/lib/util_DOM'
 import axios from 'axios'
 
-import { isDirectorySyntax, isTouch } from '@/lib/utils'
+import { isDirectorySyntax, isTouch, isValidIPv4, isValidIPv6, isValidUrl } from '@/lib/utils'
 
 import * as commandsJson from '@/services/cmd/commands.json'
 type Commands = Record<string, Command>
@@ -21,7 +21,7 @@ import { Res } from '@/app/api/cmd/route'
 
 import { useWindowStore } from '@/stores/windowStore'
 
-import { ping as actualPing } from '@/services/cmd/commands/ping'
+import { pingSimulator } from '@/services/cmd/commands/ping'
 
 interface CommandHistoryItem {
     dir: string
@@ -43,14 +43,12 @@ const CMDWindow = (props: CMDWindowProps) => {
     const windowRef = useRef<{} | null>(null)
 
     const updateOutput = (str: string) => {
-        hideInputArea()
         setOutput((prev) => [...prev, str])
-        showInputArea()
-        focusInputArea()
     }
     const clearOutput = () => {
         setOutput([])
     }
+    // TODO: Make command history persistent in local storage. Maybe use a custom store for this?
     const updateCommandHistory = (commandItem: CommandHistoryItem) => {
         setCommandHistory((prevHistory) => {
             setHistoryIndex([...prevHistory, commandItem].length)
@@ -58,11 +56,16 @@ const CMDWindow = (props: CMDWindowProps) => {
         })
     }
 
+    useEffect(() => {
+        scrollToBottom()
+    }, [output])
+
     const execute = async () => {
         const commandItem: CommandHistoryItem = {
             dir: currentDir,
             command: command.trim() // Remove leading and trailing whitespace
         }
+        hideInputArea()
         updateCommandHistory(commandItem)
         updateOutput(currentDir + command)
         setCommand('')
@@ -74,6 +77,7 @@ const CMDWindow = (props: CMDWindowProps) => {
 
             if (data.message === "UNKNOWN_COMMAND") {
                 updateOutput(`${data.command}: command not found`)
+                showInputArea()
             }
             else if (data.message === "PARSED") {
                 const cmdObj: Command = data.command as Command
@@ -82,6 +86,7 @@ const CMDWindow = (props: CMDWindowProps) => {
                 if (errors.length > 0) {
                     const errOutput = errorsToOutputString(data.config!, cmdObj, errors[0])
                     updateOutput(errOutput)
+                    showInputArea()
                 }
                 else {
                     // console.log('EXECUTE COMMAND; NO ERRORS!', cmdObj)
@@ -98,6 +103,9 @@ const CMDWindow = (props: CMDWindowProps) => {
                             break;
                         case 'ping':
                             ping(cmdObj)
+                            break;
+                        case 'ipconfig':
+                            ipconfig(cmdObj)
                             break;
                         default:
                             defaultCommand(cmdObj)
@@ -149,6 +157,8 @@ const CMDWindow = (props: CMDWindowProps) => {
             const outputMsg = `${data.command}: path invalid "${path}"\n`
             updateOutput(outputMsg)
         }
+
+        showInputArea()
     }
     const pwd = (data: Command) => {
         // TODO: Handle options pwd
@@ -164,10 +174,12 @@ const CMDWindow = (props: CMDWindowProps) => {
         currentPath = "\\" + currentDrive + currentPath
         currentPath = currentPath.replace(/\\/g, '/') // Replace all "\\" with "/"
         updateOutput(currentPath)
+        showInputArea()
     }
     const clear = (data: Command) => {
         // TODO: Handle options and arguments for clearing console
         clearOutput()
+        showInputArea()
     }
     const ping = (data: Command) => {
         const args = data.arguments || []
@@ -201,52 +213,95 @@ const CMDWindow = (props: CMDWindowProps) => {
             ttl = parseInt(ttlArg!.value)
         }
 
-        updateOutput(`\nPinging ${target} with ${size} bytes of data:`)
-        hideInputArea()
+        if (isValidUrl(target)) {
+            updateOutput(`\nPinging ${target} with ${size} bytes of data:`)
 
-        let sent = 0
-        let received = 0
-        let lost = 0
-        let pingTime: number[] = []
-        const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
-        const pingLoop = async () => {
-            for (let i = 0; i < count; i++) {
-                sent++
-                try {
+            let sent = 0
+            let received = 0
+            let lost = 0
+            let pingTime: number[] = []
+            const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+            const pingLoop = async () => {
+                for (let i = 0; i < count; i++) {
+                    sent++
                     const start = Date.now()
-                    const result = await actualPing(target, timeout)
+                    const result = await pingSimulator(target, timeout)
                     const elapsed = Date.now() - start
-                    updateOutput(`Reply from ${target}: bytes=${size} time=${result} TTL=${Math.floor(Math.random() * (ttl + 1))}`)
-                    hideInputArea()
-                    pingTime.push(result)
-                    received++
+                    if (result.status === 'ok') {
+                        received++
+                        pingTime.push(result.ping)
+                        updateOutput(`Reply from ${target}: bytes=${size} time=${result.ping} TTL=${Math.floor(Math.random() * (ttl + 1))}`)
+                        // scrollToBottom()
+                    }
+                    else {
+                        lost++
+                        updateOutput(`Ping to ${target} failed: bytes=${size} time=${result.ping} TTL=${Math.floor(Math.random() * (ttl + 1))}`)
+                        // scrollToBottom()
+                    }
                     const delayTime = Math.max(timeout - elapsed, 0)
                     if (i < count - 1) { // Don't delay after the last ping
                         await delay(delayTime)
                     }
-                } catch (error: any) {
-                    console.warn(`Ping failed: ${error.message}`)
-                    lost++
-                    updateOutput(`Ping to ${target} failed: bytes=${size} TTL=${Math.floor(Math.random() * (ttl + 1))}`)
-                    hideInputArea()
                 }
+            };
+
+            const pingAndPrintStats = async () => {
+                await pingLoop()
+                let pingStats = `\nPing statistics for ${target}:\n`
+                pingStats += `\t\tPackets: Sent = ${sent}, Received = ${received}, Lost = ${lost} (${Math.floor(lost / sent * 100)}% loss),\n`
+                pingStats += `Approximate round trip times in milli-seconds:\n`
+                pingStats += `\t\tMinimum = ${Math.min(...pingTime)}ms, Maximum = ${Math.max(...pingTime)}ms, Average = ${Math.floor(pingTime.reduce((a, b) => a + b, 0) / pingTime.length)}ms\n`
+                updateOutput(pingStats)
+                updateOutput('\n')
+                showInputArea()
+                // scrollToBottom()
+                
+                // setTimeout(() => {
+                //     console.log('Scroll to bottom after ping')
+                //     scrollToBottom()
+                // }, 1000);
             }
-        };
 
-        const pingAndPrintStats = async () => {
-            await pingLoop()
-            let pingStats = `\nPing statistics for ${target}:\n`
-            pingStats    += `\t\tPackets: Sent = ${sent}, Received = ${received}, Lost = ${lost} (${Math.floor(lost / sent * 100)}% loss),\n`
-            pingStats    += `Approximate round trip times in milli-seconds:\n`
-            pingStats    += `\t\tMinimum = ${Math.min(...pingTime)}ms, Maximum = ${Math.max(...pingTime)}ms, Average = ${Math.floor(pingTime.reduce((a, b) => a + b, 0) / pingTime.length)}ms\n`
-            updateOutput(pingStats)
-            updateOutput('\n')
+            pingAndPrintStats()
         }
+        else {
+            updateOutput(`Ping request could not find host ${target}. Please check the name and try again.`)
+            updateOutput('\n')
+            showInputArea()
+        }
+    }
+    const ipconfig = (data: Command) => {
+        const getIpAndPrintResult = async () => {
+            const ipRes = await fetch('https://api64.ipify.org?format=json')
+            const ipData = await ipRes.json()
 
-        pingAndPrintStats()
+            let outputStr = `\nIP Configuration\n\n`
+            outputStr += `Internet adapter Public:\n\n`
+            outputStr += `\tConnection-specific DNS Suffix. . : \n`
+            outputStr += `\tIPv6 Address. . . . . . . . . . . : ${isValidIPv6(ipData.ip) ? ipData.ip : ''}\n`
+            outputStr += `\tIPv4 Address. . . . . . . . . . . : ${isValidIPv4(ipData.ip) ? ipData.ip : ''}\n`
+            outputStr += `\tSubnet Mask . . . . . . . . . . . : 255.255.255.0 (Probably)\n`
+            outputStr += `\tDefault Gateway . . . . . . . . . : 192.168.0/1.1 (Probably)\n\n`
+
+            outputStr += `Ethernet adapter Bluetooth Network Connection:\n\n`
+            outputStr += `\tMedia State . . . . . . . . . . . : Media disconnected or connected. Who knows? You do.\n`
+            outputStr += `\tConnection-specific DNS Suffix  . : \n\n`
+    
+            updateOutput(outputStr)
+            showInputArea()
+        }
+        
+        getIpAndPrintResult()
+    }
+    const dir = (data: Command) => {
+        // TODO: List random files and directories
+    }
+    const exit = (data: Command) => {
+        // TODO: Close command window
     }
     const defaultCommand = (data: Command) => {
-        console.log(`${data.command} is not a command that is handled in the frontend yet. Sorry.`)
+        updateOutput(`${data.command}: command not supported yet. Sorry.`)
+        showInputArea()
     }
 
     const focusInputOnEvent = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -260,26 +315,32 @@ const CMDWindow = (props: CMDWindowProps) => {
                     const isTextSelectedInOutput = isClickInOutput && selectedText.length > 0
 
                     // Dont focus input if click is inside input or output
-                    if (!isClickInInput && !isClickInOutput) {
+                    if (!isClickInInput && !isClickInOutput && event.type === 'mouseup') {
                         focusInputArea()
                     }
                     // If click is in output check if there is text selected, if not, focus the input
-                    else if (isClickInOutput && !isTextSelectedInOutput) {
+                    if (isClickInOutput && !isTextSelectedInOutput && event.type === 'mouseup') {
                         // Focus the input only if there is no text selected in the output
                         focusInputArea()
                     }
                 }
-                else {
+                else { // First mount
                     focusInputArea()
                 }
             }
-        }, 100);
+        }, 100)
     }
     const focusInputArea = () => {
         if (inputArea.current) {
             const { value } = inputArea.current
             inputArea.current.setSelectionRange(value.length, value.length)
             inputArea.current.focus()
+        }
+    }
+    const scrollToBottom = () => {
+        if (inputArea.current !== null && inputArea.current.parentElement !== null && inputArea.current.parentElement.parentElement !== null) {
+            const contentDiv = inputArea.current.parentElement.parentElement
+            contentDiv.scrollTop = contentDiv.scrollHeight
         }
     }
     const hideInputArea = () => {
@@ -291,6 +352,7 @@ const CMDWindow = (props: CMDWindowProps) => {
         if (inputArea.current) {
             inputArea.current.style.display = ''
         }
+        focusInputArea()
     }
 
     const handleKeyDown: KeyboardEventHandler<HTMLTextAreaElement> = (event) => {
@@ -375,6 +437,7 @@ const CMDWindow = (props: CMDWindowProps) => {
                             {indentedText}
                         </p>
                     })
+                    
                 }
 
                 <div className={styles.inputContainer}>
