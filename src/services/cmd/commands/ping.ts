@@ -8,17 +8,18 @@ function requestImage(url: string): Promise<HTMLImageElement> {
         const img = new Image();
         img.onload = () => resolve(img);
         img.onerror = () => reject(new Error(`Failed to load image: ${url}`));
-        img.src = `${url}?random-no-cache=${Math.floor((1 + Math.random()) * 0x10000).toString(16)}`;
+        img.src = `?random-no-cache=${Math.floor((1 + Math.random()) * 0x10000).toString(16)}`;
     });
 }
 
 /**
  * Pings a URL.
  * @param  {string} url - The URL to ping.
+ * @param  {number} timeout - Optional timeout in milliseconds. Defaults to 5000ms.
  * @param  {number} multiplier - Optional factor to adjust the ping by. 0.3 works well for HTTP servers.
  * @returns {Promise<number>} A promise that resolves to the ping in milliseconds.
  */
-export const ping = (url: string, multiplier?: number): Promise<number> => {
+export const ping = (url: string, timeout: number = 1000, multiplier?: number): Promise<number> => {
     return new Promise((resolve, reject) => {
         const start = new Date().getTime();
         const response = () => {
@@ -28,7 +29,7 @@ export const ping = (url: string, multiplier?: number): Promise<number> => {
 
         requestImage(url).then(response).catch(response);
 
-        // Set a timeout for max-pings, 5s.
-        setTimeout(() => reject(new Error('Timeout')), 5000);
+        // Set a timeout for max-pings, using the provided timeout value.
+        setTimeout(() => reject(new Error('Timeout')), timeout);
     });
 };

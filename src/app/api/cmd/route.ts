@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 
-import { parseCommand, Command } from "@/services/cmd_new"
-import * as commandsJson from '@/services/cmd_new/commands.json'
+import { parseCommand, Command } from "@/services/cmd"
+import * as commandsJson from '@/services/cmd/commands.json'
 type Commands = Record<string, Command>
 const commands: Commands = commandsJson as Commands
 

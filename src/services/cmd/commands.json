@@ -2,7 +2,7 @@
     "test": {
         "command": "test",
         "usage": "test [-L|[-P [-e]] [-@]] dir",
-        "help": "YO!",
+        "help": "Test helper text...",
         "arguments": [
             {
                 "name": "dir",
@@ -180,7 +180,7 @@
             {
                 "option": "-n",
                 "usage": "-n count",
-                "description": "\t\t\tNumber of echo requests to send.",
+                "description": "\t\t\tNumber of requests to send.",
                 "arguments": [
                     {
                         "name": "count",

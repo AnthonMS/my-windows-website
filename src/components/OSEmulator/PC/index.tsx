@@ -42,8 +42,8 @@ const PCEmulator = () => {
         if (initialMount.current) {
             initialMount.current = false
             setStyles(styles)
-            openWindow(<CMDWindow />)
-            // openWindow(<WelcomeWindow />)
+            // openWindow(<CMDWindow />)
+            openWindow(<WelcomeWindow />)
             // openWindow(<AboutMeWindow />)
             // openWindow(<ContactWindow />)
             // openWindow(<ErrorWindow text='This is an error message. Wubba lubba dub dub!' />)

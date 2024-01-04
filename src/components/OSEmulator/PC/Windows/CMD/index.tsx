@@ -12,14 +12,16 @@ import axios from 'axios'
 
 import { isDirectorySyntax, isTouch } from '@/lib/utils'
 
-import * as commandsJson from '@/services/cmd_new/commands.json'
+import * as commandsJson from '@/services/cmd/commands.json'
 type Commands = Record<string, Command>
 const commands: Commands = commandsJson as Commands
 
-import { extractErrors, errorsToOutputString, Command } from '@/services/cmd_new'
+import { extractErrors, errorsToOutputString, Command } from '@/services/cmd'
 import { Res } from '@/app/api/cmd/route'
 
 import { useWindowStore } from '@/stores/windowStore'
+
+import { ping as actualPing } from '@/services/cmd/commands/ping'
 
 interface CommandHistoryItem {
     dir: string
@@ -28,7 +30,7 @@ interface CommandHistoryItem {
 export interface CMDWindowProps {
 }
 const CMDWindow = (props: CMDWindowProps) => {
-    const {  } = props
+    const { } = props
     const { openWindow } = useWindowStore()
     const inputArea = useRef<HTMLTextAreaElement | null>(null)
     const [inputAreaLines, setInputAreaLines] = useState(1)
@@ -38,7 +40,7 @@ const CMDWindow = (props: CMDWindowProps) => {
     const [command, setCommand] = useState<string>('')
     const [output, setOutput] = useState<string[]>(['Welcome to the Command Prompt Emulator!'])
 
-    const windowRef = useRef<{  } | null>(null)
+    const windowRef = useRef<{} | null>(null)
 
     const updateOutput = (str: string) => {
         hideInputArea()
@@ -50,7 +52,7 @@ const CMDWindow = (props: CMDWindowProps) => {
         setOutput([])
     }
     const updateCommandHistory = (commandItem: CommandHistoryItem) => {
-        setCommandHistory((prevHistory) => { 
+        setCommandHistory((prevHistory) => {
             setHistoryIndex([...prevHistory, commandItem].length)
             return [...prevHistory, commandItem]
         })
@@ -168,7 +170,80 @@ const CMDWindow = (props: CMDWindowProps) => {
         clearOutput()
     }
     const ping = (data: Command) => {
-        console.log('PING TARGET!', data)
+        const args = data.arguments || []
+        const opts = data.options || []
+        let timeout = 1000
+        let count = 4
+        let target = ''
+        let size = 32
+        let ttl = 64
+
+        const targetArg = args.find(arg => arg.name === 'target_name')
+        target = targetArg!.value
+        const option_count = opts.find(opt => opt.option === '-n')
+        if (option_count) { // If option_count is defined, then we know that the count argument is also defined
+            const countArg = option_count.arguments!.find(arg => arg.name === 'count')
+            count = parseInt(countArg!.value)
+        }
+        const option_timeout = opts.find(opt => opt.option === '-w')
+        if (option_timeout) { // If option_count is defined, then we know that the count argument is also defined
+            const timeoutArg = option_timeout.arguments!.find(arg => arg.name === 'timeout')
+            timeout = parseInt(timeoutArg!.value)
+        }
+        const option_size = opts.find(opt => opt.option === '-l')
+        if (option_size) { // If option_count is defined, then we know that the count argument is also defined
+            const sizeArg = option_size.arguments!.find(arg => arg.name === 'size')
+            size = parseInt(sizeArg!.value)
+        }
+        const option_ttl = opts.find(opt => opt.option === '-i')
+        if (option_ttl) { // If option_count is defined, then we know that the count argument is also defined
+            const ttlArg = option_ttl.arguments!.find(arg => arg.name === 'TTL')
+            ttl = parseInt(ttlArg!.value)
+        }
+
+        updateOutput(`\nPinging ${target} with ${size} bytes of data:`)
+        hideInputArea()
+
+        let sent = 0
+        let received = 0
+        let lost = 0
+        let pingTime: number[] = []
+        const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+        const pingLoop = async () => {
+            for (let i = 0; i < count; i++) {
+                sent++
+                try {
+                    const start = Date.now()
+                    const result = await actualPing(target, timeout)
+                    const elapsed = Date.now() - start
+                    updateOutput(`Reply from ${target}: bytes=${size} time=${result} TTL=${Math.floor(Math.random() * (ttl + 1))}`)
+                    hideInputArea()
+                    pingTime.push(result)
+                    received++
+                    const delayTime = Math.max(timeout - elapsed, 0)
+                    if (i < count - 1) { // Don't delay after the last ping
+                        await delay(delayTime)
+                    }
+                } catch (error: any) {
+                    console.warn(`Ping failed: ${error.message}`)
+                    lost++
+                    updateOutput(`Ping to ${target} failed: bytes=${size} TTL=${Math.floor(Math.random() * (ttl + 1))}`)
+                    hideInputArea()
+                }
+            }
+        };
+
+        const pingAndPrintStats = async () => {
+            await pingLoop()
+            let pingStats = `\nPing statistics for ${target}:\n`
+            pingStats    += `\t\tPackets: Sent = ${sent}, Received = ${received}, Lost = ${lost} (${Math.floor(lost / sent * 100)}% loss),\n`
+            pingStats    += `Approximate round trip times in milli-seconds:\n`
+            pingStats    += `\t\tMinimum = ${Math.min(...pingTime)}ms, Maximum = ${Math.max(...pingTime)}ms, Average = ${Math.floor(pingTime.reduce((a, b) => a + b, 0) / pingTime.length)}ms\n`
+            updateOutput(pingStats)
+            updateOutput('\n')
+        }
+
+        pingAndPrintStats()
     }
     const defaultCommand = (data: Command) => {
         console.log(`${data.command} is not a command that is handled in the frontend yet. Sorry.`)
@@ -260,7 +335,7 @@ const CMDWindow = (props: CMDWindowProps) => {
                 const nextCommand = commandHistory[historyIndex + 1]
                 setCommand(nextCommand.command)
                 setHistoryIndex(historyIndex + 1)
-            } 
+            }
             else if (historyIndex === commandHistory.length - 1) {
                 setCommand('')
                 setHistoryIndex(commandHistory.length)
@@ -270,7 +345,7 @@ const CMDWindow = (props: CMDWindowProps) => {
                 setCommand(commandHistory[0].command)
                 setHistoryIndex(0)
             }
-            
+
         }
     }
 
