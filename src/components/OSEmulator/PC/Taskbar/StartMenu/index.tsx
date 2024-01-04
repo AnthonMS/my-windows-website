@@ -20,7 +20,7 @@ import WelcomeWindow from '../../Windows/Welcome'
 import AboutMeWindow from '../../Windows/AboutMe'
 import ContactWindow from '../../Windows/Contact'
 import { isTouch } from '@/lib/utils'
-import { findParentWithClass } from '@/lib/util_DOM'
+import { findParentWithClass, isMouseEvent } from '@/lib/util_DOM'
 
 export interface StartMenuProps {
     toggleStartMenu: Function
@@ -29,33 +29,20 @@ const StartMenu = (props: StartMenuProps) => {
     const { toggleStartMenu } = props
     const { openWindow, styles } = useWindowStore()
 
-    function isMouseEvent(event: React.MouseEvent<HTMLLIElement> | React.TouchEvent<HTMLLIElement>): event is React.MouseEvent<HTMLLIElement> {
-        return 'clientX' in event;
-    }
     const click = (event: React.MouseEvent<HTMLLIElement> | React.TouchEvent<HTMLLIElement>) => {
         const target = event.target
         if (target instanceof HTMLLIElement) {
             const btnItem: string = target.getAttribute('data-item') as string
 
-            if (isMouseEvent(event) && event.button === 0) {
-                console.log('Left click!', btnItem)
-            }
-            else {
-                console.log('Touch event!')
-            }
-
             switch (btnItem) {
                 case 'welcome':
                     openWindow(<WelcomeWindow />)
-                    toggleStartMenu()
                     break
                 case 'about':
                     openWindow(<AboutMeWindow />)
-                    toggleStartMenu()
                     break
                 case 'contact':
                     openWindow(<ContactWindow />)
-                    toggleStartMenu()
                     break
                 case 'computer':
                     console.log('computer clicked!')
@@ -66,10 +53,16 @@ const StartMenu = (props: StartMenuProps) => {
                 case 'project-ha-cards':
                     window.open('https://github.com/AnthonMS/my-cards', '_blank')
                     break
+                case 'this':
+                    window.open('https://github.com/AnthonMS/my-windows-website', '_blank')
+                    break
                 default:
                     console.error('Start Menu click unhandled:', target)
                     break;
             }
+
+
+            toggleStartMenu()
         }
     }
 
@@ -98,7 +91,7 @@ const StartMenu = (props: StartMenuProps) => {
         }
     }
 
-    
+
     const startmenuMouseEvents = !isTouch() ? {
         onMouseDown: handleStartMenuInput
     } : {}
@@ -120,11 +113,11 @@ const StartMenu = (props: StartMenuProps) => {
                     <ul className={styles.dropdownContent}>
                         <li className={styles.dropdownItem} data-item='this'>
                             <Image className={styles.dropdownItemIcon} src={windowsLogo} alt={`game-icon`} />
-                            <p className={styles.dropdownItemText}>This</p>
+                            <p className={styles.dropdownItemText}>This (Repo)</p>
                         </li>
                         <li className={styles.dropdownItem} data-item='project-ha-cards'>
                             <Image className={styles.dropdownItemIcon} src={haIcon} alt={`game-icon`} />
-                            <p className={styles.dropdownItemText}>Home Assistant UI Bundle</p>
+                            <p className={styles.dropdownItemText}>Home Assistant UI Bundle (Repo)</p>
                         </li>
                     </ul>
                 </li>

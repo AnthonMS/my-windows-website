@@ -42,7 +42,7 @@ const PCEmulator = () => {
         if (initialMount.current) {
             initialMount.current = false
             setStyles(styles)
-            // openWindow(<CMDWindow />)
+            openWindow(<CMDWindow />)
             // openWindow(<WelcomeWindow />)
             // openWindow(<AboutMeWindow />)
             // openWindow(<ContactWindow />)

@@ -121,7 +121,6 @@ const Taskbar = (props: TaskbarProps) => {
                 }
             </div>
 
-                {/* TODO: Write clock logic */}
             <div className={styles.rightContainer}>
                 <p className={styles.clock}><Time /></p>
             </div>

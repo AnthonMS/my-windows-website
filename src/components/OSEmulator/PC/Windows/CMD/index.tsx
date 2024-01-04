@@ -33,6 +33,7 @@ const CMDWindow = (props: CMDWindowProps) => {
     const inputArea = useRef<HTMLTextAreaElement | null>(null)
     const [inputAreaLines, setInputAreaLines] = useState(1)
     const [commandHistory, setCommandHistory] = useState<CommandHistoryItem[]>([]);
+    const [historyIndex, setHistoryIndex] = useState(0)
     const [currentDir, setCurrentDir] = useState<string>('C:\\> ')
     const [command, setCommand] = useState<string>('')
     const [output, setOutput] = useState<string[]>(['Welcome to the Command Prompt Emulator!'])
@@ -49,7 +50,10 @@ const CMDWindow = (props: CMDWindowProps) => {
         setOutput([])
     }
     const updateCommandHistory = (commandItem: CommandHistoryItem) => {
-        setCommandHistory((prevHistory) => [...prevHistory, commandItem])
+        setCommandHistory((prevHistory) => { 
+            setHistoryIndex([...prevHistory, commandItem].length)
+            return [...prevHistory, commandItem]
+        })
     }
 
     const execute = async () => {
@@ -60,6 +64,7 @@ const CMDWindow = (props: CMDWindowProps) => {
         updateCommandHistory(commandItem)
         updateOutput(currentDir + command)
         setCommand('')
+        // here we should set the commandHistoryIndex to the last index in commandHistory
 
         try {
             const res = await axios.post('/api/cmd', commandItem)
@@ -143,7 +148,6 @@ const CMDWindow = (props: CMDWindowProps) => {
             updateOutput(outputMsg)
         }
     }
-
     const pwd = (data: Command) => {
         // TODO: Handle options pwd
         // RegEx to capture content between ":" and ">" in currentDir
@@ -159,7 +163,6 @@ const CMDWindow = (props: CMDWindowProps) => {
         currentPath = currentPath.replace(/\\/g, '/') // Replace all "\\" with "/"
         updateOutput(currentPath)
     }
-
     const clear = (data: Command) => {
         // TODO: Handle options and arguments for clearing console
         clearOutput()
@@ -167,7 +170,6 @@ const CMDWindow = (props: CMDWindowProps) => {
     const ping = (data: Command) => {
         console.log('PING TARGET!', data)
     }
-
     const defaultCommand = (data: Command) => {
         console.log(`${data.command} is not a command that is handled in the frontend yet. Sorry.`)
     }
@@ -230,6 +232,45 @@ const CMDWindow = (props: CMDWindowProps) => {
         else if (event.key === 'ArrowLeft' && cursorPosition <= currentDir.length) {
             // If left arrow key is pressed at or before the end of currentDir, prevent moving further left
             event.preventDefault()
+        }
+
+        // else if event.key === 'ArrowUp' or 'ArrowDown' then handle command history
+        else if (event.key === 'ArrowUp') {
+            event.preventDefault()
+            if (historyIndex > 0) {
+                const prevCommand = commandHistory[historyIndex - 1]
+                setCommand(prevCommand.command)
+                setHistoryIndex(historyIndex - 1)
+            }
+            // If we are at the first command and the command is not empty, set the command to an empty string
+            else if (historyIndex === 0 && command !== '') {
+                setHistoryIndex(0)
+                setCommand('')
+            }
+            // If we are at the first command and the command is empty, go to the last command
+            else if (historyIndex === 0 && command === '') {
+                const lastCommand = commandHistory[commandHistory.length - 1]
+                setCommand(lastCommand.command)
+                setHistoryIndex(commandHistory.length - 1)
+            }
+        }
+        else if (event.key === 'ArrowDown') {
+            event.preventDefault()
+            if (historyIndex < commandHistory.length - 1) {
+                const nextCommand = commandHistory[historyIndex + 1]
+                setCommand(nextCommand.command)
+                setHistoryIndex(historyIndex + 1)
+            } 
+            else if (historyIndex === commandHistory.length - 1) {
+                setCommand('')
+                setHistoryIndex(commandHistory.length)
+            }
+            // If the current command is empty and there are commands in the history, set the command to the first command in the history
+            else if (command === '' && commandHistory.length > 0) {
+                setCommand(commandHistory[0].command)
+                setHistoryIndex(0)
+            }
+            
         }
     }
 

@@ -26,6 +26,9 @@ export const findParentWithClass = (element: Element | null, classname: string |
 }
 
 
+export const isMouseEvent = (event: React.MouseEvent<HTMLLIElement> | React.TouchEvent<HTMLLIElement>): event is React.MouseEvent<HTMLLIElement> => {
+    return 'clientX' in event;
+}
 export const getClientCoordinates = (event: MouseEvent | TouchEvent) => {
     let clientX: number, clientY: number;
     if ('clientX' in event) {
