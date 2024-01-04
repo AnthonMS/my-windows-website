@@ -340,14 +340,13 @@
 
     "ipconfig": {
         "command": "ipconfig",
-        "usage": "ipconfig [/allcompartments] [/? | /all | \n\t\t/renew [adapter] | /release [adapter] |\n\t\t/renew6 [adapter] | /release6 [adapter] |\n\t\t/flushdns | /displaydns | /registerdns |\n\t\t/showclassid adapter |\n\t\t/setclassid adapter [classidtoset] |\n\t\t/showclassid6 adapter |\n\t\t/setclassid6 adapter [classidtoset]]",
-        "help": "ipconfig help...",
-        "arguments": [],
+        "usage": "ipconfig [-allcompartments] [-? | -all | \n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t-renew [adapter] | -release [adapter] |\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t-renew6 [adapter] | -release6 [adapter] |\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t-flushdns | -displaydns | -registerdns |\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t-showclassid adapter |\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t-setclassid adapter [classidtoset] |\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t-showclassid6 adapter |\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t-setclassid6 adapter [classidtoset]]",
+        "help": "\tThe default is to display only the IP address, subnet mask and\n\tdefault gateway for each adapter bound to TCP/IP.",
         "options": [
             {
                 "option": "--help",
                 "usage": "--help",
-                "description": "\t\t Display help message"
+                "description": "\t Display help message"
             },
             {
                 "option": "-all",
@@ -357,7 +356,92 @@
             {
                 "option": "-release",
                 "usage": "-release",
-                "description": "\t\t Release the IPv4 address for the specified adapter"
+                "description": " Release the IPv4 address for the specified adapter"
+            }
+        ]
+    },
+
+    "exit": {
+        "command": "exit",
+        "usage": "exit [n]",
+        "help": "\tExit the shell.\n\n\tExits the shell with a status of N.  If N is omitted, the exit status\n\tis that of the last command executed.",
+        "arguments": [
+            {
+                "name": "n",
+                "value": "",
+                "required": false,
+                "description": "exit code"
+            }
+        ]
+    },
+
+    "dir": {
+        "command": "dir",
+        "usage": "dir [OPTION]... [FILE]...",
+        "help": "\tList information about the FILEs (the current directory by default).\n\tSort entries alphabetically if none of -cftuvSUX nor --sort is specified.",
+        "arguments": [
+            {
+                "name": "FILE",
+                "value": "",
+                "required": false,
+                "description": "File or directory to list information about"
+            }
+        ],
+        "options": [
+            {
+                "option": "--help",
+                "usage": "--help",
+                "description": " Display help message"
+            },
+            {
+                "option": "-a",
+                "usage": "-a",
+                "description": "\t\t Do not ignore entries starting with ."
+            },
+            {
+                "option": "-A",
+                "usage": "-A",
+                "description": "\t\t Do not list implied . and .."
+            },
+            {
+                "option": "-b",
+                "usage": "-b",
+                "description": "\t\t print C-style escapes for nongraphic characters\n\t\t\t\t\t\t\t\twith -l, scale sizes by SIZE when printing them;\n\t\t\t\t\t\t\t\te.g., '--block-size=M'; see SIZE format below"
+            },
+            {
+                "option": "-B",
+                "usage": "-B",
+                "description": "\t\t do not list implied entries ending with ~"
+            },
+            {
+                "option": "-d",
+                "usage": "-d",
+                "description": "\t\t list directories themselves, not their contents"
+            },
+            {
+                "option": "-D",
+                "usage": "-D",
+                "description": "\t\t generate output designed for Emacs' dired mode"
+            },
+            {
+                "option": "-f",
+                "usage": "-f",
+                "description": "\t\t do not sort, enable -aU, disable -ls --color"
+            },
+            {
+                "option": "-G",
+                "usage": "-G",
+                "description": "\t\t in a long listing, don't print group names"
+            },
+            {
+                "option": "-G",
+                "usage": "-G",
+                "description": "\t\t in a long listing, don't print group names"
+            },
+            {
+                "option": "-i",
+                "usage": "-i",
+                "description": "\t\t print the index number of each file"
             }
         ]
     }

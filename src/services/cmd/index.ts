@@ -132,8 +132,8 @@ export function parseCommand(command: string, commandConfig: Command): Command {
 
     return {
         command: commandPart?.toLowerCase() || '',
-        usage: '',
-        help: '',
+        usage: commandConfig.usage || '', // use commandConfig.usage if it's present
+        help: commandConfig.help || '', // use commandConfig.help if it's present
         options: parsedOptions,
         arguments: commandArgs,
     }
@@ -323,8 +323,8 @@ export const processArguments = (args: Argument[], options: Option[] = []): stri
     return argOutputMsg;
 };
 
-export const errorsToOutputString = (commandConfig: Command, command:Command, err: string
-):string => {
+export const errorsToOutputString = (commandConfig: Command, command: Command, err: string
+): string => {
 
     const errors = extractErrorObjects(command)
 
@@ -336,7 +336,7 @@ export const errorsToOutputString = (commandConfig: Command, command:Command, er
             outputMsg += `Usage: ${commandConfig.usage}\n\n`
 
             outputMsg += `\tProblem option(s):\n`
-            errors.errorOptions.map((errObj:Option) => {
+            errors.errorOptions.map((errObj: Option) => {
                 outputMsg += `\t\t` + `${errObj.option} \t ${errObj.error}\n`;
             })
             outputMsg += `\n`
@@ -345,6 +345,12 @@ export const errorsToOutputString = (commandConfig: Command, command:Command, er
                 outputMsg += `\tOptions:\n`
                 outputMsg += processOptions(commandConfig.options)
             }
+            outputMsg += `\n`
+            
+            if (commandConfig.arguments) {
+                outputMsg += `\tArguments:\n`
+                outputMsg += processArguments(commandConfig.arguments, commandConfig.options);
+            }
 
             break;
         case 'MISSING_ARG':
@@ -352,7 +358,7 @@ export const errorsToOutputString = (commandConfig: Command, command:Command, er
             outputMsg += `Usage: ${commandConfig.usage}\n\n`
 
             outputMsg += `\tProblem argument(s):\n`
-            errors.errorArguments.map((errArg:Argument) => {
+            errors.errorArguments.map((errArg: Argument) => {
                 outputMsg += `\t\t` + `${errArg.name} \t ${errArg.error}\n`;
             })
             outputMsg += `\n`
@@ -361,6 +367,12 @@ export const errorsToOutputString = (commandConfig: Command, command:Command, er
                 outputMsg += `\tArguments:\n`
                 outputMsg += processArguments(commandConfig.arguments, commandConfig.options);
             }
+            outputMsg += `\n`
+
+            if (commandConfig.options) {
+                outputMsg += `\tOptions:\n`
+                outputMsg += processOptions(commandConfig.options)
+            }
 
             break
         case 'UNKNOWN_ARG':
@@ -368,9 +380,31 @@ export const errorsToOutputString = (commandConfig: Command, command:Command, er
             outputMsg += `Usage: ${commandConfig.usage}\n\n`
 
             outputMsg += `\tProblem argument(s):\n`
-            errors.errorArguments.map((errArg:Argument) => {
+            errors.errorArguments.map((errArg: Argument) => {
                 outputMsg += `\t\t` + `${errArg.value} \t ${errArg.error}\n`;
             })
+            outputMsg += `\n`
+
+            if (commandConfig.arguments) {
+                outputMsg += `\tArguments:\n`
+                outputMsg += processArguments(commandConfig.arguments, commandConfig.options);
+            }
+            outputMsg += `\n`
+            
+            if (commandConfig.options) {
+                outputMsg += `\tOptions:\n`
+                outputMsg += processOptions(commandConfig.options)
+            }
+
+            break
+        case 'HELP':
+            outputMsg += `Usage: ${commandConfig.usage}\n\n`
+            outputMsg += `${commandConfig.help}\n\n`
+
+            if (commandConfig.options) {
+                outputMsg += `\tOptions:\n`
+                outputMsg += processOptions(commandConfig.options)
+            }
             outputMsg += `\n`
 
             if (commandConfig.arguments) {

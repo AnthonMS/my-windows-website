@@ -40,7 +40,7 @@ const CMDWindow = (props: CMDWindowProps) => {
     const [command, setCommand] = useState<string>('')
     const [output, setOutput] = useState<string[]>(['Welcome to the Command Prompt Emulator!'])
 
-    const windowRef = useRef<{} | null>(null)
+    const windowRef = useRef<{ close: () => void } | null>(null)
 
     const updateOutput = (str: string) => {
         setOutput((prev) => [...prev, str])
@@ -83,34 +83,20 @@ const CMDWindow = (props: CMDWindowProps) => {
                 const cmdObj: Command = data.command as Command
                 const errors = extractErrors(cmdObj)
 
+                const helpOption = cmdObj.options?.find(arg => arg.option === '--help')
                 if (errors.length > 0) {
                     const errOutput = errorsToOutputString(data.config!, cmdObj, errors[0])
                     updateOutput(errOutput)
                     showInputArea()
                 }
+                else if (helpOption) {
+                    const helpOutput = errorsToOutputString(data.config!, cmdObj, 'HELP')
+                    updateOutput(helpOutput)
+                    showInputArea()
+                }
                 else {
-                    // console.log('EXECUTE COMMAND; NO ERRORS!', cmdObj)
-                    // Handle command
-                    switch (cmdObj.command) {
-                        case 'cd':
-                            cd(cmdObj)
-                            break;
-                        case 'pwd':
-                            pwd(cmdObj)
-                            break;
-                        case 'clear':
-                            clear(cmdObj)
-                            break;
-                        case 'ping':
-                            ping(cmdObj)
-                            break;
-                        case 'ipconfig':
-                            ipconfig(cmdObj)
-                            break;
-                        default:
-                            defaultCommand(cmdObj)
-                            break;
-                    }
+                    const commandFunc = commandFuncs[cmdObj.command] || commandFuncs.defaultCommand
+                    commandFunc(cmdObj)
                 }
             }
         }
@@ -119,189 +105,196 @@ const CMDWindow = (props: CMDWindowProps) => {
         }
 
     }
-
-    const cd = (data: Command) => {
-        // TODO: Handle options for changing directory
-        // Since command was parsed successfully, we know there is a single argument in data
-        let path = data.arguments!.find(arg => arg.name === 'dir')!.value
-        const pathValid = isDirectorySyntax(path)
-        if (pathValid) {
-            if (typeof pathValid === 'string') {
-                path = pathValid
-            }
-            // Remove the ending "/" from the path if it has one
-            path = path.replace(/\/$/, '')
-
-            const startsWithSlash = /^\//.test(path)
-            if (startsWithSlash) { // if path starts with "/" then we want to override the currentDir with C:\${path}>
-                const finalPath = path.replace(/\//g, '\\') // Replace '/' with '\'
-                setCurrentDir(`C:${finalPath}> `)
-
-            }
-            else { // if path does not start with "/" we want to add to currentDir
-                // RegEx to capture content between ":" and ">" in currentDir
-                const currentPathMatch = currentDir.match(/:(.*?)(?=>)/)
-                // Extracting the captured content or empty string
-                let finalPath = currentPathMatch ? currentPathMatch[1] : ''
-                const endsWithBackslash = /\\$/.test(finalPath)
-                if (!endsWithBackslash) {
-                    finalPath += '\\'
+    type CommandFuncs = {
+        [key: string]: (data: Command) => void
+    }
+    const commandFuncs: CommandFuncs = {
+        cd: (data: Command) => {
+            // TODO: Handle options for changing directory
+            // Since command was parsed successfully, we know there is a single argument in data
+            let path = data.arguments!.find(arg => arg.name === 'dir')!.value
+            const pathValid = isDirectorySyntax(path)
+            if (pathValid) {
+                if (typeof pathValid === 'string') {
+                    path = pathValid
                 }
-                path = path.replace(/\//g, '\\') // Replace '/' with '\'
-                finalPath += path
-                setCurrentDir(`C:${finalPath}> `)
+                // Remove the ending "/" from the path if it has one
+                path = path.replace(/\/$/, '')
 
-            }
-        }
-        else {
-            const outputMsg = `${data.command}: path invalid "${path}"\n`
-            updateOutput(outputMsg)
-        }
+                const startsWithSlash = /^\//.test(path)
+                if (startsWithSlash) { // if path starts with "/" then we want to override the currentDir with C:\${path}>
+                    const finalPath = path.replace(/\//g, '\\') // Replace '/' with '\'
+                    setCurrentDir(`C:${finalPath}> `)
 
-        showInputArea()
-    }
-    const pwd = (data: Command) => {
-        // TODO: Handle options pwd
-        // RegEx to capture content between ":" and ">" in currentDir
-        const currentPathMatch = currentDir.match(/:(.*?)(?=>)/)
-        // Extracting the matched content or empty string
-        let currentPath = currentPathMatch ? currentPathMatch[1] : ''
-        const endsWithBackslash = /\\$/.test(currentPath)
-        if (!endsWithBackslash) {
-            currentPath += '\\'
-        }
-        const currentDrive = currentDir.charAt(0)
-        currentPath = "\\" + currentDrive + currentPath
-        currentPath = currentPath.replace(/\\/g, '/') // Replace all "\\" with "/"
-        updateOutput(currentPath)
-        showInputArea()
-    }
-    const clear = (data: Command) => {
-        // TODO: Handle options and arguments for clearing console
-        clearOutput()
-        showInputArea()
-    }
-    const ping = (data: Command) => {
-        const args = data.arguments || []
-        const opts = data.options || []
-        let timeout = 1000
-        let count = 4
-        let target = ''
-        let size = 32
-        let ttl = 64
-
-        const targetArg = args.find(arg => arg.name === 'target_name')
-        target = targetArg!.value
-        const option_count = opts.find(opt => opt.option === '-n')
-        if (option_count) { // If option_count is defined, then we know that the count argument is also defined
-            const countArg = option_count.arguments!.find(arg => arg.name === 'count')
-            count = parseInt(countArg!.value)
-        }
-        const option_timeout = opts.find(opt => opt.option === '-w')
-        if (option_timeout) { // If option_count is defined, then we know that the count argument is also defined
-            const timeoutArg = option_timeout.arguments!.find(arg => arg.name === 'timeout')
-            timeout = parseInt(timeoutArg!.value)
-        }
-        const option_size = opts.find(opt => opt.option === '-l')
-        if (option_size) { // If option_count is defined, then we know that the count argument is also defined
-            const sizeArg = option_size.arguments!.find(arg => arg.name === 'size')
-            size = parseInt(sizeArg!.value)
-        }
-        const option_ttl = opts.find(opt => opt.option === '-i')
-        if (option_ttl) { // If option_count is defined, then we know that the count argument is also defined
-            const ttlArg = option_ttl.arguments!.find(arg => arg.name === 'TTL')
-            ttl = parseInt(ttlArg!.value)
-        }
-
-        if (isValidUrl(target)) {
-            updateOutput(`\nPinging ${target} with ${size} bytes of data:`)
-
-            let sent = 0
-            let received = 0
-            let lost = 0
-            let pingTime: number[] = []
-            const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
-            const pingLoop = async () => {
-                for (let i = 0; i < count; i++) {
-                    sent++
-                    const start = Date.now()
-                    const result = await pingSimulator(target, timeout)
-                    const elapsed = Date.now() - start
-                    if (result.status === 'ok') {
-                        received++
-                        pingTime.push(result.ping)
-                        updateOutput(`Reply from ${target}: bytes=${size} time=${result.ping} TTL=${Math.floor(Math.random() * (ttl + 1))}`)
-                        // scrollToBottom()
-                    }
-                    else {
-                        lost++
-                        updateOutput(`Ping to ${target} failed: bytes=${size} time=${result.ping} TTL=${Math.floor(Math.random() * (ttl + 1))}`)
-                        // scrollToBottom()
-                    }
-                    const delayTime = Math.max(timeout - elapsed, 0)
-                    if (i < count - 1) { // Don't delay after the last ping
-                        await delay(delayTime)
-                    }
                 }
-            };
+                else { // if path does not start with "/" we want to add to currentDir
+                    // RegEx to capture content between ":" and ">" in currentDir
+                    const currentPathMatch = currentDir.match(/:(.*?)(?=>)/)
+                    // Extracting the captured content or empty string
+                    let finalPath = currentPathMatch ? currentPathMatch[1] : ''
+                    const endsWithBackslash = /\\$/.test(finalPath)
+                    if (!endsWithBackslash) {
+                        finalPath += '\\'
+                    }
+                    path = path.replace(/\//g, '\\') // Replace '/' with '\'
+                    finalPath += path
+                    setCurrentDir(`C:${finalPath}> `)
 
-            const pingAndPrintStats = async () => {
-                await pingLoop()
-                let pingStats = `\nPing statistics for ${target}:\n`
-                pingStats += `\t\tPackets: Sent = ${sent}, Received = ${received}, Lost = ${lost} (${Math.floor(lost / sent * 100)}% loss),\n`
-                pingStats += `Approximate round trip times in milli-seconds:\n`
-                pingStats += `\t\tMinimum = ${Math.min(...pingTime)}ms, Maximum = ${Math.max(...pingTime)}ms, Average = ${Math.floor(pingTime.reduce((a, b) => a + b, 0) / pingTime.length)}ms\n`
-                updateOutput(pingStats)
+                }
+            }
+            else {
+                const outputMsg = `${data.command}: path invalid "${path}"\n`
+                updateOutput(outputMsg)
+            }
+
+            showInputArea()
+        },
+        pwd: (data: Command) => {
+            // TODO: Handle options pwd
+            // RegEx to capture content between ":" and ">" in currentDir
+            const currentPathMatch = currentDir.match(/:(.*?)(?=>)/)
+            // Extracting the matched content or empty string
+            let currentPath = currentPathMatch ? currentPathMatch[1] : ''
+            const endsWithBackslash = /\\$/.test(currentPath)
+            if (!endsWithBackslash) {
+                currentPath += '\\'
+            }
+            const currentDrive = currentDir.charAt(0)
+            currentPath = "\\" + currentDrive + currentPath
+            currentPath = currentPath.replace(/\\/g, '/') // Replace all "\\" with "/"
+            updateOutput(currentPath)
+            showInputArea()
+        },
+        clear: (data: Command) => {
+            // TODO: Handle options and arguments for clearing console
+            clearOutput()
+            showInputArea()
+        },
+        ping: (data: Command) => {
+            const args = data.arguments || []
+            const opts = data.options || []
+            let timeout = 1000
+            let count = 4
+            let target = ''
+            let size = 32
+            let ttl = 64
+
+            const targetArg = args.find(arg => arg.name === 'target_name')
+            target = targetArg!.value
+            const option_count = opts.find(opt => opt.option === '-n')
+            if (option_count) { // If option_count is defined, then we know that the count argument is also defined
+                const countArg = option_count.arguments!.find(arg => arg.name === 'count')
+                count = parseInt(countArg!.value)
+            }
+            const option_timeout = opts.find(opt => opt.option === '-w')
+            if (option_timeout) { // If option_count is defined, then we know that the count argument is also defined
+                const timeoutArg = option_timeout.arguments!.find(arg => arg.name === 'timeout')
+                timeout = parseInt(timeoutArg!.value)
+            }
+            const option_size = opts.find(opt => opt.option === '-l')
+            if (option_size) { // If option_count is defined, then we know that the count argument is also defined
+                const sizeArg = option_size.arguments!.find(arg => arg.name === 'size')
+                size = parseInt(sizeArg!.value)
+            }
+            const option_ttl = opts.find(opt => opt.option === '-i')
+            if (option_ttl) { // If option_count is defined, then we know that the count argument is also defined
+                const ttlArg = option_ttl.arguments!.find(arg => arg.name === 'TTL')
+                ttl = parseInt(ttlArg!.value)
+            }
+
+            if (isValidUrl(target)) {
+                updateOutput(`\nPinging ${target} with ${size} bytes of data:`)
+
+                let sent = 0
+                let received = 0
+                let lost = 0
+                let pingTime: number[] = []
+                const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+                const pingLoop = async () => {
+                    for (let i = 0; i < count; i++) {
+                        sent++
+                        const start = Date.now()
+                        const result = await pingSimulator(target, timeout)
+                        const elapsed = Date.now() - start
+                        if (result.status === 'ok') {
+                            received++
+                            pingTime.push(result.ping)
+                            updateOutput(`Reply from ${target}: bytes=${size} time=${result.ping} TTL=${Math.floor(Math.random() * (ttl + 1))}`)
+                            // scrollToBottom()
+                        }
+                        else {
+                            lost++
+                            updateOutput(`Ping to ${target} failed: bytes=${size} time=${result.ping} TTL=${Math.floor(Math.random() * (ttl + 1))}`)
+                            // scrollToBottom()
+                        }
+                        const delayTime = Math.max(timeout - elapsed, 0)
+                        if (i < count - 1) { // Don't delay after the last ping
+                            await delay(delayTime)
+                        }
+                    }
+                };
+
+                const pingAndPrintStats = async () => {
+                    await pingLoop()
+                    let pingStats = `\nPing statistics for ${target}:\n`
+                    pingStats += `\t\tPackets: Sent = ${sent}, Received = ${received}, Lost = ${lost} (${Math.floor(lost / sent * 100)}% loss),\n`
+                    pingStats += `Approximate round trip times in milli-seconds:\n`
+                    pingStats += `\t\tMinimum = ${Math.min(...pingTime)}ms, Maximum = ${Math.max(...pingTime)}ms, Average = ${Math.floor(pingTime.reduce((a, b) => a + b, 0) / pingTime.length)}ms\n`
+                    updateOutput(pingStats)
+                    updateOutput('\n')
+                    showInputArea()
+                    // scrollToBottom()
+
+                    // setTimeout(() => {
+                    //     console.log('Scroll to bottom after ping')
+                    //     scrollToBottom()
+                    // }, 1000);
+                }
+
+                pingAndPrintStats()
+            }
+            else {
+                updateOutput(`Ping request could not find host ${target}. Please check the name and try again.`)
                 updateOutput('\n')
                 showInputArea()
-                // scrollToBottom()
-                
-                // setTimeout(() => {
-                //     console.log('Scroll to bottom after ping')
-                //     scrollToBottom()
-                // }, 1000);
+            }
+        },
+        ipconfig: (data: Command) => {
+            const getIpAndPrintResult = async () => {
+                const ipRes = await fetch('https://api64.ipify.org?format=json')
+                const ipData = await ipRes.json()
+
+                let outputStr = `\nIP Configuration\n\n`
+                outputStr += `Internet adapter Public:\n\n`
+                outputStr += `\tConnection-specific DNS Suffix. . : \n`
+                outputStr += `\tIPv6 Address. . . . . . . . . . . : ${isValidIPv6(ipData.ip) ? ipData.ip : ''}\n`
+                outputStr += `\tIPv4 Address. . . . . . . . . . . : ${isValidIPv4(ipData.ip) ? ipData.ip : ''}\n`
+                outputStr += `\tSubnet Mask . . . . . . . . . . . : 255.255.255.0 (Probably)\n`
+                outputStr += `\tDefault Gateway . . . . . . . . . : 192.168.0/1.1 (Probably)\n\n`
+
+                outputStr += `Ethernet adapter Bluetooth Network Connection:\n\n`
+                outputStr += `\tMedia State . . . . . . . . . . . : Media disconnected or connected. Who knows? You do.\n`
+                outputStr += `\tConnection-specific DNS Suffix  . : \n\n`
+
+                updateOutput(outputStr)
+                showInputArea()
             }
 
-            pingAndPrintStats()
-        }
-        else {
-            updateOutput(`Ping request could not find host ${target}. Please check the name and try again.`)
-            updateOutput('\n')
+            getIpAndPrintResult()
+        },
+        dir: (data: Command) => {
+            // TODO: List random files and directories
+            showInputArea()
+        },
+        exit: (data: Command) => {
+            if (windowRef.current !== null) {
+                windowRef.current.close()
+            }
+        },
+        defaultCommand: (data: Command) => {
+            updateOutput(`${data.command}: command not supported yet. Sorry.`)
             showInputArea()
         }
-    }
-    const ipconfig = (data: Command) => {
-        const getIpAndPrintResult = async () => {
-            const ipRes = await fetch('https://api64.ipify.org?format=json')
-            const ipData = await ipRes.json()
-
-            let outputStr = `\nIP Configuration\n\n`
-            outputStr += `Internet adapter Public:\n\n`
-            outputStr += `\tConnection-specific DNS Suffix. . : \n`
-            outputStr += `\tIPv6 Address. . . . . . . . . . . : ${isValidIPv6(ipData.ip) ? ipData.ip : ''}\n`
-            outputStr += `\tIPv4 Address. . . . . . . . . . . : ${isValidIPv4(ipData.ip) ? ipData.ip : ''}\n`
-            outputStr += `\tSubnet Mask . . . . . . . . . . . : 255.255.255.0 (Probably)\n`
-            outputStr += `\tDefault Gateway . . . . . . . . . : 192.168.0/1.1 (Probably)\n\n`
-
-            outputStr += `Ethernet adapter Bluetooth Network Connection:\n\n`
-            outputStr += `\tMedia State . . . . . . . . . . . : Media disconnected or connected. Who knows? You do.\n`
-            outputStr += `\tConnection-specific DNS Suffix  . : \n\n`
-    
-            updateOutput(outputStr)
-            showInputArea()
-        }
-        
-        getIpAndPrintResult()
-    }
-    const dir = (data: Command) => {
-        // TODO: List random files and directories
-    }
-    const exit = (data: Command) => {
-        // TODO: Close command window
-    }
-    const defaultCommand = (data: Command) => {
-        updateOutput(`${data.command}: command not supported yet. Sorry.`)
-        showInputArea()
     }
 
     const focusInputOnEvent = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -423,7 +416,7 @@ const CMDWindow = (props: CMDWindowProps) => {
     }
 
     return <Window ref={windowRef}
-        width={550} height={300} fullscreen={isTouch()}
+        width={650} height={350} fullscreen={isTouch()}
         title='Command Prompt' icon={cmdIcon}
         onActive={focusInputOnEvent}>
 
@@ -437,7 +430,7 @@ const CMDWindow = (props: CMDWindowProps) => {
                             {indentedText}
                         </p>
                     })
-                    
+
                 }
 
                 <div className={styles.inputContainer}>
