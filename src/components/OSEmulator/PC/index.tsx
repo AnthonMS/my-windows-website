@@ -1,9 +1,8 @@
 'use client'
 
 import { useEffect, useState, useRef, MutableRefObject } from 'react'
-import Head from 'next/head'
 
-import styles from './styles.module.css'
+import myStyles from './styles-win98.module.css'
 
 import Taskbar from './Taskbar'
 import DesktopIcon from './DesktopIcon'
@@ -29,7 +28,7 @@ import { useWindowStore } from '@/stores/windowStore'
 import { isTouch } from '@/lib/utils'
 
 const PCEmulator = () => {
-    const { windows, openWindow, removeClass, addClass, setWindowsContainer, setStyles } = useWindowStore()
+    const { windows, openWindow, removeClass, addClass, setWindowsContainer, setStyles, styles } = useWindowStore()
     const initialMount = useRef<Boolean>(true)
     const windowsContainer = useRef<HTMLDivElement | null>(null)
 
@@ -40,24 +39,23 @@ const PCEmulator = () => {
 
     useEffect(() => {
         if (initialMount.current) {
-            initialMount.current = false
-            setStyles(styles)
+            // TODO: the styles should be named so we can set it in localstorage and get it next time we render initially
+            setStyles(myStyles)
+        }
+
+        if (initialMount.current) {
             // openWindow(<CMDWindow />)
             openWindow(<WelcomeWindow />)
             // openWindow(<AboutMeWindow />)
             // openWindow(<ContactWindow />)
             // openWindow(<ErrorWindow text='This is an error message. Wubba lubba dub dub!' />)
         }
-
+        if (initialMount.current) {
+            initialMount.current = false
+        }
         return () => {
         }
     }, [])
-
-    useEffect(() => {
-        //   console.log('Windows Updated:', windows)
-    }, [windows])
-
-
 
     useEffect(() => {
         if (windowsContainer.current) {
@@ -65,9 +63,6 @@ const PCEmulator = () => {
         }
     }, [windowsContainer, setWindowsContainer])
 
-    useEffect(() => {
-        setStyles(styles)
-    }, [styles, setStyles])
 
 
     // parse highlight box coordinates (handle negatives)
@@ -251,14 +246,9 @@ const PCEmulator = () => {
         onTouchEnd: inputEnd,
         onTouchMove: inputMove
     }
+    
     return <>
-        <Head>
-            <title>Your Custom Title</title>
-            <meta name="description" content="Your custom description" />
-            {/* Add more meta tags as needed */}
-        </Head>
-
-        <div className={styles.main} { ...mainMouseEvents } { ...mainTouchEvents }>
+        <div className={styles.main || myStyles.main} { ...mainMouseEvents } { ...mainTouchEvents }>
             <DesktopIcon left='0px' top='0px' id='Computer'
                 text='Computer Program 123 (Testname)' icon={computerExplorer}
                 primaryAction={onClickDesktopIcon} />
@@ -293,7 +283,7 @@ const PCEmulator = () => {
 
             {isHighlighting && (
                 <div
-                    className={styles.highlightBox}
+                    className={styles.highlightBox || myStyles.highlightBox}
                     style={{
                         left: `${highlightBoxRendered.startX}px`,
                         top: `${highlightBoxRendered.startY}px`,

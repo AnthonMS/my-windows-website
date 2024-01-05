@@ -1,9 +1,10 @@
-import styles from './../../styles.module.css'
+// import styles from './../../styles.module.css'
 import Image from 'next/image'
 import { StaticImport } from 'next/dist/shared/lib/get-img-props'
 import React, { forwardRef, useRef, useImperativeHandle  } from 'react'
 
 import { isTouch } from '@/lib/utils'
+import { useWindowStore } from '@/stores/windowStore'
 
 export interface ButtonProps {
     icon?: string | StaticImport
@@ -18,6 +19,7 @@ export interface ButtonProps {
 const Button = forwardRef((props: ButtonProps, ref) => {
     const { onClick, icon, text, className, dataTitle } = props
     const thisButton = useRef<HTMLDivElement | null>(null)
+    const { styles } = useWindowStore()
     
     useImperativeHandle(ref, () => ({
         thisButton,
@@ -49,6 +51,7 @@ const Button = forwardRef((props: ButtonProps, ref) => {
         onTouchStart: inputStart
     } : {}
 
+    if (!styles.button) return <></>
     return (
         <div ref={thisButton} 
             className={`${styles.button} ${className ? className : ''}`}

@@ -1,4 +1,4 @@
-// import styles from './../styles.module.css'
+import styles from './../../styles-win98.module.css'
 import Image from 'next/image'
 
 import aboutMeIcon from '@/assets/images/icons/user_card.png'
@@ -27,7 +27,7 @@ export interface StartMenuProps {
 }
 const StartMenu = (props: StartMenuProps) => {
     const { toggleStartMenu } = props
-    const { openWindow, styles } = useWindowStore()
+    const { openWindow } = useWindowStore()
 
     const click = (event: React.MouseEvent<HTMLLIElement> | React.TouchEvent<HTMLLIElement>) => {
         const target = event.target
@@ -98,7 +98,8 @@ const StartMenu = (props: StartMenuProps) => {
     const startmenuTouchEvents = isTouch() ? {
         onTouchStart: handleStartMenuInput
     } : {}
-    if (!styles.startMenu) return <></>
+
+    // if (!styles.startMenu) return <></>
     return (
         <div className={styles.startMenu}>
             <div className={styles.blueBar}></div>

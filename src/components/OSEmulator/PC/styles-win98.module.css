@@ -29,6 +29,39 @@
     margin-right: 2px;
     margin-bottom: 2px;
     touch-action: manipulation;
+
+    .buttonContent {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        text-align: left;
+
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        .image {
+            width: 20px;
+            height: 15px;
+            margin-left: 4px;
+            display: inline;
+            pointer-events: none;
+        }
+
+        .text {
+            color: black;
+            font-size: inherit;
+            margin-left: 4px;
+            margin-right: 4px;
+            font-family: 'Windows95', sans-serif;
+            letter-spacing: 1px;
+
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: inline;
+        }
+    }
 }
 
 .button.selected {
@@ -37,39 +70,6 @@
     border-left: 1px solid gray;
     border-top: 1px solid gray;
     box-shadow: inset -1px -1px #dfdfdf, -1px 0 #000, 0 -1px #000, -1px -1px #000;
-}
-
-.buttonContent {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    text-align: left;
-
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-
-    .image {
-        width: 20px;
-        height: 15px;
-        margin-left: 4px;
-        display: inline;
-        pointer-events: none;
-    }
-
-    .text {
-        color: black;
-        font-size: inherit;
-        margin-left: 4px;
-        margin-right: 4px;
-        font-family: 'Windows95', sans-serif;
-        letter-spacing: 1px;
-
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        display: inline;
-    }
 }
 
 .border {
@@ -92,7 +92,6 @@
 }
 
 .input:focus {
-    /* border: none; */
     outline: none;
 }
 
@@ -220,6 +219,7 @@
     .startBtn.selected .buttonContent p {
         font-size: 13px;
     }
+
 }
 
 .taskbar>div {
@@ -258,6 +258,7 @@
         position: relative;
         /* background-color: red; */
     }
+
     .desktopIconImage {
         width: 45px;
         height: 45px;
@@ -288,7 +289,7 @@
         /* Ensure text doesn't overflow */
         overflow: hidden;
 
-        
+
     }
 
 
@@ -299,13 +300,13 @@
 
         .desktopIconImage {
             -webkit-filter: url(#blueoverlay);
-            filter:  url(#blueoverlay);
+            filter: url(#blueoverlay);
         }
-        
+
         .desktopIconText {
             -webkit-line-clamp: unset;
             max-height: none;
-            background-color: rgba(0,0,255,0.65);
+            background-color: rgba(0, 0, 255, 0.65);
         }
     }
 }
@@ -355,13 +356,14 @@
         bottom: 0;
         text-align: left;
         margin-bottom: -15px;
-    
+
         font-weight: bold;
     }
+
     .headline span {
         font-weight: normal;
     }
-    
+
     .menuContent {
         .item {
             margin-left: 25px;
@@ -377,6 +379,7 @@
                 margin-left: 6px;
                 pointer-events: none;
             }
+
             .itemText {
                 margin-left: 6px;
                 user-select: none;
@@ -388,6 +391,7 @@
                 position: absolute;
                 right: 7px;
             }
+
             &.more {
                 position: relative;
 
@@ -416,12 +420,14 @@
                             background-color: var(--blue-dark);
                             color: white;
                         }
+
                         .dropdownItemIcon {
                             width: 15px;
                             height: 15px;
                             margin-left: 5px;
                             pointer-events: none;
                         }
+
                         .dropdownItemText {
                             user-select: none;
                             margin-left: 7px;
@@ -434,6 +440,7 @@
                 &.active {
                     background-color: var(--blue-dark);
                     color: white;
+
                     .dropdownContent {
                         display: block;
                         top: -2px;
@@ -446,10 +453,6 @@
     }
 }
 
-
-
-
-
 /* Enable hover only on non-touch devices */
 @media (hover: hover) and (pointer: fine) {
     .startMenu {
@@ -458,6 +461,7 @@
                 background-color: var(--blue-dark);
                 color: white;
             }
+
             .item.more {
                 .dropdownContent .dropdownItem:hover {
                     color: white;
@@ -465,7 +469,7 @@
                 }
             }
 
-            
+
         }
     }
 }
@@ -486,211 +490,211 @@
 
     display: flex;
     flex-direction: column;
-}
 
-.window.active {
-    z-index: 90;
-    border-color: #1084d0;
-}
+    &.active {
+        z-index: 90;
+        border-color: #1084d0;
+    }
 
-.window.hidden {
-    opacity: 0;
-    pointer-events: none;
-}
+    &.hidden {
+        opacity: 0;
+        pointer-events: none;
+    }
 
-.windowContent {
-    flex: 1 1 auto;
-    margin: 3px;
-    overflow: hidden;
+    .windowHeader {
+        background: var(--blue-dark);
+        color: white;
+        padding: 4px;
+        font-weight: bold;
+        display: flex;
+        justify-content: space-between;
+        flex: 0 0 auto;
 
+        .windowTitle {
+            margin: 0;
+            padding: 0;
+            border: 0;
+            font: inherit;
+            letter-spacing: 1px;
+            /* display: inline-block; */
+            display: flex;
+            align-items: center;
 
-    /* border-right: 1px solid #fff;
-    border-bottom: 1px solid #fff;
-    border-left: 1px solid gray;
-    border-top: 1px solid gray;
-    box-shadow: inset -1px -1px #dfdfdf, -1px 0 #000, 0 -1px #000, -1px -1px #000;
-    background-color: white; */
-}
+            white-space: nowrap;
+            /* Prevent text from wrapping */
+            overflow: hidden;
+            /* Hide the overflowing content */
+            text-overflow: ellipsis;
 
-.windowHeader {
-    background: var(--blue-dark);
-    color: white;
-    padding: 4px;
-    font-weight: bold;
-    display: flex;
-    /* Use flex container */
-    justify-content: space-between;
-    /* Space content evenly */
-    flex: 0 0 auto;
-}
+            .windowIcon {
+                width: 20px;
+                height: 100%;
+                margin-right: 4px;
+                margin-left: 4px;
+                display: inline;
+                pointer-events: none;
+            }
 
-.windowTitle {
-    margin: 0;
-    padding: 0;
-    border: 0;
-    font: inherit;
-    letter-spacing: 1px;
-    /* display: inline-block; */
-    display: flex;
-    align-items: center;
+            .windowTitleText {
+                height: 100%;
 
-    white-space: nowrap;
-    /* Prevent text from wrapping */
-    overflow: hidden;
-    /* Hide the overflowing content */
-    text-overflow: ellipsis;
-}
+                display: inline;
+                margin-left: 7px;
+            }
+        }
 
-.windowIcon {
-    width: 20px;
-    height: 100%;
-    margin-right: 4px;
-    margin-left: 4px;
-    display: inline;
-    pointer-events: none;
-}
+        .windowButtons {
+            display: flex;
+            align-items: center;
+            /* Align items vertically in the middle */
 
-.windowTitleText {
-    height: 100%;
+            .windowButton {
+                background: no-repeat center #ccc;
+                height: 17px;
+                width: 17px;
+                margin-left: 2px;
+                background-size: 80%;
 
-    display: inline;
-    margin-left: 7px;
-}
+                &.close {
+                    background-image: url(/Assets/Images/Icons/close_icon.png);
 
-.windowButtons {
-    display: flex;
-    align-items: center;
-    /* Align items vertically in the middle */
-}
+                    &.selected {
+                        background-size: 75%;
+                    }
+                }
 
-.windowButton {
-    background: no-repeat center #ccc;
-    height: 17px;
-    width: 17px;
-    margin-left: 2px;
-    background-size: 80%;
-}
+                &.help {
+                    background-image: url(/Assets/Images/Icons/question_icon.png);
 
-.windowButton.close {
-    background-image: url(/Assets/Images/Icons/close_icon.png);
-}
+                    &.selected {
+                        background-size: 75%;
+                    }
+                }
 
-.windowButton.help {
-    background-image: url(/Assets/Images/Icons/question_icon.png);
-}
+                &.hide {
+                    background-image: url(/Assets/Images/Icons/hide_icon.png);
 
-.windowButton.hide {
-    background-image: url(/Assets/Images/Icons/hide_icon.png);
-}
+                    &.selected {
+                        background-size: 75%;
+                    }
+                }
 
-.windowButton.max {
-    background-image: url(/Assets/Images/Icons/max_icon.png);
-    background-size: 90%;
-}
+                &.max {
+                    background-image: url(/Assets/Images/Icons/max_icon.png);
+                    background-size: 90%;
 
-.windowButton.min {
-    background-image: url(/Assets/Images/Icons/min_icon.png);
-    background-size: 90%;
-}
+                    &.selected {
+                        background-size: 85%;
+                    }
+                }
 
-.windowButton.close.selected,
-.windowButton.help.selected,
-.windowButton.hide.selected {
-    /* border: 1px solid red; */
-    background-size: 75%;
-}
+                &.min {
+                    background-image: url(/Assets/Images/Icons/min_icon.png);
+                    background-size: 90%;
 
-.windowButton.max.selected,
-.windowButton.min.selected {
-    /* border: 1px solid red; */
-    background-size: 85%;
-}
+                    &.selected {
+                        background-size: 85%;
+                    }
+                }
+            }
+        }
+    }
 
+    .windowContent {
+        flex: 1 1 auto;
+        margin: 3px;
+        overflow: hidden;
+    }
 
+    .dragToResize {
+        position: absolute;
 
-.dragToResize {
-    position: absolute;
-}
+        &.bottomRight {
+            bottom: -4px;
+            right: -4px;
+            height: 6px;
+            width: 6px;
+        }
 
-.bottomRight {
-    bottom: -4px;
-    right: -4px;
-    height: 6px;
-    width: 6px;
-}
+        &.bottomLeft {
+            bottom: -4px;
+            left: -4px;
+            height: 6px;
+            width: 6px;
+        }
 
-.bottomLeft {
-    bottom: -4px;
-    left: -4px;
-    height: 6px;
-    width: 6px;
-}
+        &.topRight {
+            top: -4px;
+            right: -4px;
+            height: 6px;
+            width: 6px;
+        }
 
-.topRight {
-    top: -4px;
-    right: -4px;
-    height: 6px;
-    width: 6px;
-}
+        &.topLeft {
+            top: -4px;
+            left: -4px;
+            height: 6px;
+            width: 6px;
+        }
 
-.topLeft {
-    top: -4px;
-    left: -4px;
-    height: 6px;
-    width: 6px;
-}
+        &.top,
+        &.bottom {
+            left: 50%;
+            transform: translateX(-50%);
+            height: 4px;
+            width: 98%;
+        }
 
-.top,
-.bottom {
-    left: 50%;
-    transform: translateX(-50%);
-    height: 4px;
-    width: 98%;
-}
+        &.top {
+            top: -4px;
+        }
 
-.top {
-    top: -4px;
-}
+        &.bottom {
+            bottom: -4px;
+        }
 
-.bottom {
-    bottom: -4px;
-}
+        &.left,
+        &.right {
+            top: 50%;
+            transform: translateY(-50%);
+            height: 98%;
+            width: 4px;
+        }
 
-.left,
-.right {
-    top: 50%;
-    transform: translateY(-50%);
-    height: 98%;
-    width: 4px;
-}
+        &.left {
+            left: -4px;
+        }
 
-.left {
-    left: -4px;
-}
-
-.right {
-    right: -4px;
+        &.right {
+            right: -4px;
+        }
+    }
 }
 
 @media (hover: hover) and (pointer: fine) {
+    .window {
+        .dragToResize {
 
-    .bottomRight:hover,
-    .topLeft:hover {
-        cursor: nwse-resize;
+            &.bottomRight:hover,
+            &.topLeft:hover {
+                cursor: nwse-resize;
+            }
+
+            &.bottomLeft:hover,
+            &.topRight:hover {
+                cursor: nesw-resize;
+            }
+
+            &.top:hover,
+            &.bottom:hover {
+                cursor: ns-resize;
+            }
+
+            &.left:hover,
+            &.right:hover {
+                cursor: ew-resize;
+            }
+        }
     }
 
-    .bottomLeft:hover,
-    .topRight:hover {
-        cursor: nesw-resize;
-    }
-
-    .top:hover,
-    .bottom:hover {
-        cursor: ns-resize;
-    }
-
-    .left:hover,
-    .right:hover {
-        cursor: ew-resize;
-    }
 }

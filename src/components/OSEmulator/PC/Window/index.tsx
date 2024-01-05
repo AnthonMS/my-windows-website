@@ -421,7 +421,6 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
         <div ref={thisWindow} data-title={thisTitle} id={thisTitle} className={`${styles.window} ${styles.hidden}`}
             {...windowMouseEvents} {...windowTouchEvents}>
 
-
             <div className={styles.windowHeader} {...headerMouseEvents} {...headerTouchEvents}>
                 <div className={styles.windowTitle}>
                     {icon !== null ? <Image className={styles.windowIcon} width={48} height={48} src={icon as string | StaticImport} alt={`icon`} data-icon={true} /> : <></>}

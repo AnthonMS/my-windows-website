@@ -201,6 +201,10 @@ export const useWindowStore = create<WindowStore>((set: StoreApi<WindowStore>['s
         tryToUpdate(0)
     },
     addClass: (windowTitle, classes) => {
+        if (!classes) {
+            console.warn('addClass called with undefined classes.', windowTitle)
+            return
+        }
         const maxAttempts = 20
         const retryInterval = 100
 

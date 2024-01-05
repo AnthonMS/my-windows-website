@@ -1,5 +1,5 @@
-import globalStyles from './../../styles.module.css'
-import styles from './styles.module.css'
+// import globalStyles from './../../styles.module.css'
+import myStyles from './styles.module.css'
 
 import Window from '@/components/OSEmulator/PC/Window'
 
@@ -31,7 +31,7 @@ export interface CMDWindowProps {
 }
 const CMDWindow = (props: CMDWindowProps) => {
     const { } = props
-    const { openWindow } = useWindowStore()
+    const { styles } = useWindowStore()
     const inputArea = useRef<HTMLTextAreaElement | null>(null)
     const [inputAreaLines, setInputAreaLines] = useState(1)
     const [commandHistory, setCommandHistory] = useState<CommandHistoryItem[]>([]);
@@ -302,8 +302,8 @@ const CMDWindow = (props: CMDWindowProps) => {
             if (inputArea.current !== null) {
                 if (event) {
                     const target = event.target as Element
-                    const isClickInInput = isElementInClass(target, styles.input)
-                    const isClickInOutput = isElementInClass(target, styles.output)
+                    const isClickInInput = isElementInClass(target, myStyles.input)
+                    const isClickInOutput = isElementInClass(target, myStyles.output)
                     const selectedText = window.getSelection()?.toString() || ''
                     const isTextSelectedInOutput = isClickInOutput && selectedText.length > 0
 
@@ -415,26 +415,27 @@ const CMDWindow = (props: CMDWindowProps) => {
         }
     }
 
+    if (!styles.window) return <></>
     return <Window ref={windowRef}
-        width={650} height={350} fullscreen={isTouch()}
+        width={Math.min(window.innerWidth - 25, 675)} height={Math.min(window.innerHeight - 25, 350)} fullscreen={isTouch()}
         title='Command Prompt' icon={cmdIcon}
         onActive={focusInputOnEvent}>
 
-        <div className={styles.windowContainer}>
-            <div className={`${globalStyles.border} ${styles.content}`}>
+        <div className={myStyles.windowContainer}>
+            <div className={`${styles.border} ${myStyles.content}`}>
 
                 {
                     output.map((out, index) => {
                         const indentedText = out.replace(/\t/g, '  ')
-                        return <p key={`output-${index}`} className={styles.output}>
+                        return <p key={`output-${index}`} className={myStyles.output}>
                             {indentedText}
                         </p>
                     })
 
                 }
 
-                <div className={styles.inputContainer}>
-                    <textarea ref={inputArea} className={`${styles.input}`} rows={inputAreaLines}
+                <div className={myStyles.inputContainer}>
+                    <textarea ref={inputArea} className={`${myStyles.input}`} rows={inputAreaLines}
                         value={currentDir + command}
                         onChange={handleInputChange}
                         onKeyDown={handleKeyDown} />

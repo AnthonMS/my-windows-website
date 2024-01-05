@@ -1,7 +1,6 @@
 import { useRef } from 'react'
 
-import globalStyles from './../../styles.module.css'
-import styles from './styles.module.css'
+import myStyles from './styles.module.css'
 
 // import Window from '@/components/Windows/Window'
 import Window from '@/components/OSEmulator/PC/Window'
@@ -11,7 +10,7 @@ import successIcon from '@/assets/images/icons/check-0.png'
 
 import Button from '../../UI/Button'
 
-// import { useWindowStore } from '@/stores/windowStore'
+import { useWindowStore } from '@/stores/windowStore'
 
 interface PopupWindowProps {
     title: string
@@ -23,11 +22,12 @@ interface PopupWindowProps {
 const PopupWindow = (props: PopupWindowProps) => {
     const { title, text, error } = props
     let { width, height } = props
+    const { styles } = useWindowStore()
     if (width === null ||width === undefined) {
-        width = 250
+        width = Math.min(window.innerWidth - 25, 300)
     }
     if (height === null || height === undefined) {
-        height = 150
+        height = Math.min(window.innerHeight - 25, 150)
     }
     // const { closeWindow } = useWindowStore()
     const windowRef = useRef<{ close?: () => void } | null>(null)
@@ -38,17 +38,18 @@ const PopupWindow = (props: PopupWindowProps) => {
         }
     }
 
+    if (!styles.window) return <></>
     return <Window ref={windowRef}
         width={width} height={height}
         title={title} icon={error ? errorIcon : successIcon} helpBtn={true} maximizeBtn={false} hideBtn={false}>
 
-        <div className={styles.errorContainer}>
-            <p className={styles.text}>
+        <div className={myStyles.errorContainer}>
+            <p className={myStyles.text}>
                 { text }
             </p>
 
-            <div className={`${styles.content}`}>
-                <div className={styles.buttonContainer}>
+            <div className={`${myStyles.content}`}>
+                <div className={myStyles.buttonContainer}>
                     <Button text='OK' onClick={click}/>
                 </div>
             </div>

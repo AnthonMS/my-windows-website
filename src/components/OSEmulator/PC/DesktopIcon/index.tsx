@@ -1,4 +1,4 @@
-import styles from './../styles.module.css'
+import styles from './../styles-win98.module.css'
 import Image, { StaticImageData } from 'next/image'
 import dynamic from 'next/dynamic'
 import { useState, useEffect, useRef } from 'react'
@@ -179,6 +179,7 @@ const DesktopIcon = (props: DesktopIconProps) => {
         setLastMouseClick(now)
     }
 
+    // if (!styles.desktopIcon) return <></>
     return (
         <div ref={thisIcon} id={id} data-id={id}
             className={`${styles.desktopIcon}`}

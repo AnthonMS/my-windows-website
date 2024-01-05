@@ -1,4 +1,4 @@
-// import styles from './../styles.module.css'
+import styles from './../styles-win98.module.css'
 import Image from 'next/image'
 import { useState, useEffect, useRef } from 'react'
 
@@ -11,7 +11,7 @@ import { isTouch } from '@/lib/utils'
 interface TaskbarProps {}
 const Taskbar = (props: TaskbarProps) => {
     const {  } = props
-    const { windows, openWindow, closeWindow, hideWindow, showWindow, removeClass, addClass, styles } = useWindowStore()
+    const { windows, openWindow, closeWindow, hideWindow, showWindow, removeClass, addClass } = useWindowStore()
     const [showStart, setShowStart] = useState<Boolean>(false)
     const toggleStartMenu = () => { setShowStart(prev => !prev) }
 
@@ -88,7 +88,7 @@ const Taskbar = (props: TaskbarProps) => {
     }
 
 
-    if (!styles.taskbar) return <></>
+    // if (!styles.taskbar) return <></>
     return <>
         <div className={styles.taskbar}>
             <div className={styles.leftContainer}>
