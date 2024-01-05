@@ -93,7 +93,7 @@ const Taskbar = (props: TaskbarProps) => {
         <div className={styles.taskbar}>
             <div className={styles.leftContainer}>
                 
-                <div className={`${styles.taskbarButtonContainer}`}>
+                <div className={`${styles.startBtnContainer}`}>
                     <div ref={startBtn} className={`${styles.button} ${styles.taskbarButton} ${styles.startBtn} ${showStart ? styles.selected : ''}`}
                         onClick={clickStart}>
                         <div className={styles.buttonContent}>
@@ -102,6 +102,7 @@ const Taskbar = (props: TaskbarProps) => {
                         </div>
                     </div>
                 </div>
+                
             </div>
 
             <div className={styles.middleContainer}>
@@ -111,7 +112,7 @@ const Taskbar = (props: TaskbarProps) => {
                         const iconSrc = iconElement ? iconElement.getAttribute('src') : null
 
                         return (
-                            <div key={`window-${index}`} className={`${styles.taskbarButtonContainer}`}>
+                            <div key={`window-${index}`} className={`${styles.windowBtnContainer}`}>
                                 <div data-window={window.getAttribute('data-title')}
                                     className={`${styles.button} ${styles.taskbarButton} ${styles.windowBtn} ${window.classList.contains(styles.active) ? styles.selected : ''}`}
                                     onClick={clickWindow}>

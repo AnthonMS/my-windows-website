@@ -182,8 +182,8 @@
         justify-content: center;
         align-items: center;
         background: linear-gradient(180deg, #4cb8ff, #3377ff 8%, #3374ff 40%, #39f 88%, #39f 93%, #337bff 95%, #3362d7 96%, #3362d7);
-        box-shadow: 
-            inset 5px 0 5px -5px rgba(200, 200, 200, 0.7), 
+        box-shadow:
+            inset 5px 0 5px -5px rgba(200, 200, 200, 0.7),
             inset 0 5px 5px -5px rgba(200, 200, 200, 0.7);
     }
 
@@ -199,9 +199,10 @@
         box-shadow: inset -1px -1px #dfdfdf, -1px 0 #000, 0 -1px #000, -1px -1px #000; */
     }
 
-    .taskbarButtonContainer {
-        padding-top: 3px;
-        padding-bottom: 2px;
+    .startBtnContainer,
+    .windowBtnContainer {
+        padding-top: 0px;
+        padding-bottom: 0px;
         height: 100%;
         flex-shrink: 1;
         max-width: 200px;
@@ -211,6 +212,12 @@
         text-overflow: ellipsis;
         box-sizing: border-box;
     }
+
+    .windowBtnContainer {
+        padding-top: 3px;
+        padding-bottom: 2px;
+    }
+
 
     .taskbarButton {
         padding-left: 2px;
@@ -311,49 +318,76 @@
     z-index: 200;
 
     position: absolute;
-    bottom: calc(var(--bottom-height) - 1px);
-    left: 2px;
-    width: 200px;
+    bottom: calc(var(--bottom-height));
+    left: 0px;
+    width: 300px;
     /* height: 200px; */
-    background-color: var(--windows-grey);
-    border-left: 2px solid white;
-    border-top: 2px solid white;
-    border-right: 2px solid grey;
-    border-bottom: 2px solid grey;
+    background-color: white;
+    border-top-left-radius: 7px;
+    border-top-right-radius: 7px;
+
+    padding-top: 50px;
+    /* Add padding to the top equal to the height of the blueBar */
 
     .blueBar {
-        background: linear-gradient(to bottom, #000080, #1084d0);
+        background: linear-gradient(to bottom, #0a58ba, #3c88e7);
+        box-shadow:
+            inset -2px -2px 3px 0px rgba(23, 82, 188, 0.65),
+            inset 0px 1px 2px 0px rgba(222, 222, 222, 0.65),
+            inset 1px 0px 2px 0px rgba(222, 222, 222, 0.65);
         display: inline-block;
-        width: 25px;
+        width: 100%;
         position: absolute;
         top: 0px;
-        bottom: 0px;
         left: 0px;
+        height: 50px;
+        border-top-left-radius: 7px;
+        border-top-right-radius: 7px;
     }
 
     .headline {
-        transform: rotate(-90deg);
-        transform-origin: 0% 0%;
-        width: 150%;
-        padding-top: 4px;
-        padding-bottom: 3px;
-        padding-left: 0px;
+        width: 100%;
+        height: 50px;
+        padding: 0px 5px;
         color: white;
         position: absolute;
-        bottom: 0;
-        text-align: left;
-        margin-bottom: -15px;
-
+        top: 0;
+        /* Position at the top */
+        text-align: center;
+        /* Center the text */
         font-weight: bold;
+
+        text-align: left;
+        display: flex;
+        /* Add this to layout the children of headline in a row */
+        align-items: center;
+        /* Add this to vertically center the children */
+
+        .accountImage {
+            width: 40px;
+            /* adjust as needed */
+            height: 40px;
+            /* adjust as needed */
+            background: url(/Assets/Images/user_duck.png) no-repeat center/contain;
+            margin-right: 10px;
+            /* space between the image and the text */
+            border-radius: 3px;
+            border: 1px solid white;
+
+            box-shadow: 0px 0px 7px -3px rgba(0, 0, 0, 0.75) inset;
+            -webkit-box-shadow: 0px 0px 7px -3px rgba(0, 0, 0, 0.75) inset;
+            -moz-box-shadow: 0px 0px 7px -3px rgba(0, 0, 0, 0.75) inset;
+        }
     }
 
     .headline span {
         font-weight: normal;
+        margin-left: 2px;
     }
 
     .menuContent {
         .item {
-            margin-left: 25px;
+            margin: 5px;
             display: flex;
             align-items: center;
             padding-top: 5px;
@@ -374,9 +408,21 @@
             }
 
             &.more::after {
-                content: "►";
+                content: url(/Assets/Images/Icons/xp-arrow.png);
+                ;
                 position: absolute;
                 right: 7px;
+            }
+
+            &.more::after {
+                content: "";
+                background: url(/Assets/Images/Icons/xp-arrow.png) no-repeat center/contain;
+                position: absolute;
+                right: 7px;
+                width: 16px;
+                /* adjust as needed */
+                height: 16px;
+                /* adjust as needed */
             }
 
             &.more {

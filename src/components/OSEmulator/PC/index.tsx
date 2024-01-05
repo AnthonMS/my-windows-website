@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef, MutableRefObject } from 'react'
 
 import styles_win98 from './styles-win98.module.css'
-// import styles_winxp from './styles-winxp.module.css'
+import styles_winxp from './styles-winxp.module.css'
 
 import Taskbar from './Taskbar'
 import DesktopIcon from './DesktopIcon'

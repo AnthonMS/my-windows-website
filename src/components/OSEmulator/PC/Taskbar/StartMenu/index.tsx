@@ -1,5 +1,8 @@
-import styles from './../../styles-win98.module.css'
+// import styles from './../../styles-win98.module.css'
 import Image from 'next/image'
+
+import styles_win98 from '@/components/OSEmulator/PC/styles-win98.module.css'
+import styles_winxp from '@/components/OSEmulator/PC/styles-winxp.module.css'
 
 import aboutMeIcon from '@/assets/images/icons/user_card.png'
 import helpIcon from '@/assets/images/icons/help_book_big-0.png'
@@ -30,7 +33,7 @@ export interface StartMenuProps {
 }
 const StartMenu = (props: StartMenuProps) => {
     const { toggleStartMenu } = props
-    const { openWindow } = useWindowStore()
+    const { openWindow, setStyles, styles } = useWindowStore()
 
     const click = (event: React.MouseEvent<HTMLLIElement> | React.TouchEvent<HTMLLIElement>) => {
         const target = event.target
@@ -59,8 +62,14 @@ const StartMenu = (props: StartMenuProps) => {
                 case 'this':
                     window.open('https://github.com/AnthonMS/my-windows-website', '_blank')
                     break
+                case 'settings-styles-win98':
+                    setStyles(styles_win98)
+                    break
+                case 'settings-styles-winxp':
+                    setStyles(styles_winxp)
+                    break
                 default:
-                    console.error('Start Menu click unhandled:', target)
+                    console.error('Start Menu click unhandled:', btnItem, target)
                     break;
             }
 
@@ -76,7 +85,7 @@ const StartMenu = (props: StartMenuProps) => {
             const clickedDropdownItem: Element = findParentWithClass(target, styles.dropdownItem) as Element
             const activeBtns = document.querySelectorAll(`.${styles.item}.${styles.active}, .${styles.dropdownItem}.${styles.active}`)
             activeBtns.forEach(element => {
-                if (element !== clickedMenuItem && 
+                if (element !== clickedMenuItem &&
                     element !== clickedDropdownItem) {
                     element.classList.remove(styles.active)
                 }
@@ -103,11 +112,14 @@ const StartMenu = (props: StartMenuProps) => {
         onTouchStart: handleStartMenuInput
     } : {}
 
-    // if (!styles.startMenu) return <></>
+    if (!styles.startMenu) return <></>
     return (
         <div className={styles.startMenu}>
             <div className={styles.blueBar}></div>
-            <div className={styles.headline}>Anthon <span>Mølgaard Steiness</span></div>
+            <div className={styles.headline}>
+                <div className={styles.accountImage}></div>
+                Anthon<span>Mølgaard Steiness</span>
+            </div>
 
             <ul className={styles.menuContent}>
 
@@ -169,7 +181,7 @@ const StartMenu = (props: StartMenuProps) => {
                     <Image className={styles.itemIcon} src={helpIcon} alt='icon' />
                     <p className={styles.itemText}>Help</p>
                 </li> */}
-                
+
                 <li className={`${styles.item} ${styles.more}`} data-item='settings' {...startmenuMouseEvents} {...startmenuTouchEvents}>
                     <Image className={styles.itemIcon} src={monitorGear} alt={`settings-icon`} />
                     <p className={styles.itemText}>Settings</p>
@@ -185,10 +197,10 @@ const StartMenu = (props: StartMenuProps) => {
                                     <Image className={styles.dropdownItemIcon} src={windowsLogo} alt={`settings-styles-win98-icon`} />
                                     <p className={styles.dropdownItemText}>Windows 98/95</p>
                                 </li>
-                                {/* <li className={styles.dropdownItem} data-item='settings-styles-winxp'>
+                                <li className={styles.dropdownItem} data-item='settings-styles-winxp'>
                                     <Image className={styles.dropdownItemIcon} src={winxpLogo} alt={`settings-styles-winxp-icon`} />
                                     <p className={styles.dropdownItemText}>Windows XP</p>
-                                </li> */}
+                                </li>
                             </ul>
                         </li>
 
