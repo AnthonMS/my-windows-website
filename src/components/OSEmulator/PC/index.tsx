@@ -2,7 +2,8 @@
 
 import { useEffect, useState, useRef, MutableRefObject } from 'react'
 
-import myStyles from './styles-win98.module.css'
+import styles_win98 from './styles-win98.module.css'
+// import styles_winxp from './styles-winxp.module.css'
 
 import Taskbar from './Taskbar'
 import DesktopIcon from './DesktopIcon'
@@ -40,7 +41,7 @@ const PCEmulator = () => {
     useEffect(() => {
         if (initialMount.current) {
             // TODO: the styles should be named so we can set it in localstorage and get it next time we render initially
-            setStyles(myStyles)
+            setStyles(styles_win98)
         }
 
         if (initialMount.current) {
@@ -248,7 +249,7 @@ const PCEmulator = () => {
     }
     
     return <>
-        <div className={styles.main || myStyles.main} { ...mainMouseEvents } { ...mainTouchEvents }>
+        <div className={styles.main || styles_win98.main} { ...mainMouseEvents } { ...mainTouchEvents }>
             <DesktopIcon left='0px' top='0px' id='Computer'
                 text='Computer Program 123 (Testname)' icon={computerExplorer}
                 primaryAction={onClickDesktopIcon} />
@@ -283,7 +284,7 @@ const PCEmulator = () => {
 
             {isHighlighting && (
                 <div
-                    className={styles.highlightBox || myStyles.highlightBox}
+                    className={styles.highlightBox || styles_win98.highlightBox}
                     style={{
                         left: `${highlightBoxRendered.startX}px`,
                         top: `${highlightBoxRendered.startY}px`,

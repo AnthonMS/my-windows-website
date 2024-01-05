@@ -1,4 +1,4 @@
-import styles from './../styles-win98.module.css'
+// import styles from './../styles-win98.module.css'
 import Image from 'next/image'
 import { useState, useEffect, useRef } from 'react'
 
@@ -8,10 +8,10 @@ import { useWindowStore } from '@/stores/windowStore'
 import Time from '../UI/Time'
 import { isTouch } from '@/lib/utils'
 
-interface TaskbarProps {}
+interface TaskbarProps { }
 const Taskbar = (props: TaskbarProps) => {
-    const {  } = props
-    const { windows, openWindow, closeWindow, hideWindow, showWindow, removeClass, addClass } = useWindowStore()
+    const { } = props
+    const { windows, hideWindow, showWindow, removeClass, styles } = useWindowStore()
     const [showStart, setShowStart] = useState<Boolean>(false)
     const toggleStartMenu = () => { setShowStart(prev => !prev) }
 
@@ -20,7 +20,7 @@ const Taskbar = (props: TaskbarProps) => {
     useEffect(() => {
         // console.log('Windows Updated in Taskbar:', windows)
     }, [windows])
-    
+
 
     useEffect(() => {
         const handleWindowClick = (event: any) => {
@@ -68,7 +68,7 @@ const Taskbar = (props: TaskbarProps) => {
 
     const clickWindow = async (event: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
         const target = event.currentTarget
-        
+
         // remove active class from active window(s) (there should only be 1)
         const activeWindows = windows.filter((win: HTMLDivElement) => win.classList.contains(styles.active))
         activeWindows.forEach((window: Element) => {
@@ -76,7 +76,7 @@ const Taskbar = (props: TaskbarProps) => {
         })
 
         let btnTitle: string = target.getAttribute('data-window') as string
-        const element: HTMLDivElement|undefined = windows.find((win: HTMLDivElement) => win.getAttribute('data-title') === btnTitle)
+        const element: HTMLDivElement | undefined = windows.find((win: HTMLDivElement) => win.getAttribute('data-title') === btnTitle)
         if (element !== undefined) {
             if (target.classList.contains(styles.selected)) {
                 hideWindow(btnTitle)
@@ -88,15 +88,18 @@ const Taskbar = (props: TaskbarProps) => {
     }
 
 
-    // if (!styles.taskbar) return <></>
+    if (!styles.taskbar) return <></>
     return <>
         <div className={styles.taskbar}>
             <div className={styles.leftContainer}>
-                <div ref={startBtn} className={`${styles.button} ${styles.taskbarButton} ${styles.startBtn} ${showStart ? styles.selected : ''}`}
-                    onClick={clickStart}>
-                    <div className={styles.buttonContent}>
-                        <Image className={styles.image} src={windowsLogo} width={48} height={48} alt={`windows-logo`} />
-                        <p className={styles.text}>Start</p>
+                
+                <div className={`${styles.taskbarButtonContainer}`}>
+                    <div ref={startBtn} className={`${styles.button} ${styles.taskbarButton} ${styles.startBtn} ${showStart ? styles.selected : ''}`}
+                        onClick={clickStart}>
+                        <div className={styles.buttonContent}>
+                            <Image className={styles.image} src={windowsLogo} width={48} height={48} alt={`windows-logo`} />
+                            <p className={styles.text}>Start</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -108,12 +111,14 @@ const Taskbar = (props: TaskbarProps) => {
                         const iconSrc = iconElement ? iconElement.getAttribute('src') : null
 
                         return (
-                            <div key={`window-${index}`} data-window={window.getAttribute('data-title')} 
-                                className={`${styles.button} ${styles.taskbarButton} ${styles.windowBtn} ${window.classList.contains(styles.active) ? styles.selected : ''}`}
-                                onClick={clickWindow}>
-                                <div className={styles.buttonContent}>
-                                    <Image className={styles.image} width={48} height={48} src={iconSrc ? iconSrc : windowsLogo} alt={`window-icon`} />
-                                    <p className={styles.text}>{window.getAttribute('data-title')}</p>
+                            <div key={`window-${index}`} className={`${styles.taskbarButtonContainer}`}>
+                                <div data-window={window.getAttribute('data-title')}
+                                    className={`${styles.button} ${styles.taskbarButton} ${styles.windowBtn} ${window.classList.contains(styles.active) ? styles.selected : ''}`}
+                                    onClick={clickWindow}>
+                                    <div className={styles.buttonContent}>
+                                        <Image className={styles.image} width={48} height={48} src={iconSrc ? iconSrc : windowsLogo} alt={`window-icon`} />
+                                        <p className={styles.text}>{window.getAttribute('data-title')}</p>
+                                    </div>
                                 </div>
                             </div>
                         )
