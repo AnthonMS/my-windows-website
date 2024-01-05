@@ -137,6 +137,7 @@
 
 
 
+
 .taskbar {
     position: absolute;
     bottom: 0;
@@ -235,88 +236,6 @@
 
 
 
-.desktopIcon {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    text-align: center;
-    padding: 5px;
-    overflow: hidden;
-
-    width: 100px;
-    height: 100px;
-
-    position: absolute;
-    z-index: 5;
-
-    .imgWrapper {
-        width: 45px;
-        height: 45px;
-        pointer-events: none;
-        user-select: none;
-        position: relative;
-        /* background-color: red; */
-    }
-
-    .desktopIconImage {
-        width: 45px;
-        height: 45px;
-        filter: none;
-    }
-
-    .desktopIconText {
-        padding: 1px 2px;
-        word-wrap: break-word;
-        margin-top: 5px;
-        flex-grow: 1;
-        /* Allow the text to expand downward */
-        font-size: 14px;
-        line-height: 16px;
-        max-height: 32px;
-        pointer-events: none;
-        user-select: none;
-
-        font-family: 'Windows95', sans-serif;
-        /* font-weight: bold; */
-        letter-spacing: 1px;
-
-        /* Limit to 2 lines by default */
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-
-        /* Ensure text doesn't overflow */
-        overflow: hidden;
-
-
-    }
-
-
-    &.selected {
-        /* background-color: var(--grey-light-hover); */
-        height: auto;
-        z-index: 6;
-
-        .desktopIconImage {
-            -webkit-filter: url(#blueoverlay);
-            filter: url(#blueoverlay);
-        }
-
-        .desktopIconText {
-            -webkit-line-clamp: unset;
-            max-height: none;
-            background-color: rgba(0, 0, 255, 0.65);
-        }
-    }
-}
-
-/* Enable hover only on non-touch devices */
-@media (hover: hover) and (pointer: fine) {
-    /* .desktopIcon:hover {
-        background-color: var(--grey-hover);
-    } */
-}
 
 
 
@@ -419,6 +338,17 @@
                         &.active {
                             background-color: var(--blue-dark);
                             color: white;
+                            >.dropdownContent {
+                                display: block;
+                                top: -2px;
+                                left: 100%;
+                                min-width: 100%;
+                            }
+                        }
+                        &.more::after {
+                            content: "►";
+                            position: absolute;
+                            right: 7px;
                         }
 
                         .dropdownItemIcon {
@@ -441,7 +371,7 @@
                     background-color: var(--blue-dark);
                     color: white;
 
-                    .dropdownContent {
+                    >.dropdownContent {
                         display: block;
                         top: -2px;
                         left: 100%;
@@ -473,6 +403,88 @@
         }
     }
 }
+
+
+
+
+.desktopIcon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: center;
+    padding: 5px;
+    overflow: hidden;
+
+    width: 100px;
+    height: 100px;
+
+    position: absolute;
+    z-index: 5;
+
+    .imgWrapper {
+        width: 45px;
+        height: 45px;
+        pointer-events: none;
+        user-select: none;
+        position: relative;
+        /* background-color: red; */
+    }
+
+    .desktopIconImage {
+        width: 45px;
+        height: 45px;
+        filter: none;
+    }
+
+    .desktopIconText {
+        padding: 1px 2px;
+        word-wrap: break-word;
+        margin-top: 5px;
+        flex-grow: 1;
+        /* Allow the text to expand downward */
+        font-size: 14px;
+        line-height: 16px;
+        max-height: 32px;
+        pointer-events: none;
+        user-select: none;
+
+        font-family: 'Windows95', sans-serif;
+        /* font-weight: bold; */
+        letter-spacing: 1px;
+
+        /* Limit to 2 lines by default */
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+
+        /* Ensure text doesn't overflow */
+        overflow: hidden;
+
+
+    }
+
+
+    &.selected {
+        /* background-color: var(--grey-light-hover); */
+        height: auto;
+        z-index: 6;
+
+        .desktopIconImage {
+            -webkit-filter: url(#blueoverlay);
+            filter: url(#blueoverlay);
+        }
+
+        .desktopIconText {
+            -webkit-line-clamp: unset;
+            max-height: none;
+            background-color: rgba(0, 0, 255, 0.65);
+        }
+    }
+}
+
+
+
 
 .window {
     z-index: 10;
@@ -700,7 +712,8 @@
 }
 
 
-/* Welcome Window */
+
+
 .windowContainer {
     height: 100%;
     width: 100%;
@@ -782,7 +795,9 @@
     }
 }
 
-/* AboutMe Window */
+
+
+
 .aboutMeContainer {
     height: 100%;
     width: 100%;
@@ -834,6 +849,8 @@
         }
     }
 }
+
+
 
 
 .contactContainer {
@@ -921,6 +938,9 @@
     }
 }
 
+
+
+
 .cmdContainer {
     height: 100%;
     width: 100%;
@@ -979,6 +999,9 @@
         }
     }
 }
+
+
+
 
 .popopContainer {
     display: flex;

@@ -11,8 +11,11 @@ import contactIcon from '@/assets/images/icons/contact_icon.png'
 import welcomeIcon from '@/assets/images/icons/welcome_icon.png'
 import haIcon from '@/assets/images/icons/ha_icon.png'
 import windowsLogo from '@/assets/images/windows92-logo.png'
-
+import winxpLogo from '@/assets/images/icons/winxp-logo.png'
+import monitorGear from '@/assets/images/icons/monitor_gear.png'
 import minesGameIcon from '@/assets/images/icons/game_mine_1-0.png'
+import kodakIcon from '@/assets/images/icons/kodak_imaging-0.png'
+import toolsGear from '@/assets/images/icons/tools_gear-0.png'
 
 import { useWindowStore } from '@/stores/windowStore'
 
@@ -68,12 +71,13 @@ const StartMenu = (props: StartMenuProps) => {
 
     const handleStartMenuInput = (event: React.MouseEvent<HTMLLIElement> | React.TouchEvent<HTMLLIElement>) => {
         const target = event.target
-        console.log('target:', target)
         if (target instanceof HTMLLIElement) {
             const clickedMenuItem: Element = findParentWithClass(target, styles.item) as Element
+            const clickedDropdownItem: Element = findParentWithClass(target, styles.dropdownItem) as Element
             const activeBtns = document.querySelectorAll(`.${styles.item}.${styles.active}, .${styles.dropdownItem}.${styles.active}`)
             activeBtns.forEach(element => {
-                if (element !== clickedMenuItem) {
+                if (element !== clickedMenuItem && 
+                    element !== clickedDropdownItem) {
                     element.classList.remove(styles.active)
                 }
             })
@@ -165,6 +169,33 @@ const StartMenu = (props: StartMenuProps) => {
                     <Image className={styles.itemIcon} src={helpIcon} alt='icon' />
                     <p className={styles.itemText}>Help</p>
                 </li> */}
+                
+                <li className={`${styles.item} ${styles.more}`} data-item='settings' {...startmenuMouseEvents} {...startmenuTouchEvents}>
+                    <Image className={styles.itemIcon} src={monitorGear} alt={`settings-icon`} />
+                    <p className={styles.itemText}>Settings</p>
+
+                    <ul className={styles.dropdownContent}>
+
+                        <li className={`${styles.dropdownItem} ${styles.more}`} data-item='settings-styles'>
+                            <Image className={styles.itemIcon} src={kodakIcon} alt={`settings-styles-icon`} />
+                            <p className={styles.itemText}>Style</p>
+
+                            <ul className={styles.dropdownContent}>
+                                <li className={styles.dropdownItem} data-item='settings-styles-win98'>
+                                    <Image className={styles.dropdownItemIcon} src={windowsLogo} alt={`settings-styles-win98-icon`} />
+                                    <p className={styles.dropdownItemText}>Windows 98/95</p>
+                                </li>
+                                {/* <li className={styles.dropdownItem} data-item='settings-styles-winxp'>
+                                    <Image className={styles.dropdownItemIcon} src={winxpLogo} alt={`settings-styles-winxp-icon`} />
+                                    <p className={styles.dropdownItemText}>Windows XP</p>
+                                </li> */}
+                            </ul>
+                        </li>
+
+                    </ul>
+                </li>
+
+
 
                 <li className={styles.item} data-item='shutdown' {...startmenuMouseEvents} {...startmenuTouchEvents}>
                     <Image className={styles.itemIcon} src={shutdownIcon} alt='icon' />
