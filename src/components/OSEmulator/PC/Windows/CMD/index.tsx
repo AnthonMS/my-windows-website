@@ -1,6 +1,3 @@
-// import globalStyles from './../../styles.module.css'
-import myStyles from './styles.module.css'
-
 import Window from '@/components/OSEmulator/PC/Window'
 
 import cmdIcon from '@/assets/images/icons/console_prompt-0.png'
@@ -302,8 +299,8 @@ const CMDWindow = (props: CMDWindowProps) => {
             if (inputArea.current !== null) {
                 if (event) {
                     const target = event.target as Element
-                    const isClickInInput = isElementInClass(target, myStyles.input)
-                    const isClickInOutput = isElementInClass(target, myStyles.output)
+                    const isClickInInput = isElementInClass(target, styles.input)
+                    const isClickInOutput = isElementInClass(target, styles.output)
                     const selectedText = window.getSelection()?.toString() || ''
                     const isTextSelectedInOutput = isClickInOutput && selectedText.length > 0
 
@@ -421,21 +418,21 @@ const CMDWindow = (props: CMDWindowProps) => {
         title='Command Prompt' icon={cmdIcon}
         onActive={focusInputOnEvent}>
 
-        <div className={myStyles.windowContainer}>
-            <div className={`${styles.border} ${myStyles.content}`}>
+        <div className={styles.cmdContainer}>
+            <div className={`${styles.border} ${styles.content}`}>
 
                 {
                     output.map((out, index) => {
                         const indentedText = out.replace(/\t/g, '  ')
-                        return <p key={`output-${index}`} className={myStyles.output}>
+                        return <p key={`output-${index}`} className={styles.output}>
                             {indentedText}
                         </p>
                     })
 
                 }
 
-                <div className={myStyles.inputContainer}>
-                    <textarea ref={inputArea} className={`${myStyles.input}`} rows={inputAreaLines}
+                <div className={styles.inputContainer}>
+                    <textarea ref={inputArea} className={`${styles.input}`} rows={inputAreaLines}
                         value={currentDir + command}
                         onChange={handleInputChange}
                         onKeyDown={handleKeyDown} />

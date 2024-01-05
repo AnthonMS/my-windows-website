@@ -6,8 +6,8 @@ import type { Metadata } from 'next'
 import PCEmulator from '@/components/OSEmulator/PC'
 
 export const metadata:Metadata = {
-    title: "Anthon's Windows98",
-    description: "Embark on a nostalgic digital journey. Explore the interactive Windows 98-inspired desktop and embrace the stories woven into every part of the site. Discover easter eggs and enjoy the nostalgia!",
+    title: "Anthon's OS Simulation",
+    description: "Embark on a nostalgic digital journey through the different versions of Windows and possibly other operating systems. Explore the interactive Windows 98-inspired desktop and embrace the stories woven into every part of the site. Discover easter eggs and enjoy the nostalgia!",
     authors: [{ name: 'Anthon', url: 'https://AnthonMS.dk' }],
     creator: 'Anthon Mølgaard Steiness',
     icons: [

@@ -16,9 +16,9 @@ import cmdIcon from '@/assets/images/icons/console_prompt-0.png'
 
 // import Window from './Window'
 import WelcomeWindow from './Windows/Welcome'
-// import AboutMeWindow from './Windows/AboutMe'
-// import ContactWindow from './Windows/Contact'
-// import ErrorWindow from './Windows/Popup'
+import AboutMeWindow from './Windows/AboutMe'
+import ContactWindow from './Windows/Contact'
+import ErrorWindow from './Windows/Popup'
 import CMDWindow from './Windows/CMD'
 
 import { isElementInClass, findParentWithClass } from '@/lib/util_DOM'

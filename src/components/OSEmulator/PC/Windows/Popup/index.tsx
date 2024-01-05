@@ -1,8 +1,5 @@
 import { useRef } from 'react'
 
-import myStyles from './styles.module.css'
-
-// import Window from '@/components/Windows/Window'
 import Window from '@/components/OSEmulator/PC/Window'
 
 import errorIcon from '@/assets/images/icons/msg_error-0.png'
@@ -43,13 +40,13 @@ const PopupWindow = (props: PopupWindowProps) => {
         width={width} height={height}
         title={title} icon={error ? errorIcon : successIcon} helpBtn={true} maximizeBtn={false} hideBtn={false}>
 
-        <div className={myStyles.errorContainer}>
-            <p className={myStyles.text}>
+        <div className={styles.popopContainer}>
+            <p className={styles.text}>
                 { text }
             </p>
 
-            <div className={`${myStyles.content}`}>
-                <div className={myStyles.buttonContainer}>
+            <div className={`${styles.content}`}>
+                <div className={styles.buttonContainer}>
                     <Button text='OK' onClick={click}/>
                 </div>
             </div>

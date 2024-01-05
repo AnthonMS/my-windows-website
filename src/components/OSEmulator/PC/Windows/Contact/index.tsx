@@ -1,8 +1,5 @@
 import { useState } from 'react'
 
-// import globalStyles from './../../styles.module.css'
-import myStyles from './styles.module.css'
-
 import Window from '@/components/OSEmulator/PC/Window'
 
 import contactIcon from '@/assets/images/icons/contact_icon.png'
@@ -76,27 +73,27 @@ const ContactWindow = (props: ContactWindowProps) => {
     return <Window title='Contact' icon={contactIcon} fullscreen={isTouch() || isMobile()}
         width={Math.min(window.innerWidth - 25, 600)} height={Math.min(window.innerHeight - 25, 820)}>
 
-        <div className={myStyles.windowContainer}>
-            <p className={myStyles.mainTitle}>
-                <span className={myStyles.small}>Contact</span> Anthon Mølgaard Steiness
+        <div className={styles.contactContainer}>
+            <p className={styles.mainTitle}>
+                <span className={styles.small}>Contact</span> Anthon Mølgaard Steiness
             </p>
 
-            <div className={`${styles.border} ${myStyles.content}`}>
-                <div className={myStyles.centerDiv}>
-                    <p className={myStyles.label}>Your name:</p>
-                    <input type='text' className={`${styles.inverseBoxShadow} ${styles.input} ${myStyles.input}`} onChange={e => setName(e.target.value)} />
-                    <p className={myStyles.label}>Your e-mail:</p>
-                    <input type='email' className={`${styles.inverseBoxShadow} ${styles.input} ${myStyles.input}`} onChange={e => setEmail(e.target.value)} />
-                    <p className={myStyles.label}>Your phone number:</p>
-                    <input type='tel' className={`${styles.inverseBoxShadow} ${styles.input} ${myStyles.input}`} onChange={e => setPhone(e.target.value)} />
+            <div className={`${styles.border} ${styles.content}`}>
+                <div className={styles.centerDiv}>
+                    <p className={styles.label}>Your name:</p>
+                    <input type='text' className={`${styles.inverseBoxShadow} ${styles.input} ${styles.input}`} onChange={e => setName(e.target.value)} />
+                    <p className={styles.label}>Your e-mail:</p>
+                    <input type='email' className={`${styles.inverseBoxShadow} ${styles.input} ${styles.input}`} onChange={e => setEmail(e.target.value)} />
+                    <p className={styles.label}>Your phone number:</p>
+                    <input type='tel' className={`${styles.inverseBoxShadow} ${styles.input} ${styles.input}`} onChange={e => setPhone(e.target.value)} />
 
-                    <p className={myStyles.label}>Subject:</p>
-                    <input type='text' className={`${styles.inverseBoxShadow} ${styles.input} ${myStyles.input}`} onChange={e => setSubject(e.target.value)} />
-                    <p className={myStyles.label}>What&apos;s it all about?</p>
-                    <textarea className={`${styles.inverseBoxShadow} ${styles.textarea} ${myStyles.textarea}`} onChange={e => setContent(e.target.value)} />
+                    <p className={styles.label}>Subject:</p>
+                    <input type='text' className={`${styles.inverseBoxShadow} ${styles.input} ${styles.input}`} onChange={e => setSubject(e.target.value)} />
+                    <p className={styles.label}>What&apos;s it all about?</p>
+                    <textarea className={`${styles.inverseBoxShadow} ${styles.textarea} ${styles.textarea}`} onChange={e => setContent(e.target.value)} />
 
                     <div className={styles.divider} />
-                    <Button className={myStyles.button} icon={sendmailIcon} text='Send!' onClick={click} />
+                    <Button className={styles.button} icon={sendmailIcon} text='Send!' onClick={click} />
                     <div className={styles.divider} />
                 </div>
                 <div className={styles.divider}></div>

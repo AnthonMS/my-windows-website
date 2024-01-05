@@ -1,5 +1,3 @@
-// import styles from './../styles.module.css'
-
 import React, { useRef, useState, useEffect } from 'react'
 import Image, { StaticImageData } from 'next/image'
 import { StaticImport } from 'next/dist/shared/lib/get-img-props'

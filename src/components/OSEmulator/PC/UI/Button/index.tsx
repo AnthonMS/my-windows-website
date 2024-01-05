@@ -1,4 +1,3 @@
-// import styles from './../../styles.module.css'
 import Image from 'next/image'
 import { StaticImport } from 'next/dist/shared/lib/get-img-props'
 import React, { forwardRef, useRef, useImperativeHandle  } from 'react'

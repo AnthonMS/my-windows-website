@@ -102,7 +102,9 @@ export const useWindowStore = create<WindowStore>((set: StoreApi<WindowStore>['s
                 }
             }
             else if (attempts < maxAttempts) {
-                console.warn('Retry removeClass:', windowTitle)
+                if (attempts > 5) {
+                    console.warn('Retry closeWindow:', windowTitle)
+                }
                 setTimeout(() => tryToUpdate(attempts + 1), retryInterval)
             }
             else {
@@ -131,7 +133,9 @@ export const useWindowStore = create<WindowStore>((set: StoreApi<WindowStore>['s
                 set({ windows: [...currentWindows] })
             }
             else if (attempts < maxAttempts) {
-                console.warn('Retry removeClass:', windowTitle)
+                if (attempts > 5) {
+                    console.warn('Retry hideWindow:', windowTitle)
+                }
                 setTimeout(() => tryToUpdate(attempts + 1), retryInterval)
             }
             else {
@@ -160,7 +164,9 @@ export const useWindowStore = create<WindowStore>((set: StoreApi<WindowStore>['s
                 set({ windows: [...currentWindows] })
             }
             else if (attempts < maxAttempts) {
-                console.warn('Retry removeClass:', windowTitle)
+                if (attempts > 5) {
+                    console.warn('Retry showWindow:', windowTitle)
+                }
                 setTimeout(() => tryToUpdate(attempts + 1), retryInterval)
             }
             else {
@@ -191,7 +197,9 @@ export const useWindowStore = create<WindowStore>((set: StoreApi<WindowStore>['s
                 set({ windows: [...currentWindows] })
             }
             else if (attempts < maxAttempts) {
-                console.warn('Retry removeClass:', windowTitle)
+                if (attempts > 5) {
+                    console.warn('Retry removeClass:', windowTitle)
+                }
                 setTimeout(() => tryToUpdate(attempts + 1), retryInterval)
             }
             else {
@@ -226,7 +234,9 @@ export const useWindowStore = create<WindowStore>((set: StoreApi<WindowStore>['s
                 set({ windows: [...currentWindows] })
             }
             else if (attempts < maxAttempts) {
-                console.warn('Retry addClass:', windowTitle)
+                if (attempts > 5) {
+                    console.warn('Retry addClass:', windowTitle)
+                }
                 setTimeout(() => tryToUpdate(attempts + 1), retryInterval)
             }
             else {
@@ -254,6 +264,9 @@ export const useWindowStore = create<WindowStore>((set: StoreApi<WindowStore>['s
             }
             else if (attempts < maxAttempts) {
                 // console.warn('Retry updateWindowStyle:', windowTitle)
+                if (attempts > 5) {
+                    console.warn('Retry updateWindowStyle:', windowTitle)
+                }
                 setTimeout(() => tryToUpdate(attempts + 1), retryInterval)
             }
             else {

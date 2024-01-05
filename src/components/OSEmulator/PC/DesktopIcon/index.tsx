@@ -1,4 +1,3 @@
-import styles from './../styles-win98.module.css'
 import Image, { StaticImageData } from 'next/image'
 import dynamic from 'next/dynamic'
 import { useState, useEffect, useRef } from 'react'
@@ -22,7 +21,7 @@ interface DesktopIconProps {
 }
 const DesktopIcon = (props: DesktopIconProps) => {
     const { id, text, icon, primaryAction, left, top } = props
-    const { windows, openWindow } = useWindowStore()
+    const { windows, openWindow, styles } = useWindowStore()
     const thisIcon = useRef<HTMLDivElement | null>(null)
     // const [isSelected, setIsSelected] = useState(false)
     const [lastMouseClick, setLastMouseClick] = useState<number | null>(null)
@@ -179,7 +178,7 @@ const DesktopIcon = (props: DesktopIconProps) => {
         setLastMouseClick(now)
     }
 
-    // if (!styles.desktopIcon) return <></>
+    if (!styles.desktopIcon) return <></>
     return (
         <div ref={thisIcon} id={id} data-id={id}
             className={`${styles.desktopIcon}`}
