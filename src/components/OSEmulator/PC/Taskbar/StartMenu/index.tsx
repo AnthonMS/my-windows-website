@@ -93,6 +93,21 @@ const StartMenu = (props: StartMenuProps) => {
 
             if (!target.classList.contains(styles.active)) {
                 target.classList.add(styles.active)
+                const dropdownContent = target.querySelector(`.${styles.dropdownContent}`) as HTMLElement
+                if (dropdownContent) {
+                    // Calculate the bottom position of the dropdownContent relative to the viewport
+                    const targetBottom = target.getBoundingClientRect().bottom
+                    const targetBottomDiff = (targetBottom - window.innerHeight) + 5
+                    const dropdownBottom = dropdownContent.getBoundingClientRect().bottom
+                    // If the dropdownContent is extending beyond the window
+                    if (dropdownBottom > window.innerHeight) {
+                        // Position the bottom of the dropdownContent at the bottom of the window
+                        dropdownContent.style.bottom = `${targetBottomDiff}px`;
+                        dropdownContent.style.top = 'auto';
+                        dropdownContent.style.transform = 'translateY(0)';
+                    }
+                }
+
             }
             else {
                 target.classList.remove(styles.active)
@@ -203,7 +218,6 @@ const StartMenu = (props: StartMenuProps) => {
                                 </li>
                             </ul>
                         </li>
-
                     </ul>
                 </li>
 
