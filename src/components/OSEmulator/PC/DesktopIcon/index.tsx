@@ -92,16 +92,17 @@ const DesktopIcon = (props: DesktopIconProps) => {
             setIsMouseDown(true)
 
             const clickedDesktopIcon: Element = findParentWithClass(target, styles.desktopIcon) as Element
-            if (!clickedDesktopIcon.classList.contains(styles.selected)) {
-                clickedDesktopIcon.classList.add(styles.selected)
-            }
 
-            if (!isCtrlKeyHeld) {
+            if (!isCtrlKeyHeld && !clickedDesktopIcon.classList.contains(styles.selected)) {
                 Array.from(document.querySelectorAll(`.${styles.desktopIcon}.${styles.selected}`))
                     .filter(icon => clickedDesktopIcon && icon.id !== clickedDesktopIcon.id)
                     .forEach(icon => icon.classList.remove(styles.selected))
             }
 
+
+            if (!clickedDesktopIcon.classList.contains(styles.selected)) {
+                clickedDesktopIcon.classList.add(styles.selected)
+            }
             const { clientX, clientY } = getClientCoordinates(event.nativeEvent)
             setPrevMousePosition({ x: clientX, y: clientY })
             click(event)
