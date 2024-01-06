@@ -8,7 +8,7 @@ import sendmailIcon from '@/assets/images/icons/sendmail_icon.png'
 import PopupWindow from '../Popup'
 import Button from '../../UI/Button'
 
-import { useWindowStore } from '@/stores/windowStore'
+import { useSettingsStore } from '@/stores/SettingsStore'
 
 import axios from 'axios'
 
@@ -18,7 +18,7 @@ export interface ContactWindowProps {
 }
 const ContactWindow = (props: ContactWindowProps) => {
     const { } = props
-    const { openWindow, styles } = useWindowStore()
+    const { openWindow, styles } = useSettingsStore()
 
     const [name, setName] = useState<string>('')
     const [email, setEmail] = useState<string>('')

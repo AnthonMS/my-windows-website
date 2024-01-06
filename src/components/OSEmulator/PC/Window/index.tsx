@@ -6,7 +6,7 @@ import { isElementInClass, findParentWithClass, getClientCoordinates } from '@/l
 
 import Button from '../UI/Button'
 
-import { useWindowStore } from '@/stores/windowStore'
+import { useSettingsStore } from '@/stores/SettingsStore'
 import { isTouch } from '@/lib/utils'
 
 export interface WindowProps {
@@ -33,7 +33,7 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
     if (maximizeBtn === null || maximizeBtn === undefined) { maximizeBtn = true }
     if (helpBtn === null || helpBtn === undefined) { helpBtn = false }
     if (closeBtn === null || closeBtn === undefined) { closeBtn = true }
-    const { windows, openWindow, closeWindow, hideWindow, updateWindowStyle, removeClass, styles } = useWindowStore()
+    const { windows, openWindow, closeWindow, hideWindow, updateWindowStyle, removeClass, styles } = useSettingsStore()
     const initialMount = useRef<Boolean>(true)
     const thisWindow = useRef<HTMLDivElement | null>(null)
     const [isHeaderHeld, setIsHeaderHeld] = useState(false)

@@ -20,7 +20,7 @@ import minesGameIcon from '@/assets/images/icons/game_mine_1-0.png'
 import kodakIcon from '@/assets/images/icons/kodak_imaging-0.png'
 import toolsGear from '@/assets/images/icons/tools_gear-0.png'
 
-import { useWindowStore } from '@/stores/windowStore'
+import { useSettingsStore } from '@/stores/SettingsStore'
 
 import WelcomeWindow from '../../Windows/Welcome'
 import AboutMeWindow from '../../Windows/AboutMe'
@@ -33,7 +33,7 @@ export interface StartMenuProps {
 }
 const StartMenu = (props: StartMenuProps) => {
     const { toggleStartMenu } = props
-    const { openWindow, setStyles, styles } = useWindowStore()
+    const { openWindow, setStyles, styles } = useSettingsStore()
 
     const click = (event: React.MouseEvent<HTMLLIElement> | React.TouchEvent<HTMLLIElement>) => {
         const target = event.target

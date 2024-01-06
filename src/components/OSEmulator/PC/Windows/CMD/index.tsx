@@ -16,7 +16,7 @@ const commands: Commands = commandsJson as Commands
 import { extractErrors, errorsToOutputString, Command } from '@/services/cmd'
 import { Res } from '@/app/api/cmd/route'
 
-import { useWindowStore } from '@/stores/windowStore'
+import { useSettingsStore } from '@/stores/SettingsStore'
 
 import { pingSimulator } from '@/services/cmd/commands/ping'
 
@@ -28,7 +28,7 @@ export interface CMDWindowProps {
 }
 const CMDWindow = (props: CMDWindowProps) => {
     const { } = props
-    const { styles } = useWindowStore()
+    const { styles } = useSettingsStore()
     const inputArea = useRef<HTMLTextAreaElement | null>(null)
     const [inputAreaLines, setInputAreaLines] = useState(1)
     const [commandHistory, setCommandHistory] = useState<CommandHistoryItem[]>([]);

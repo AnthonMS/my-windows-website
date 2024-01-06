@@ -4,14 +4,14 @@ import { useState, useEffect, useRef } from 'react'
 
 import windowsLogo from '@/assets/images/windows92-logo.png'
 import StartMenu from './StartMenu'
-import { useWindowStore } from '@/stores/windowStore'
+import { useSettingsStore } from '@/stores/SettingsStore'
 import Time from '../UI/Time'
 import { isTouch } from '@/lib/utils'
 
 interface TaskbarProps { }
 const Taskbar = (props: TaskbarProps) => {
     const { } = props
-    const { windows, hideWindow, showWindow, removeClass, styles } = useWindowStore()
+    const { windows, hideWindow, showWindow, removeClass, styles } = useSettingsStore()
     const [showStart, setShowStart] = useState<Boolean>(false)
     const toggleStartMenu = () => { setShowStart(prev => !prev) }
 

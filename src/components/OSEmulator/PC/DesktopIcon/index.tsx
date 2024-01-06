@@ -2,7 +2,7 @@ import Image, { StaticImageData } from 'next/image'
 import dynamic from 'next/dynamic'
 import { useState, useEffect, useRef } from 'react'
 
-import { useWindowStore } from '@/stores/windowStore'
+import { useSettingsStore } from '@/stores/SettingsStore'
 
 // import AboutMeWindow from '@/components/OSEmulator/PC/Windows/AboutMe'
 import AboutMeWindow from '../Windows/AboutMe'
@@ -21,7 +21,7 @@ interface DesktopIconProps {
 }
 const DesktopIcon = (props: DesktopIconProps) => {
     const { id, text, icon, primaryAction, left, top } = props
-    const { windows, openWindow, styles } = useWindowStore()
+    const { windows, openWindow, styles } = useSettingsStore()
     const thisIcon = useRef<HTMLDivElement | null>(null)
     // const [isSelected, setIsSelected] = useState(false)
     const [lastMouseClick, setLastMouseClick] = useState<number | null>(null)

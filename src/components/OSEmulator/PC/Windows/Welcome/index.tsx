@@ -4,14 +4,14 @@ import welcomeIcon from '@/assets/images/icons/welcome_icon.png'
 import AboutMeWindow from '../AboutMe'
 import ContactWindow from '../Contact'
 
-import { useWindowStore } from '@/stores/windowStore'
+import { useSettingsStore } from '@/stores/SettingsStore'
 import { isMobile, isTouch } from '@/lib/utils'
 
 export interface WelcomeWindowProps {
 }
 const WelcomeWindow = (props: WelcomeWindowProps) => {
     const { } = props
-    const { openWindow, styles } = useWindowStore()
+    const { openWindow, styles } = useSettingsStore()
 
     const click = (event: React.MouseEvent<HTMLAnchorElement>) => {
         const target = event.target

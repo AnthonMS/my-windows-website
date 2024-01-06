@@ -7,7 +7,7 @@ import successIcon from '@/assets/images/icons/check-0.png'
 
 import Button from '../../UI/Button'
 
-import { useWindowStore } from '@/stores/windowStore'
+import { useSettingsStore } from '@/stores/SettingsStore'
 
 interface PopupWindowProps {
     title: string
@@ -19,14 +19,13 @@ interface PopupWindowProps {
 const PopupWindow = (props: PopupWindowProps) => {
     const { title, text, error } = props
     let { width, height } = props
-    const { styles } = useWindowStore()
+    const { styles } = useSettingsStore()
     if (width === null ||width === undefined) {
         width = Math.min(window.innerWidth - 25, 300)
     }
     if (height === null || height === undefined) {
         height = Math.min(window.innerHeight - 25, 150)
     }
-    // const { closeWindow } = useWindowStore()
     const windowRef = useRef<{ close?: () => void } | null>(null)
 
     const click = async (event: React.MouseEvent<HTMLDivElement>) => {

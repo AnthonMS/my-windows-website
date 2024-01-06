@@ -3,7 +3,7 @@ import { StaticImport } from 'next/dist/shared/lib/get-img-props'
 import React, { forwardRef, useRef, useImperativeHandle  } from 'react'
 
 import { isTouch } from '@/lib/utils'
-import { useWindowStore } from '@/stores/windowStore'
+import { useSettingsStore } from '@/stores/SettingsStore'
 
 export interface ButtonProps {
     icon?: string | StaticImport
@@ -18,7 +18,7 @@ export interface ButtonProps {
 const Button = forwardRef((props: ButtonProps, ref) => {
     const { onClick, icon, text, className, dataTitle } = props
     const thisButton = useRef<HTMLDivElement | null>(null)
-    const { styles } = useWindowStore()
+    const { styles } = useSettingsStore()
     
     useImperativeHandle(ref, () => ({
         thisButton,

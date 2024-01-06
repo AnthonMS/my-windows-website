@@ -25,11 +25,11 @@ import CMDWindow from './Windows/CMD'
 import { isElementInClass, findParentWithClass } from '@/lib/util_DOM'
 
 
-import { useWindowStore } from '@/stores/windowStore'
+import { useSettingsStore } from '@/stores/SettingsStore'
 import { isTouch } from '@/lib/utils'
 
 const PCEmulator = () => {
-    const { windows, openWindow, removeClass, addClass, setWindowsContainer, setStyles, styles } = useWindowStore()
+    const { windows, openWindow, removeClass, addClass, setWindowsContainer, setStyles, styles } = useSettingsStore()
     const initialMount = useRef<Boolean>(true)
     const windowsContainer = useRef<HTMLDivElement | null>(null)
 
@@ -40,7 +40,7 @@ const PCEmulator = () => {
 
     useEffect(() => {
         if (initialMount.current) {
-            // TODO: the styles should be named so we can set it in localstorage and get it next time we render initially
+            // TODO: save windowStore variables in localstorage and get it next time we render initially
             setStyles(styles_win98)
         }
 

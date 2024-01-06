@@ -3,12 +3,12 @@ import Window from '@/components/OSEmulator/PC/Window'
 import userCardIcon from '@/assets/images/icons/user_card.png'
 import { isMobile, isTouch } from '@/lib/utils'
 
-import { useWindowStore } from '@/stores/windowStore'
+import { useSettingsStore } from '@/stores/SettingsStore'
 export interface AboutMeWindowProps {
 }
 const AboutMeWindow = (props: AboutMeWindowProps) => {
     const { } = props
-    const { styles } = useWindowStore()
+    const { styles } = useSettingsStore()
 
     
     if (!styles.window) return <></>

@@ -2,8 +2,11 @@ import { create, StoreApi } from 'zustand'
 import { createRoot } from 'react-dom/client'
 import { MutableRefObject } from 'react'
 
-interface WindowStore {
+// TODO: Update store to be named SettingsStore.
+
+interface SettingsStore {
     windows: HTMLDivElement[]
+    setWindows: (newWindows: HTMLDivElement[]) => void
     windowsContainer: MutableRefObject<HTMLDivElement> | null
     setWindowsContainer: (container: MutableRefObject<HTMLDivElement>) => void
     styles: any; // This is the new styles property
@@ -34,9 +37,9 @@ interface WindowStore {
     ) => void
 }
 
-// TODO: Create a closeWindow function that takes in the title:string that is used in attribute "data-title" for the div element
-export const useWindowStore = create<WindowStore>((set: StoreApi<WindowStore>['setState'], get: StoreApi<WindowStore>['getState']) => ({
+export const useSettingsStore = create<SettingsStore>((set: StoreApi<SettingsStore>['setState'], get: StoreApi<SettingsStore>['getState']) => ({
     windows: [],
+    setWindows: (newWindows) => { set({ windows: newWindows }) },
     windowsContainer: null,
     setWindowsContainer: (container) => { set({ windowsContainer: container }) },
     styles: {},
@@ -66,7 +69,8 @@ export const useWindowStore = create<WindowStore>((set: StoreApi<WindowStore>['s
                     get().showWindow(win.getAttribute('data-title') as string)
                 }
             })
-            set({ windows: [...currentWindows] })
+            // set({ windows: [...currentWindows] })
+            get().setWindows([...currentWindows])
 
             if (!windowOpen) {
                 windowDiv.classList.add(currentStyles.active)
@@ -74,7 +78,8 @@ export const useWindowStore = create<WindowStore>((set: StoreApi<WindowStore>['s
                 if (currentWindowsContainer) {
                     currentWindowsContainer.current.appendChild(portalContainer)
                 }
-                set((state) => ({ windows: [...state.windows, windowDiv] }))
+                // set((state) => ({ windows: [...state.windows, windowDiv] }))
+                get().setWindows([...currentWindows, windowDiv])
                 get().addClass(windowDiv.getAttribute('data-title') as string, currentStyles.active)
             }
         }, 10)
@@ -91,7 +96,8 @@ export const useWindowStore = create<WindowStore>((set: StoreApi<WindowStore>['s
             if (windowToUpdate) {
                 // Remove the window from the list
                 const updatedWindows = currentWindows.filter((win: HTMLDivElement) => win !== windowToUpdate)
-                set({ windows: updatedWindows })
+                // set({ windows: updatedWindows })
+                get().setWindows(updatedWindows)
 
                 // Remove the window from the DOM
                 const parent = windowToUpdate.parentElement
@@ -130,7 +136,8 @@ export const useWindowStore = create<WindowStore>((set: StoreApi<WindowStore>['s
                     windowToUpdate.classList.remove(currentStyles.active)
                 }
 
-                set({ windows: [...currentWindows] })
+                // set({ windows: [...currentWindows] })
+                get().setWindows([...currentWindows])
             }
             else if (attempts < maxAttempts) {
                 if (attempts > 5) {
@@ -161,7 +168,8 @@ export const useWindowStore = create<WindowStore>((set: StoreApi<WindowStore>['s
                     windowToUpdate.classList.add(currentStyles.active)
                 }
 
-                set({ windows: [...currentWindows] })
+                // set({ windows: [...currentWindows] })
+                get().setWindows([...currentWindows])
             }
             else if (attempts < maxAttempts) {
                 if (attempts > 5) {
@@ -194,7 +202,8 @@ export const useWindowStore = create<WindowStore>((set: StoreApi<WindowStore>['s
                     }
                 })
 
-                set({ windows: [...currentWindows] })
+                // set({ windows: [...currentWindows] })
+                get().setWindows([...currentWindows])
             }
             else if (attempts < maxAttempts) {
                 if (attempts > 5) {
@@ -231,7 +240,8 @@ export const useWindowStore = create<WindowStore>((set: StoreApi<WindowStore>['s
                     }
                 })
 
-                set({ windows: [...currentWindows] })
+                // set({ windows: [...currentWindows] })
+                get().setWindows([...currentWindows])
             }
             else if (attempts < maxAttempts) {
                 if (attempts > 5) {
@@ -260,7 +270,8 @@ export const useWindowStore = create<WindowStore>((set: StoreApi<WindowStore>['s
                     windowToUpdate.style.setProperty(property, newStyles[property])
                 }
 
-                set({ windows: [...currentWindows] })
+                // set({ windows: [...currentWindows] })
+                get().setWindows([...currentWindows])
             }
             else if (attempts < maxAttempts) {
                 // console.warn('Retry updateWindowStyle:', windowTitle)
