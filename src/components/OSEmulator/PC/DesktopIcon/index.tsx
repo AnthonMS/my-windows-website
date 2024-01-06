@@ -99,8 +99,10 @@ const DesktopIcon = (props: DesktopIconProps) => {
                     .forEach(icon => icon.classList.remove(styles.selected))
             }
 
-
-            if (!clickedDesktopIcon.classList.contains(styles.selected)) {
+            if (isCtrlKeyHeld && clickedDesktopIcon.classList.contains(styles.selected)) {
+                clickedDesktopIcon.classList.remove(styles.selected)
+            }
+            else if (!clickedDesktopIcon.classList.contains(styles.selected)) {
                 clickedDesktopIcon.classList.add(styles.selected)
             }
             const { clientX, clientY } = getClientCoordinates(event.nativeEvent)
