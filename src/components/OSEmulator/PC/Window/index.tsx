@@ -15,7 +15,7 @@ export interface WindowProps {
     height?: number
     left?: number
     top?: number
-    title?: string
+    title: string
     icon?: string | StaticImport
     onActive?: Function
     fullscreen?: Boolean
@@ -40,19 +40,23 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
     const [isResizeHeld, setIsResizeHeld] = useState(false)
     const [resizeX, setResizeX] = useState<number>(0) // 0: false, -1: true inverse, 1: true
     const [resizeY, setResizeY] = useState<number>(0) // 0: false, -1: true inverse, 1: true
-
     const [prevMousePosition, setPrevMousePosition] = useState<{ x: number; y: number } | null>(null)
 
     const [isFullscreen, setIsFullscreen] = useState(fullscreen || false)
-
-    // Update code so these values are stored on HTMLDivElements as data attributes instead. This will be easier to handle and debug. We dont want to change styles directly
-    // const [thisWidth, setThisWidth] = useState(width || 600)
-    // const [thisHeight, setThisHeight] = useState(height || 400)
-    // const [thisLeft, setThisLeft] = useState(left || 200)
-    // const [thisTop, setThisTop] = useState(top || 200)
-
-    const [thisTitle, setThisTitle] = useState<string>(title || 'Untitled-')
-
+    const [thisTitle, setThisTitle] = useState<string>(generateTitle(title))
+    function generateTitle(baseTitle: string): string {
+        if (!windows.some(win => win.getAttribute('data-title') === baseTitle)) {
+            return baseTitle
+        }
+    
+        let counter = 1
+        let newTitle = `${baseTitle} ${counter}`
+        while (windows.some(win => win.getAttribute('data-title') === newTitle)) {
+            counter++
+            newTitle = `${baseTitle} ${counter}`
+        }
+        return newTitle
+    }
 
     React.useImperativeHandle(ref, () => ({
         close: () => {
@@ -132,6 +136,7 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
             window.removeEventListener('touchmove', resize)
         }
     }, [thisWindow, isResizeHeld, prevMousePosition])
+
 
 
 

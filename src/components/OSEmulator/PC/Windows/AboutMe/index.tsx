@@ -57,4 +57,5 @@ const AboutMeWindow = (props: AboutMeWindowProps) => {
 
 }
 
+AboutMeWindow.displayName = 'AboutMe'
 export default AboutMeWindow

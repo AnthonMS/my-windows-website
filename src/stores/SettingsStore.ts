@@ -51,7 +51,7 @@ export const useSettingsStore = create<SettingsStore>((set: StoreApi<SettingsSto
         const portalContainer = document.createElement('div')
         portalContainer.classList.add('window')
         const rootPortal = createRoot(portalContainer)
-        rootPortal.render(window) // root.unmount() to remove from DOM
+        rootPortal.render(window)
 
         // wait for render to see if window we want to create is already created.
         setTimeout(function waitForRender() {
@@ -62,26 +62,32 @@ export const useSettingsStore = create<SettingsStore>((set: StoreApi<SettingsSto
                 return
             }
 
-            let windowOpen: Boolean = false
-            currentWindows.forEach((win: Element) => {
-                if (win.getAttribute('data-title') === windowDiv.getAttribute('data-title')) {
-                    windowOpen = true
-                    get().showWindow(win.getAttribute('data-title') as string)
+            let highestZIndex = 10
+            let lowestZIndex = Infinity
+            currentWindows.forEach((win: HTMLDivElement) => {
+                const zIndex = parseInt(win.style.zIndex || '0');
+                if (zIndex > highestZIndex) {
+                    highestZIndex = zIndex
+                }
+                if (zIndex < lowestZIndex) {
+                    lowestZIndex = zIndex
                 }
             })
-            // set({ windows: [...currentWindows] })
-            get().setWindows([...currentWindows])
-
-            if (!windowOpen) {
-                windowDiv.classList.add(currentStyles.active)
-                const currentWindowsContainer = get().windowsContainer
-                if (currentWindowsContainer) {
-                    currentWindowsContainer.current.appendChild(portalContainer)
-                }
-                // set((state) => ({ windows: [...state.windows, windowDiv] }))
-                get().setWindows([...currentWindows, windowDiv])
-                get().addClass(windowDiv.getAttribute('data-title') as string, currentStyles.active)
+            if (lowestZIndex > 200) { // Maybe it will start bugging if there is more than 200 windows open at the same time?
+                currentWindows.forEach((win: HTMLDivElement, index: number) => {
+                    win.style.zIndex = `${10 + index}`
+                })
+                highestZIndex = 10 + currentWindows.length - 1
             }
+
+            windowDiv.style.zIndex = `${highestZIndex + 1}`
+            windowDiv.classList.add(currentStyles.active)
+
+            const currentWindowsContainer = get().windowsContainer
+            if (currentWindowsContainer) {
+                currentWindowsContainer.current.appendChild(portalContainer)
+            }
+            get().setWindows([...currentWindows, windowDiv])
         }, 10)
     },
     closeWindow: (windowTitle) => {
@@ -94,9 +100,7 @@ export const useSettingsStore = create<SettingsStore>((set: StoreApi<SettingsSto
             const windowToUpdate = currentWindows.find((win) => win.getAttribute('data-title') === windowTitle)
 
             if (windowToUpdate) {
-                // Remove the window from the list
                 const updatedWindows = currentWindows.filter((win: HTMLDivElement) => win !== windowToUpdate)
-                // set({ windows: updatedWindows })
                 get().setWindows(updatedWindows)
 
                 // Remove the window from the DOM
@@ -136,6 +140,8 @@ export const useSettingsStore = create<SettingsStore>((set: StoreApi<SettingsSto
                     windowToUpdate.classList.remove(currentStyles.active)
                 }
 
+                windowToUpdate.style.zIndex = ''
+
                 // set({ windows: [...currentWindows] })
                 get().setWindows([...currentWindows])
             }
@@ -167,6 +173,26 @@ export const useSettingsStore = create<SettingsStore>((set: StoreApi<SettingsSto
                 if (!windowToUpdate.classList.contains(currentStyles.active)) {
                     windowToUpdate.classList.add(currentStyles.active)
                 }
+
+                let highestZIndex = 10
+                let lowestZIndex = Infinity
+                currentWindows.forEach((win: HTMLDivElement) => {
+                    const zIndex = parseInt(win.style.zIndex || '0');
+                    if (zIndex > highestZIndex) {
+                        highestZIndex = zIndex
+                    }
+                    if (zIndex < lowestZIndex) {
+                        lowestZIndex = zIndex
+                    }
+                })
+                if (lowestZIndex > 200) { // Maybe it will start bugging if there is more than 200 windows open at the same time?
+                    currentWindows.forEach((win: HTMLDivElement, index: number) => {
+                        win.style.zIndex = `${10 + index}`
+                    })
+                    highestZIndex = 10 + currentWindows.length - 1
+                }
+
+                windowToUpdate.style.zIndex = `${highestZIndex + 1}`
 
                 // set({ windows: [...currentWindows] })
                 get().setWindows([...currentWindows])
@@ -255,6 +281,7 @@ export const useSettingsStore = create<SettingsStore>((set: StoreApi<SettingsSto
         }
         tryToUpdate(0)
     },
+    // TODO: Create function to setWindowStyle instead of just updating it, it should overwrite the whole style object of the window
     updateWindowStyle: (windowTitle, newStyles) => {
         const maxAttempts = 20
         const retryInterval = 100

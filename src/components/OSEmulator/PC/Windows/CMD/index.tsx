@@ -98,7 +98,7 @@ const CMDWindow = (props: CMDWindowProps) => {
             }
         }
         catch (e) {
-            console.log('CATCH ERROR:', e)
+            console.error('CATCH ERROR:', e)
         }
 
     }

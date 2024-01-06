@@ -244,7 +244,7 @@
 
 
 .startMenu {
-    z-index: 200;
+    z-index: 20000;
 
     position: absolute;
     bottom: calc(var(--bottom-height) - 1px);
@@ -512,7 +512,7 @@
     flex-direction: column;
 
     &.active {
-        z-index: 90;
+        /* z-index: 90; */
         border-color: #1084d0;
     }
 

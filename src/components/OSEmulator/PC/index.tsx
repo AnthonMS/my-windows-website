@@ -29,7 +29,7 @@ import { useSettingsStore } from '@/stores/SettingsStore'
 import { isTouch } from '@/lib/utils'
 
 const PCEmulator = () => {
-    const { windows, openWindow, removeClass, addClass, setWindowsContainer, setStyles, styles } = useSettingsStore()
+    const { windows, openWindow, showWindow, removeClass, setWindowsContainer, setStyles, styles } = useSettingsStore()
     const initialMount = useRef<Boolean>(true)
     const windowsContainer = useRef<HTMLDivElement | null>(null)
 
@@ -98,7 +98,7 @@ const PCEmulator = () => {
                 // if click is inside a window, add active to that one
                 if (isElementInClass(target, styles.window)) {
                     const clickedWindow: Element = findParentWithClass(target, styles.window) as Element
-                    addClass(clickedWindow.getAttribute('data-title') as string, styles.active)
+                    showWindow(clickedWindow.getAttribute('data-title') as string)
                 }
             }
         }
@@ -255,7 +255,7 @@ const PCEmulator = () => {
     return <>
         <div className={styles.main || styles_win98.main} { ...mainMouseEvents } { ...mainTouchEvents }>
             <DesktopIcon left='0px' top='0px' id='Computer'
-                text='Computer Program 123 (Testname)' icon={computerExplorer}
+                text='Computer' icon={computerExplorer}
                 primaryAction={onClickDesktopIcon} />
 
             <DesktopIcon left='0px' top='100px' id='CMD'
