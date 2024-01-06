@@ -138,9 +138,13 @@ const PCEmulator = () => {
             )
 
             if (overlaps) {
-                // The desktop icon is within the highlight box
                 if (!desktopIcon.classList.contains(styles.selected)) {
                     desktopIcon.classList.add(styles.selected)
+                }
+            }
+            else {
+                if (desktopIcon.classList.contains(styles.selected)) {
+                    desktopIcon.classList.remove(styles.selected)
                 }
             }
         })
