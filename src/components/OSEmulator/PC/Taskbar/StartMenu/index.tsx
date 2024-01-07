@@ -119,9 +119,46 @@ const StartMenu = (props: StartMenuProps) => {
         }
     }
 
+    const mouseOver = (event: React.MouseEvent<HTMLLIElement>) => {
+        const target = event.target
+        if (target instanceof HTMLLIElement) {
+            const menuItem: Element = findParentWithClass(target, styles.item) as Element
+            const dropdownItem: Element = findParentWithClass(target, styles.dropdownItem) as Element
+            const activeBtns = document.querySelectorAll(`.${styles.item}.${styles.active}, .${styles.dropdownItem}.${styles.active}`)
+            activeBtns.forEach(element => {
+                if (element !== menuItem &&
+                    (dropdownItem === null || !element.contains(dropdownItem))) {
+                    element.classList.remove(styles.active)
+                }
+            })
+
+            if (!target.classList.contains(styles.active)) {
+                target.classList.add(styles.active)
+                const dropdownContent = target.querySelector(`.${styles.dropdownContent}`) as HTMLElement
+                if (dropdownContent) {
+                    // Calculate the bottom position of the dropdownContent relative to the viewport
+                    const targetBottom = target.getBoundingClientRect().bottom
+                    const targetBottomDiff = (targetBottom - window.innerHeight) + 5
+                    const dropdownBottom = dropdownContent.getBoundingClientRect().bottom
+                    // If the dropdownContent is extending beyond the window
+                    if (dropdownBottom > window.innerHeight) {
+                        // Position the bottom of the dropdownContent at the bottom of the window
+                        dropdownContent.style.bottom = `${targetBottomDiff}px`;
+                        dropdownContent.style.top = 'auto';
+                        dropdownContent.style.transform = 'translateY(0)';
+                    }
+                }
+
+            }
+        }
+    }
+
 
     const startmenuMouseEvents = !isTouch() ? {
-        onMouseDown: handleStartMenuInput
+        onMouseDown: handleStartMenuInput,
+        onMouseOver: mouseOver
+    } : {}
+    const mouseOverEvents = !isTouch() ? {
     } : {}
     const startmenuTouchEvents = isTouch() ? {
         onTouchStart: handleStartMenuInput
