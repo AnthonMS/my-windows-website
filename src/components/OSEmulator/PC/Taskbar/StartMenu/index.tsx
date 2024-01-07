@@ -19,6 +19,18 @@ import monitorGear from '@/assets/images/icons/monitor_gear.png'
 import minesGameIcon from '@/assets/images/icons/game_mine_1-0.png'
 import kodakIcon from '@/assets/images/icons/kodak_imaging-0.png'
 import toolsGear from '@/assets/images/icons/tools_gear-0.png'
+import my_documents from '@/assets/images/WindowsXP/my-documents.png'
+import my_recent_documents from '@/assets/images/WindowsXP/my-recent-documents.png'
+import my_pictures from '@/assets/images/WindowsXP/my-pictures.png'
+import my_music from '@/assets/images/WindowsXP/my-music.png'
+import my_computer from '@/assets/images/WindowsXP/my-computer.png'
+import control_panel from '@/assets/images/WindowsXP/control-panel.png'
+import program_access from '@/assets/images/WindowsXP/program-access.png'
+import connect_to from '@/assets/images/WindowsXP/connect-to.png'
+import printers_faxes from '@/assets/images/WindowsXP/printers-faxes.png'
+import help_support from '@/assets/images/WindowsXP/help-support.png'
+import search from '@/assets/images/WindowsXP/search.png'
+import run from '@/assets/images/WindowsXP/run.png'
 
 import { useSettingsStore } from '@/stores/SettingsStore'
 
@@ -173,98 +185,205 @@ const StartMenu = (props: StartMenuProps) => {
                 Anthon<span>Mølgaard Steiness</span>
             </div>
 
-            <ul className={styles.menuContent}>
+            <section className={styles.menu}>
+                <hr className={styles.orange} />
+                <ul className={`${styles.menuContent} ${styles.left}`}>
 
-                <li className={`${styles.item} ${styles.more}`} data-item='projects' {...startmenuMouseEvents} {...startmenuTouchEvents}>
-                    <Image className={styles.itemIcon} src={gamesIcon} alt={`projects-icon`} />
-                    <p className={styles.itemText}>Projects</p>
+                    <li className={`${styles.item} ${styles.more}`} data-item='projects' {...startmenuMouseEvents} {...startmenuTouchEvents}>
+                        <Image className={styles.itemIcon} src={gamesIcon} alt={`projects-icon`} />
+                        <p className={styles.itemText}>Projects</p>
 
-                    <ul className={styles.dropdownContent}>
-                        <li className={styles.dropdownItem} data-item='this'>
-                            <Image className={styles.dropdownItemIcon} src={windowsLogo} alt={`game-icon`} />
-                            <p className={styles.dropdownItemText}>This (Repo)</p>
-                        </li>
-                        <li className={styles.dropdownItem} data-item='project-ha-cards'>
-                            <Image className={styles.dropdownItemIcon} src={haIcon} alt={`game-icon`} />
-                            <p className={styles.dropdownItemText}>Home Assistant UI Bundle (Repo)</p>
-                        </li>
-                    </ul>
-                </li>
+                        <ul className={styles.dropdownContent}>
+                            <li className={styles.dropdownItem} data-item='this'>
+                                <Image className={styles.dropdownItemIcon} src={windowsLogo} alt={`game-icon`} />
+                                <p className={styles.dropdownItemText}>This (Repo)</p>
+                            </li>
+                            <li className={styles.dropdownItem} data-item='project-ha-cards'>
+                                <Image className={styles.dropdownItemIcon} src={haIcon} alt={`game-icon`} />
+                                <p className={styles.dropdownItemText}>Home Assistant UI Bundle (Repo)</p>
+                            </li>
+                        </ul>
+                    </li>
 
-                <li className={`${styles.item} ${styles.more}`} data-item='games' {...startmenuMouseEvents} {...startmenuTouchEvents}>
-                    <Image className={styles.itemIcon} src={gamesIcon} alt='icon' />
-                    <p className={styles.itemText}>Games</p>
+                    <li className={`${styles.item} ${styles.more}`} data-item='games' {...startmenuMouseEvents} {...startmenuTouchEvents}>
+                        <Image className={styles.itemIcon} src={gamesIcon} alt='icon' />
+                        <p className={styles.itemText}>Games</p>
 
-                    <ul className={styles.dropdownContent}>
-                        <li className={styles.dropdownItem} data-item='minesweeper'>
-                            <Image className={styles.dropdownItemIcon} src={minesGameIcon} alt='icon' />
-                            <p className={styles.dropdownItemText}>Minesweeper</p>
-                        </li>
-                    </ul>
-                </li>
+                        <ul className={styles.dropdownContent}>
+                            <li className={styles.dropdownItem} data-item='minesweeper'>
+                                <Image className={styles.dropdownItemIcon} src={minesGameIcon} alt='icon' />
+                                <p className={styles.dropdownItemText}>Minesweeper</p>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <div className={styles.separator}></div>
+
+                    <li className={styles.item} data-item='about' {...startmenuMouseEvents} {...startmenuTouchEvents}>
+                        <Image className={styles.itemIcon} src={aboutMeIcon} alt='icon' />
+                        <p className={styles.itemText}>About</p>
+                    </li>
+
+                    <li className={styles.item} data-item='contact' {...startmenuMouseEvents} {...startmenuTouchEvents}>
+                        <Image className={styles.itemIcon} src={contactIcon} alt='icon' />
+                        <p className={styles.itemText}>Contact</p>
+                    </li>
+
+                    <li className={styles.item} data-item='welcome' {...startmenuMouseEvents} {...startmenuTouchEvents}>
+                        <Image className={styles.itemIcon} src={welcomeIcon} alt='icon' />
+                        <p className={styles.itemText}>Welcome</p>
+                    </li>
+
+                    {/* <li className={styles.item} onClick={click} data-item='find'>
+                        <Image className={styles.itemIcon} src={searchIcon} alt='icon' />
+                        <p className={styles.itemText}>Find</p>
+                    </li> */}
+
+                    {/* <li className={styles.item} onClick={click} data-item='settings'>
+                        <Image className={styles.itemIcon} src={settingsIcon} alt='icon' />
+                        <p className={styles.itemText}>Settings</p>
+                    </li> */}
+
+                    {/* <li className={styles.item} onClick={click} data-item='help'>
+                        <Image className={styles.itemIcon} src={helpIcon} alt='icon' />
+                        <p className={styles.itemText}>Help</p>
+                    </li> */}
+
+                    <li className={`${styles.item} ${styles.more}`} data-item='settings' {...startmenuMouseEvents} {...startmenuTouchEvents}>
+                        <Image className={styles.itemIcon} src={monitorGear} alt={`settings-icon`} />
+                        <p className={styles.itemText}>Settings</p>
+
+                        <ul className={styles.dropdownContent}>
+                            <li className={`${styles.dropdownItem} ${styles.more}`} data-item='settings-styles'>
+                                <Image className={styles.itemIcon} src={kodakIcon} alt={`settings-styles-icon`} />
+                                <p className={styles.itemText}>Style</p>
+
+                                <ul className={styles.dropdownContent}>
+                                    <li className={styles.dropdownItem} data-item='settings-styles-win98'>
+                                        <Image className={styles.dropdownItemIcon} src={windowsLogo} alt={`settings-styles-win98-icon`} />
+                                        <p className={styles.dropdownItemText}>Windows 98/95</p>
+                                    </li>
+                                    <li className={styles.dropdownItem} data-item='settings-styles-winxp'>
+                                        <Image className={styles.dropdownItemIcon} src={winxpLogo} alt={`settings-styles-winxp-icon`} />
+                                        <p className={styles.dropdownItemText}>Windows XP</p>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
 
 
-                <li className={styles.item} data-item='about' {...startmenuMouseEvents} {...startmenuTouchEvents}>
-                    <Image className={styles.itemIcon} src={aboutMeIcon} alt='icon' />
-                    <p className={styles.itemText}>About</p>
-                </li>
+                    <li className={`${styles.item} ${styles.nodisplay_xp}`} data-item='shutdown' {...startmenuMouseEvents} {...startmenuTouchEvents}>
+                        <Image className={styles.itemIcon} src={shutdownIcon} alt='icon' />
+                        <p className={styles.itemText}>Shutdown</p>
+                    </li>
 
-                <li className={styles.item} data-item='contact' {...startmenuMouseEvents} {...startmenuTouchEvents}>
-                    <Image className={styles.itemIcon} src={contactIcon} alt='icon' />
-                    <p className={styles.itemText}>Contact</p>
-                </li>
+                    <div className={styles.filler}></div>
+                    <div className={styles.separator}></div>
 
-                <li className={styles.item} data-item='welcome' {...startmenuMouseEvents} {...startmenuTouchEvents}>
-                    <Image className={styles.itemIcon} src={welcomeIcon} alt='icon' />
-                    <p className={styles.itemText}>Welcome</p>
-                </li>
+                    <li className={`${styles.item} ${styles.more} ${styles.nodisplay_98}`} data-item='all-programs' {...startmenuMouseEvents} {...startmenuTouchEvents}>
+                        <Image className={styles.itemIcon} src={gamesIcon} alt='icon' />
+                        <p className={styles.itemText}>All Programs</p>
 
-                {/* <li className={styles.item} onClick={click} data-item='find'>
-                    <Image className={styles.itemIcon} src={searchIcon} alt='icon' />
-                    <p className={styles.itemText}>Find</p>
-                </li> */}
+                        <ul className={styles.dropdownContent}>
+                            <li className={styles.dropdownItem} data-item='program-access'>
+                                <Image className={styles.dropdownItemIcon} src={minesGameIcon} alt='icon' />
+                                <p className={styles.dropdownItemText}>Set Program Access and Defaults</p>
+                            </li>
+                            <li className={styles.dropdownItem} data-item='windows-catalog'>
+                                <Image className={styles.dropdownItemIcon} src={minesGameIcon} alt='icon' />
+                                <p className={styles.dropdownItemText}>Windows Catalog</p>
+                            </li>
+                            <li className={styles.dropdownItem} data-item='windows-update'>
+                                <Image className={styles.dropdownItemIcon} src={minesGameIcon} alt='icon' />
+                                <p className={styles.dropdownItemText}>Windows Update</p>
+                            </li>
+                        </ul>
+                    </li>
 
-                {/* <li className={styles.item} onClick={click} data-item='settings'>
-                    <Image className={styles.itemIcon} src={settingsIcon} alt='icon' />
-                    <p className={styles.itemText}>Settings</p>
-                </li> */}
-
-                {/* <li className={styles.item} onClick={click} data-item='help'>
-                    <Image className={styles.itemIcon} src={helpIcon} alt='icon' />
-                    <p className={styles.itemText}>Help</p>
-                </li> */}
-
-                <li className={`${styles.item} ${styles.more}`} data-item='settings' {...startmenuMouseEvents} {...startmenuTouchEvents}>
-                    <Image className={styles.itemIcon} src={monitorGear} alt={`settings-icon`} />
-                    <p className={styles.itemText}>Settings</p>
-
-                    <ul className={styles.dropdownContent}>
-
-                        <li className={`${styles.dropdownItem} ${styles.more}`} data-item='settings-styles'>
-                            <Image className={styles.itemIcon} src={kodakIcon} alt={`settings-styles-icon`} />
-                            <p className={styles.itemText}>Style</p>
-
-                            <ul className={styles.dropdownContent}>
-                                <li className={styles.dropdownItem} data-item='settings-styles-win98'>
-                                    <Image className={styles.dropdownItemIcon} src={windowsLogo} alt={`settings-styles-win98-icon`} />
-                                    <p className={styles.dropdownItemText}>Windows 98/95</p>
-                                </li>
-                                <li className={styles.dropdownItem} data-item='settings-styles-winxp'>
-                                    <Image className={styles.dropdownItemIcon} src={winxpLogo} alt={`settings-styles-winxp-icon`} />
-                                    <p className={styles.dropdownItemText}>Windows XP</p>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                </li>
+                </ul>
 
 
 
-                <li className={styles.item} data-item='shutdown' {...startmenuMouseEvents} {...startmenuTouchEvents}>
-                    <Image className={styles.itemIcon} src={shutdownIcon} alt='icon' />
-                    <p className={styles.itemText}>Shutdown</p>
-                </li>
-            </ul>
+                <ul className={`${styles.menuContent} ${styles.right}`}>
+
+                    <li className={styles.item} data-item='my-documents' {...startmenuMouseEvents} {...startmenuTouchEvents}>
+                        <Image className={styles.itemIcon} src={my_documents} alt='icon' />
+                        <p className={styles.itemText}>My Documents</p>
+                    </li>
+
+                    <li className={`${styles.item} ${styles.more}`} data-item='my-recent-documents' {...startmenuMouseEvents} {...startmenuTouchEvents}>
+                        <Image className={styles.itemIcon} src={my_recent_documents} alt='icon' />
+                        <p className={styles.itemText}>My Recent Documents</p>
+
+                        <ul className={styles.dropdownContent}>
+                            <li className={styles.dropdownItem} data-item='my-recent-documents-empty'>
+                                <Image className={styles.dropdownItemIcon} src={minesGameIcon} alt='icon' />
+                                <p className={styles.dropdownItemText}>Empty</p>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li className={styles.item} data-item='my-pictures' {...startmenuMouseEvents} {...startmenuTouchEvents}>
+                        <Image className={styles.itemIcon} src={my_pictures} alt='icon' />
+                        <p className={styles.itemText}>My Pictures</p>
+                    </li>
+
+                    <li className={styles.item} data-item='my-music' {...startmenuMouseEvents} {...startmenuTouchEvents}>
+                        <Image className={styles.itemIcon} src={my_music} alt='icon' />
+                        <p className={styles.itemText}>My Music</p>
+                    </li>
+
+                    <li className={styles.item} data-item='my-computer' {...startmenuMouseEvents} {...startmenuTouchEvents}>
+                        <Image className={styles.itemIcon} src={my_computer} alt='icon' />
+                        <p className={styles.itemText}>My Computer</p>
+                    </li>
+
+                    <div className={styles.separator}></div>
+
+                    <li className={styles.item} data-item='control-panel' {...startmenuMouseEvents} {...startmenuTouchEvents}>
+                        <Image className={styles.itemIcon} src={control_panel} alt='icon' />
+                        <p className={styles.itemText}>Control Panel</p>
+                    </li>
+
+                    <li className={styles.item} data-item='program-access' {...startmenuMouseEvents} {...startmenuTouchEvents}>
+                        <Image className={styles.itemIcon} src={program_access} alt='icon' />
+                        <p className={styles.itemText}>Set Program Access and Defaults</p>
+                    </li>
+
+                    <li className={styles.item} data-item='connect-to' {...startmenuMouseEvents} {...startmenuTouchEvents}>
+                        <Image className={styles.itemIcon} src={connect_to} alt='icon' />
+                        <p className={styles.itemText}>Connect To</p>
+                    </li>
+
+                    <li className={styles.item} data-item='printers-faxes' {...startmenuMouseEvents} {...startmenuTouchEvents}>
+                        <Image className={styles.itemIcon} src={printers_faxes} alt='icon' />
+                        <p className={styles.itemText}>Printers and Faxes</p>
+                    </li>
+
+                    <div className={styles.separator}></div>
+
+                    <li className={styles.item} data-item='help-support' {...startmenuMouseEvents} {...startmenuTouchEvents}>
+                        <Image className={styles.itemIcon} src={help_support} alt='icon' />
+                        <p className={styles.itemText}>Help and Support</p>
+                    </li>
+
+                    <li className={styles.item} data-item='search' {...startmenuMouseEvents} {...startmenuTouchEvents}>
+                        <Image className={styles.itemIcon} src={search} alt='icon' />
+                        <p className={styles.itemText}>Search</p>
+                    </li>
+
+                    <li className={styles.item} data-item='run' {...startmenuMouseEvents} {...startmenuTouchEvents}>
+                        <Image className={styles.itemIcon} src={run} alt='icon' />
+                        <p className={styles.itemText}>Run...</p>
+                    </li>
+
+
+
+
+                </ul>
+
+            </section>
 
         </div>
     )
