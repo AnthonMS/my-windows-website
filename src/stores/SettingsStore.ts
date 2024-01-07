@@ -63,31 +63,34 @@ export const useSettingsStore = create<SettingsStore>((set: StoreApi<SettingsSto
             }
 
             let highestZIndex = 10
-            let lowestZIndex = Infinity
             currentWindows.forEach((win: HTMLDivElement) => {
                 const zIndex = parseInt(win.style.zIndex || '0');
                 if (zIndex > highestZIndex) {
                     highestZIndex = zIndex
                 }
-                if (zIndex < lowestZIndex) {
-                    lowestZIndex = zIndex
-                }
             })
-            if (lowestZIndex > 200) { // Maybe it will start bugging if there is more than 200 windows open at the same time?
-                currentWindows.forEach((win: HTMLDivElement, index: number) => {
-                    win.style.zIndex = `${10 + index}`
-                })
-                highestZIndex = 10 + currentWindows.length - 1
-            }
-
-            windowDiv.style.zIndex = `${highestZIndex + 1}`
+            highestZIndex++
+            windowDiv.style.zIndex = `${highestZIndex}`
             windowDiv.classList.add(currentStyles.active)
+
+            let zIndex = 10
+            let sortedWindows = [...currentWindows, windowDiv].slice().sort((a: HTMLDivElement, b: HTMLDivElement) => {
+                const zIndexA = parseInt(a.style.zIndex || '0')
+                const zIndexB = parseInt(b.style.zIndex || '0')
+                return zIndexA - zIndexB
+            })
+            let updatedWindows = [...currentWindows, windowDiv].map((win: HTMLDivElement) => {
+                const sortedIndex = sortedWindows.indexOf(win)
+                zIndex = sortedIndex + 10
+                win.style.zIndex = `${zIndex}`
+                return win
+            })
 
             const currentWindowsContainer = get().windowsContainer
             if (currentWindowsContainer) {
                 currentWindowsContainer.current.appendChild(portalContainer)
             }
-            get().setWindows([...currentWindows, windowDiv])
+            get().setWindows(updatedWindows)
         }, 10)
     },
     closeWindow: (windowTitle) => {
@@ -175,23 +178,12 @@ export const useSettingsStore = create<SettingsStore>((set: StoreApi<SettingsSto
                 }
 
                 let highestZIndex = 10
-                let lowestZIndex = Infinity
                 currentWindows.forEach((win: HTMLDivElement) => {
                     const zIndex = parseInt(win.style.zIndex || '0');
                     if (zIndex > highestZIndex) {
                         highestZIndex = zIndex
                     }
-                    if (zIndex < lowestZIndex) {
-                        lowestZIndex = zIndex
-                    }
                 })
-                if (lowestZIndex > 200) { // Maybe it will start bugging if there is more than 200 windows open at the same time?
-                    currentWindows.forEach((win: HTMLDivElement, index: number) => {
-                        win.style.zIndex = `${10 + index}`
-                    })
-                    highestZIndex = 10 + currentWindows.length - 1
-                }
-
                 windowToUpdate.style.zIndex = `${highestZIndex + 1}`
 
                 // set({ windows: [...currentWindows] })
