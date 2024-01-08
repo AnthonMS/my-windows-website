@@ -192,16 +192,28 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        background: linear-gradient(180deg, #4cb8ff, #3377ff 8%, #3374ff 40%, #39f 88%, #39f 93%, #337bff 95%, #3362d7 96%, #3362d7);
-        box-shadow:
-            inset 5px 0 5px -5px rgba(200, 200, 200, 0.7),
-            inset 0 5px 5px -5px rgba(200, 200, 200, 0.7);
+        background: linear-gradient(rgb(12, 89, 185) 1%, rgb(19, 158, 233) 6%, rgb(24, 181, 242) 10%, rgb(19, 155, 235) 14%, rgb(18, 144, 232) 19%, rgb(13, 141, 234) 63%, rgb(13, 159, 241) 81%, rgb(15, 158, 237) 88%, rgb(17, 155, 233) 91%, rgb(19, 146, 226) 94%, rgb(19, 126, 215) 97%, rgb(9, 91, 201) 100%);
+        border-left: 1px solid rgb(16, 66, 175);
+        box-shadow: rgb(24, 187, 255) 1px 0px 1px inset;
+        padding: 0px 10px;
+
+        .image {
+            width: 15px;
+            height: 15px;
+            margin-left: 2px;
+        }
     }
 
     .clock {
-        color: white;
-        margin: 0px 3px;
-        padding: 0 10px;
+        /* color: white;
+        margin: 0px 3px; */
+        /* padding: 0 10px; */
+
+        margin: 0px 5px;
+        color: rgb(255, 255, 255);
+        font-size: 12px;
+        font-weight: lighter;
+        text-shadow: none;
 
         /* border-right: 1px solid #fff;
         border-bottom: 1px solid #fff;
@@ -400,6 +412,7 @@
                 font-size: 12px;
             }
         }
+
         .item:hover {
             background-color: rgba(0, 0, 0, 0.2);
         }

@@ -20,7 +20,8 @@ import WelcomeWindow from './Windows/Welcome'
 import AboutMeWindow from './Windows/AboutMe'
 import ContactWindow from './Windows/Contact'
 import ErrorWindow from './Windows/Popup'
-import CMDWindow from './Windows/CMD'
+import CommandPrompt from './Windows/CommandPrompt'
+import Notepad from './Windows/Notepad'
 
 import { isElementInClass, findParentWithClass } from '@/lib/util_DOM'
 
@@ -45,8 +46,9 @@ const PCEmulator = () => {
         }
 
         if (initialMount.current) {
-            // openWindow(<CMDWindow />)
-            openWindow(<WelcomeWindow />)
+            openWindow(<Notepad />)
+            // openWindow(<CommandPrompt />)
+            // openWindow(<WelcomeWindow />)
             // openWindow(<AboutMeWindow />)
             // openWindow(<ContactWindow />)
             // openWindow(<ErrorWindow text='This is an error message. Wubba lubba dub dub!' />)
@@ -86,6 +88,7 @@ const PCEmulator = () => {
         const target: HTMLElement = event.target as HTMLElement
     }
 
+    // TODO: Move this logic to Window Component
     const handleActiveWindowsOnClick = (event: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
         const target = event.target as HTMLElement
         if (!isElementInClass(target, [styles.window, styles.active])) {
@@ -258,7 +261,7 @@ const PCEmulator = () => {
                 text='Computer' icon={computerExplorer}
                 primaryAction={onClickDesktopIcon} />
 
-            <DesktopIcon left='0px' top='100px' id='CMD'
+            <DesktopIcon left='0px' top='100px' id='CommandPrompt'
                 text='Command Prompt' icon={cmdIcon}
                 primaryAction={onClickDesktopIcon} />
 

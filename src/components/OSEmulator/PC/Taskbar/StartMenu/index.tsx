@@ -1,45 +1,10 @@
 // import styles from './../../styles-win98.module.css'
 import Image from 'next/image'
+import { useRef } from 'react'
 
 import styles_win98 from '@/components/OSEmulator/PC/styles-win98.module.css'
 import styles_winxp from '@/components/OSEmulator/PC/styles-winxp.module.css'
 
-// import aboutMeIcon from '@/assets/images/icons/user_card.png'
-// import helpIcon from '@/assets/images/icons/help_book_big-0.png'
-// import settingsIcon from '@/assets/images/icons/gears-0.png'
-// import gamesIcon from '@/assets/images/icons/joystick-2.png'
-// import shutdownIcon from '@/assets/images/icons/shut_down_cool-4.png'
-// import searchIcon from '@/assets/images/icons/search_file-1.png'
-// import contactIcon from '@/assets/images/icons/contact_icon.png'
-// import welcomeIcon from '@/assets/images/icons/welcome_icon.png'
-// import haIcon from '@/assets/images/icons/ha_icon.png'
-// import windowsLogo from '@/assets/images/windows92-logo.png'
-// import winxpLogo from '@/assets/images/icons/winxp-logo.png'
-// import monitorGear from '@/assets/images/icons/monitor_gear.png'
-// import minesGameIcon from '@/assets/images/icons/game_mine_1-0.png'
-// import kodakIcon from '@/assets/images/icons/kodak_imaging-0.png'
-// import toolsGear from '@/assets/images/icons/tools_gear-0.png'
-// import my_documents from '@/assets/images/WindowsXP/my-documents.png'
-// import my_recent_documents from '@/assets/images/WindowsXP/my-recent-documents.png'
-// import my_pictures from '@/assets/images/WindowsXP/my-pictures.png'
-// import my_music from '@/assets/images/WindowsXP/my-music.png'
-// import my_computer from '@/assets/images/WindowsXP/my-computer.png'
-// import control_panel from '@/assets/images/WindowsXP/control-panel.png'
-// import program_access from '@/assets/images/WindowsXP/program-access.png'
-// import connect_to from '@/assets/images/WindowsXP/connect-to.png'
-// import printers_faxes from '@/assets/images/WindowsXP/printers-faxes.png'
-// import help_support from '@/assets/images/WindowsXP/help-support.png'
-// import search from '@/assets/images/WindowsXP/search.png'
-// import run from '@/assets/images/WindowsXP/run.png'
-// import windows_catalog from '@/assets/images/WindowsXP/windows-catalog.png'
-// import windows_update from '@/assets/images/WindowsXP/windows-update.png'
-// import folder_program from '@/assets/images/WindowsXP/folder-program.png'
-// import internet_explorer from '@/assets/images/WindowsXP/internet-explorer.png'
-// import email from '@/assets/images/WindowsXP/email.png'
-// import remote_assistance from '@/assets/images/WindowsXP/remote-assistance.png'
-// import windows_media_player from '@/assets/images/WindowsXP/windows-media-player.png'
-// import windows_messenger from '@/assets/images/WindowsXP/windows-messenger.png'
-// import windows_movie_maker from '@/assets/images/WindowsXP/windows-movie-maker.png'
 import images from './imageAssets'
 
 import { useSettingsStore } from '@/stores/SettingsStore'
@@ -56,6 +21,7 @@ export interface StartMenuProps {
 const StartMenu = (props: StartMenuProps) => {
     const { toggleStartMenu } = props
     const { openWindow, setStyles, styles } = useSettingsStore()
+    const thisStartMenu = useRef<HTMLDivElement|null>(null)
 
     const click = (event: React.MouseEvent<HTMLLIElement> | React.TouchEvent<HTMLLIElement>) => {
         const target = event.target
@@ -101,11 +67,14 @@ const StartMenu = (props: StartMenuProps) => {
     }
 
     const handleStartMenuInput = (event: React.MouseEvent<HTMLLIElement> | React.TouchEvent<HTMLLIElement>) => {
+        if ('button' in event && event.button !== 0) { return } // Dont react on right click
+        if (!thisStartMenu.current) { return }
+
         const target = event.target
         if (target instanceof HTMLLIElement) {
             const clickedMenuItem: Element = findParentWithClass(target, styles.item) as Element
             const clickedDropdownItem: Element = findParentWithClass(target, styles.dropdownItem) as Element
-            const activeBtns = document.querySelectorAll(`.${styles.item}.${styles.active}, .${styles.dropdownItem}.${styles.active}`)
+            const activeBtns = thisStartMenu.current.querySelectorAll(`.${styles.item}.${styles.active}, .${styles.dropdownItem}.${styles.active}`)
             activeBtns.forEach(element => {
                 if (element !== clickedMenuItem &&
                     element !== clickedDropdownItem) {
@@ -142,11 +111,13 @@ const StartMenu = (props: StartMenuProps) => {
     }
 
     const mouseOver = (event: React.MouseEvent<HTMLLIElement>) => {
+        if (!thisStartMenu.current) { return }
+
         const target = event.target
         if (target instanceof HTMLLIElement) {
             const menuItem: Element = findParentWithClass(target, styles.item) as Element
             const dropdownItem: Element = findParentWithClass(target, styles.dropdownItem) as Element
-            const activeBtns = document.querySelectorAll(`.${styles.item}.${styles.active}, .${styles.dropdownItem}.${styles.active}`)
+            const activeBtns = thisStartMenu.current.querySelectorAll(`.${styles.item}.${styles.active}, .${styles.dropdownItem}.${styles.active}`)
             activeBtns.forEach(element => {
                 if (element !== menuItem &&
                     (dropdownItem === null || !element.contains(dropdownItem))) {
@@ -188,7 +159,7 @@ const StartMenu = (props: StartMenuProps) => {
 
     if (!styles.startMenu) return <></>
     return (
-        <div className={styles.startMenu}>
+        <div ref={thisStartMenu} className={styles.startMenu}>
             <div className={styles.blueBar}></div>
             <div className={styles.headline}>
                 <div className={styles.accountImage}></div>

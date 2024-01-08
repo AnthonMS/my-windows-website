@@ -6,6 +6,8 @@ import { isElementInClass, findParentWithClass, getClientCoordinates } from '@/l
 
 import Button from '../UI/Button'
 
+import Toolbar from './Toolbar'
+
 import { useSettingsStore } from '@/stores/SettingsStore'
 import { isTouch } from '@/lib/utils'
 
@@ -36,6 +38,11 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
     const { windows, openWindow, closeWindow, hideWindow, updateWindowStyle, removeClass, styles } = useSettingsStore()
     const initialMount = useRef<Boolean>(true)
     const thisWindow = useRef<HTMLDivElement | null>(null)
+    // const [toolbar, setToolbar] = useState<React.ReactElement | null>(null)
+    // const [otherChildren, setOtherChildren] = useState<React.ReactElement[]>([])
+    let toolbarElement: React.ReactElement | null = null
+    let otherChildren: React.ReactElement[] = []
+
     const [isHeaderHeld, setIsHeaderHeld] = useState(false)
     const [isResizeHeld, setIsResizeHeld] = useState(false)
     const [resizeX, setResizeX] = useState<number>(0) // 0: false, -1: true inverse, 1: true
@@ -48,7 +55,7 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
         if (!windows.some(win => win.getAttribute('data-title') === baseTitle)) {
             return baseTitle
         }
-    
+
         let counter = 1
         let newTitle = `${baseTitle} ${counter}`
         while (windows.some(win => win.getAttribute('data-title') === newTitle)) {
@@ -57,6 +64,17 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
         }
         return newTitle
     }
+
+    React.Children.forEach(children, child => {
+        if (React.isValidElement(child)) {
+            if (child.type === Toolbar) {
+                toolbarElement = child
+            } else {
+                otherChildren.push(child)
+            }
+        }
+    })
+
 
     React.useImperativeHandle(ref, () => ({
         close: () => {
@@ -438,8 +456,9 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
                 </div>
             </div>
 
+            { toolbarElement }
             <div className={styles.windowContent}>
-                {children}
+                {otherChildren}
             </div>
 
             <div className={`${styles.dragToResize} ${styles.topRight}`} {...resizeMouseEvents} {...resizeTouchEvents}></div>

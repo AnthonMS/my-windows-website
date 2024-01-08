@@ -2,6 +2,9 @@
 import Image from 'next/image'
 import { useState, useEffect, useRef } from 'react'
 
+import _sound from '@/assets/images/WindowsXP/sound.png'
+import _windows_messenger from '@/assets/images/WindowsXP/windows-messenger.png'
+import _security_shield_red from '@/assets/images/WindowsXP/security-shield-red.png'
 import windowsLogo from '@/assets/images/windows92-logo.png'
 import StartMenu from './StartMenu'
 import { useSettingsStore } from '@/stores/SettingsStore'
@@ -23,8 +26,8 @@ const Taskbar = (props: TaskbarProps) => {
 
 
     useEffect(() => {
+        if (!showStart) return // Dont handle close if it's not open
         const handleWindowClick = (event: any) => {
-            if (!showStart) return // Dont handle close if it's not open
             closeStart(event)
         }
         if (!isTouch()) {
@@ -128,6 +131,9 @@ const Taskbar = (props: TaskbarProps) => {
             </div>
 
             <div className={styles.rightContainer}>
+                <Image className={`${styles.image} ${styles.nodisplay_98}`} width={15} height={15} src={_sound} alt={`icon`} />
+                <Image className={`${styles.image} ${styles.nodisplay_98}`} width={15} height={15} src={_windows_messenger} alt={`icon`} />
+                <Image className={`${styles.image} ${styles.nodisplay_98}`} width={15} height={15} src={_security_shield_red} alt={`icon`} />
                 <p className={styles.clock}><Time /></p>
             </div>
 

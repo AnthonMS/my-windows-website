@@ -24,9 +24,9 @@ interface CommandHistoryItem {
     dir: string
     command: string
 }
-export interface CMDWindowProps {
+export interface CommandPromptProps {
 }
-const CMDWindow = (props: CMDWindowProps) => {
+const CommandPrompt = (props: CommandPromptProps) => {
     const { } = props
     const { styles } = useSettingsStore()
     const inputArea = useRef<HTMLTextAreaElement | null>(null)
@@ -442,4 +442,4 @@ const CMDWindow = (props: CMDWindowProps) => {
     </Window>
 }
 
-export default CMDWindow
+export default CommandPrompt
