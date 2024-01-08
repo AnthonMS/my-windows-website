@@ -1,5 +1,5 @@
-import { useRef, useState, useEffect } from 'react'
-import Image from 'next/image'
+import React, { useRef, useState, useEffect, cloneElement } from 'react'
+import Image, { StaticImageData } from 'next/image'
 
 
 import _notepad from '@/assets/images/Windows98/notepad.png'
@@ -12,16 +12,17 @@ import { boolean } from 'zod'
 
 interface ToolbarProps {
     windowTitle: string
+    children?: React.ReactNode;
 }
 const Toolbar = (props: ToolbarProps) => {
-    const { } = props
+    const { children } = props
     const { styles } = useSettingsStore()
     const thisToolbar = useRef<HTMLDivElement | null>(null)
     const [menuOpen, setMenuOpen] = useState<boolean>(false)
 
     useEffect(() => {
         if (!menuOpen) return
-        
+
         if (!isTouch()) {
             window.addEventListener('mousedown', closeMenus)
         }
@@ -39,7 +40,7 @@ const Toolbar = (props: ToolbarProps) => {
         let target = event.target
         const item: Element = findParentWithClass(target, styles.item) as Element
         const menuItem: Element = findParentWithClass(target, styles.menuItem) as Element
-        
+
         if (!item && !menuItem) {
             const activeBtns = thisToolbar.current.querySelectorAll(`.${styles.item}.${styles.active}, .${styles.menuItem}.${styles.active}`)
             activeBtns.forEach(element => {
@@ -48,6 +49,7 @@ const Toolbar = (props: ToolbarProps) => {
             setMenuOpen(false)
         }
     }
+
 
     const handleInput = (event: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
         if ('button' in event && event.button !== 0) { return } // Dont react on right click
@@ -82,14 +84,13 @@ const Toolbar = (props: ToolbarProps) => {
     const mouseOver = (event: React.MouseEvent<HTMLDivElement>) => {
         if (!thisToolbar.current) { return }
         const target = event.target
-        // console.log('HOVER!')
         if (target instanceof HTMLDivElement) {
             const activeBtns = thisToolbar.current.querySelectorAll(`.${styles.item}.${styles.active}, .${styles.menuItem}.${styles.active}`)
             // if any of the items in toolbar already has an active class, we should add & remove active classes while hovering
             if (activeBtns.length > 0) {
                 const item: Element = findParentWithClass(target, styles.item) as Element
                 const menuItem: Element = findParentWithClass(target, styles.menuItem) as Element
-                
+
                 activeBtns.forEach(element => {
                     if (element !== item &&
                         element !== menuItem &&
@@ -104,8 +105,6 @@ const Toolbar = (props: ToolbarProps) => {
             }
         }
     }
-
-
     const startmenuMouseEvents = !isTouch() ? {
         onMouseDown: handleInput,
         onMouseOver: mouseOver
@@ -113,181 +112,111 @@ const Toolbar = (props: ToolbarProps) => {
     const startmenuTouchEvents = isTouch() ? {
         onTouchStart: handleInput
     } : {}
+
+
+
+    const addEventHandlers = (child: React.ReactNode): React.ReactNode => {
+        if (React.isValidElement(child) && (child.type === Item || child.type === MenuItem)) {
+            const existingMouseDown = child.props.onMouseDown
+            const newMouseDown = startmenuMouseEvents.onMouseDown
+            const combinedMouseDown = (e: React.MouseEvent) => {
+                existingMouseDown && existingMouseDown(e)
+                newMouseDown && newMouseDown(e as React.MouseEvent<HTMLDivElement>)
+            }
+    
+            const childWithProps = cloneElement(child as React.ReactElement, { 
+                ...(child.props || {}), 
+                ...startmenuMouseEvents, 
+                ...startmenuTouchEvents, 
+                onMouseDown: combinedMouseDown 
+            })
+    
+            if (child.props.children) {
+                const childrenWithProps = React.Children.map(child.props.children, addEventHandlers)
+                return cloneElement(childWithProps as React.ReactElement, { children: childrenWithProps })
+            }
+    
+            return childWithProps
+        }
+    
+        if (React.isValidElement(child) && (child as React.ReactElement<any>).props.children) {
+            const childrenWithProps = React.Children.map((child as React.ReactElement<any>).props.children, addEventHandlers)
+            return cloneElement(child as React.ReactElement<any>, { ...(child.props as any), children: childrenWithProps })
+        }
+    
+        return child
+    }
+
+    const childrenWithProps = React.Children.map(children, addEventHandlers)
+
     if (!styles.window) return <></>
     return <div ref={thisToolbar} className={styles.toolbar}>
-        <div className={`${styles.item} ${styles.active}`} {...startmenuMouseEvents} {...startmenuTouchEvents}>
-            <span className={styles.label}>File</span>
-
-            <div className={styles.menu}>
-                <div className={`${styles.menuItem}`}>
-                    <div className={styles.menuItemCheck}>
-                        <Image className={styles.icon} src={_folder} alt={`game-icon`} />
-                    </div>
-                    <span className={styles.menuItemLabel}>New</span>
-                    <div className={styles.menuItemHotkey}></div>
-                    <div className={styles.menuItemArrow}></div>
-                </div>
-                <div className={`${styles.menuItem} ${styles.more}`}>
-                    <div className={styles.menuItemCheck}></div>
-                    <span className={styles.menuItemLabel}>Open..</span>
-                    <div className={styles.menuItemHotkey}></div>
-                    <div className={styles.menuItemArrow}></div>
-
-                    <div className={styles.menu}>
-                        <div className={`${styles.menuItem} ${styles.disabled}`}>
-                            <div className={styles.menuItemCheck}></div>
-                            <span className={styles.menuItemLabel}>Open this...</span>
-                            <div className={styles.menuItemHotkey}></div>
-                            <div className={styles.menuItemArrow}></div>
-                        </div>
-                        <div className={`${styles.menuItem} ${styles.disabled} ${styles.more}`}>
-                            <div className={styles.menuItemCheck}></div>
-                            <span className={styles.menuItemLabel}>Open that...</span>
-                            <div className={styles.menuItemHotkey}></div>
-                            <div className={styles.menuItemArrow}></div>
-                            <div className={styles.menu}>
-                                <div className={`${styles.menuItem} ${styles.disabled}`}>
-                                    <div className={styles.menuItemCheck}></div>
-                                    <span className={styles.menuItemLabel}>Open that there...</span>
-                                    <div className={styles.menuItemHotkey}></div>
-                                    <div className={styles.menuItemArrow}></div>
-                                </div>
-                                <div className={`${styles.menuItem} ${styles.disabled} ${styles.more}`}>
-                                    <div className={styles.menuItemCheck}></div>
-                                    <span className={styles.menuItemLabel}>Open that here...</span>
-                                    <div className={styles.menuItemHotkey}></div>
-                                    <div className={styles.menuItemArrow}></div>
-                                    <div className={styles.menu}>
-                                        <div className={`${styles.menuItem} ${styles.disabled}`}>
-                                            <div className={styles.menuItemCheck}></div>
-                                            <span className={styles.menuItemLabel}>Edit this?</span>
-                                            <div className={styles.menuItemHotkey}></div>
-                                            <div className={styles.menuItemArrow}></div>
-                                        </div>
-                                        <div className={`${styles.menuItem} ${styles.disabled}`}>
-                                            <div className={styles.menuItemCheck}></div>
-                                            <span className={styles.menuItemLabel}>Edit that?</span>
-                                            <div className={styles.menuItemHotkey}></div>
-                                            <div className={styles.menuItemArrow}></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className={`${styles.menuItem} ${styles.disabled}`}>
-                                    <div className={styles.menuItemCheck}></div>
-                                    <span className={styles.menuItemLabel}>Open that now...</span>
-                                    <div className={styles.menuItemHotkey}></div>
-                                    <div className={styles.menuItemArrow}></div>
-                                </div>
-                                <div className={`${styles.menuItem} ${styles.disabled}`}>
-                                    <div className={styles.menuItemCheck}></div>
-                                    <span className={styles.menuItemLabel}>Open that later...</span>
-                                    <div className={styles.menuItemHotkey}></div>
-                                    <div className={styles.menuItemArrow}></div>
-                                </div>
-                                <div className={`${styles.menuItem} ${styles.disabled}`}>
-                                    <div className={styles.menuItemCheck}></div>
-                                    <span className={styles.menuItemLabel}>Open that later...</span>
-                                    <div className={styles.menuItemHotkey}></div>
-                                    <div className={styles.menuItemArrow}></div>
-                                </div>
-                                <div className={`${styles.menuItem} ${styles.disabled}`}>
-                                    <div className={styles.menuItemCheck}></div>
-                                    <span className={styles.menuItemLabel}>Open that later...</span>
-                                    <div className={styles.menuItemHotkey}></div>
-                                    <div className={styles.menuItemArrow}></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-                <div className={`${styles.menuItem} ${styles.disabled}`}>
-                    <div className={styles.menuItemCheck}></div>
-                    <span className={styles.menuItemLabel}>Save</span>
-                    <div className={styles.menuItemHotkey}></div>
-                    <div className={styles.menuItemArrow}></div>
-                </div>
-                <div className={`${styles.menuItem} ${styles.disabled}`}>
-                    <div className={styles.menuItemCheck}></div>
-                    <span className={styles.menuItemLabel}>Save As...</span>
-                    <div className={styles.menuItemHotkey}></div>
-                    <div className={styles.menuItemArrow}></div>
-                </div>
-                <div className={`${styles.menuItem} ${styles.disabled}`}>
-                    <div className={styles.menuItemCheck}></div>
-                    <span className={styles.menuItemLabel}>Page Setup...</span>
-                    <div className={styles.menuItemHotkey}></div>
-                    <div className={styles.menuItemArrow}></div>
-                </div>
-                <div className={`${styles.menuItem} ${styles.disabled}`}>
-                    <div className={styles.menuItemCheck}></div>
-                    <span className={styles.menuItemLabel}>Print...</span>
-                    <div className={styles.menuItemHotkey}></div>
-                    <div className={styles.menuItemArrow}></div>
-                </div>
-                <div className={styles.menuItem}>
-                    <div className={styles.menuItemCheck}></div>
-                    <span className={styles.menuItemLabel}>Exit</span>
-                    <div className={styles.menuItemHotkey}></div>
-                    <div className={styles.menuItemArrow}></div>
-                </div>
-            </div>
-        </div>
-        <div className={styles.item} {...startmenuMouseEvents} {...startmenuTouchEvents}>
-            <span className={styles.label}>Edit</span>
-
-            <div className={styles.menu}>
-                <div className={`${styles.menuItem} ${styles.disabled}`}>
-                    <div className={styles.menuItemCheck}></div>
-                    <span className={styles.menuItemLabel}>Edit this?</span>
-                    <div className={styles.menuItemHotkey}></div>
-                    <div className={styles.menuItemArrow}></div>
-                </div>
-                <div className={`${styles.menuItem} ${styles.disabled}`}>
-                    <div className={styles.menuItemCheck}></div>
-                    <span className={styles.menuItemLabel}>Edit that?</span>
-                    <div className={styles.menuItemHotkey}></div>
-                    <div className={styles.menuItemArrow}></div>
-                </div>
-            </div>
-        </div>
-        <div className={styles.item} {...startmenuMouseEvents} {...startmenuTouchEvents}>
-            <span className={styles.label}>Search</span>
-
-            <div className={styles.menu}>
-                <div className={`${styles.menuItem} ${styles.disabled}`}>
-                    <div className={styles.menuItemCheck}></div>
-                    <span className={styles.menuItemLabel}>Search this</span>
-                    <div className={styles.menuItemHotkey}></div>
-                    <div className={styles.menuItemArrow}></div>
-                </div>
-                <div className={`${styles.menuItem} ${styles.disabled}`}>
-                    <div className={styles.menuItemCheck}></div>
-                    <span className={styles.menuItemLabel}>Search That</span>
-                    <div className={styles.menuItemHotkey}></div>
-                    <div className={styles.menuItemArrow}></div>
-                </div>
-            </div>
-        </div>
-        <div className={styles.item} {...startmenuMouseEvents} {...startmenuTouchEvents}>
-            <span className={styles.label}>Help</span>
-
-            <div className={styles.menu}>
-                <div className={`${styles.menuItem} ${styles.disabled}`}>
-                    <div className={styles.menuItemCheck}></div>
-                    <span className={styles.menuItemLabel}>Help You</span>
-                    <div className={styles.menuItemHotkey}></div>
-                    <div className={styles.menuItemArrow}></div>
-                </div>
-                <div className={`${styles.menuItem} ${styles.disabled}`}>
-                    <div className={styles.menuItemCheck}></div>
-                    <span className={styles.menuItemLabel}>Help Me</span>
-                    <div className={styles.menuItemHotkey}></div>
-                    <div className={styles.menuItemArrow}></div>
-                </div>
-            </div>
-        </div>
+        {childrenWithProps}
     </div>
 }
+interface ItemProps extends React.HTMLAttributes<HTMLDivElement> {
+    label: string
+    children?: React.ReactNode
+}
+const Item = React.forwardRef<HTMLDivElement, ItemProps>(
+    ({ label, children, ...props }, ref) => {
+        const { styles } = useSettingsStore()
+        // console.log('Item Props:', { ...props })
+        return (
+            <div className={styles.item} ref={ref} {...props}>
+                <span className={styles.label}>{label}</span>
+                {children}
+            </div>
+        )
+    }
+)
+Item.displayName = "Item"
+
+
+interface MenuProps extends React.HTMLAttributes<HTMLDivElement> {
+    children?: React.ReactNode
+}
+const Menu = React.forwardRef<HTMLDivElement, MenuProps>(
+    ({ children, ...props }, ref) => {
+        const { styles } = useSettingsStore()
+        return (
+            <div className={styles.menu} ref={ref} {...props}>
+                {children}
+            </div>
+        );
+    }
+)
+Menu.displayName = "Menu"
+
+interface MenuItemProps extends React.HTMLAttributes<HTMLDivElement> {
+    label: string;
+    disabled?: boolean;
+    more?: boolean;
+    icon?: StaticImageData;
+    children?: React.ReactNode;
+}
+
+const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
+    ({ label, disabled, more, icon, children, ...props }, ref) => {
+        const { styles } = useSettingsStore()
+        const classNames = [styles.menuItem];
+        if (disabled) classNames.push(styles.disabled);
+        if (more) classNames.push(styles.more);
+
+        return (
+            <div className={classNames.join(' ')} ref={ref} {...props}>
+                <div className={styles.menuItemCheck}>
+                    { icon && <Image className={styles.icon} src={icon} alt={`game-icon`} /> }
+                </div>
+                <span className={styles.menuItemLabel}>{label}</span>
+                <div className={styles.menuItemHotkey}></div>
+                <div className={styles.menuItemArrow}></div>
+                {children}
+            </div>
+        );
+    }
+);
+MenuItem.displayName = "MenuItem"
 
 export default Toolbar
+export { Item, Menu, MenuItem }
