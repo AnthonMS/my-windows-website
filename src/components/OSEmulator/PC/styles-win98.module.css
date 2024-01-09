@@ -30,8 +30,6 @@
     border-right: 1px solid gray;
     border-bottom: 1px solid gray;
     box-shadow: inset 1px 1px #dfdfdf, 1px 0 #000, 0 1px #000, 1px 1px #000;
-    margin-right: 2px;
-    margin-bottom: 2px;
     touch-action: manipulation;
 
     .buttonContent {
@@ -524,7 +522,7 @@
     border-top-color: #fff;
     border-bottom-color: #131313;
     border-left-color: #fff;
-    background: #c0c0c0;
+    background: var(--grey-98);
     max-width: 100%;
     resize: both;
     min-width: 100px;
@@ -534,8 +532,12 @@
     flex-direction: column;
 
     &.active {
+
         /* z-index: 90; */
-        border-color: #1084d0;
+        /* border-color: #1084d0; */
+        .windowHeader {
+            background: linear-gradient(to right, #000080, #1084d0);
+        }
     }
 
     &.hidden {
@@ -544,9 +546,11 @@
     }
 
     .windowHeader {
-        background: var(--blue-dark);
+        background: linear-gradient(to right, #000080, #1084d0);
+        background: linear-gradient(to right, rgb(128, 128, 128) 0%, rgb(181, 181, 181) 100%);
         color: white;
-        padding: 4px;
+        padding: 1px;
+        margin: 4px;
         font-weight: bold;
         display: flex;
         justify-content: space-between;
@@ -569,19 +573,23 @@
             text-overflow: ellipsis;
 
             .windowIcon {
-                width: 20px;
-                height: 100%;
-                margin-right: 4px;
-                margin-left: 4px;
+                width: 15px;
+                height: 15px;
+                margin-right: 1px;
+                margin-left: 1px;
                 display: inline;
                 pointer-events: none;
             }
 
             .windowTitleText {
                 height: 100%;
+                display: flex !important;
+                align-items: center;
+                justify-content: center;
 
                 display: inline;
-                margin-left: 7px;
+                margin-left: 1px;
+                font-size: 13px;
             }
         }
 
@@ -594,6 +602,8 @@
                 background: no-repeat center #ccc;
                 height: 17px;
                 width: 17px;
+                margin-top: 1px;
+                margin-bottom: 1px;
                 margin-left: 2px;
                 background-size: 80%;
 
@@ -657,29 +667,29 @@
         position: absolute;
 
         &.bottomRight {
-            bottom: -4px;
-            right: -4px;
+            bottom: -2px;
+            right: -2px;
             height: 6px;
             width: 6px;
         }
 
         &.bottomLeft {
-            bottom: -4px;
-            left: -4px;
+            bottom: -2px;
+            left: -2px;
             height: 6px;
             width: 6px;
         }
 
         &.topRight {
-            top: -4px;
-            right: -4px;
+            top: -2px;
+            right: -2px;
             height: 6px;
             width: 6px;
         }
 
         &.topLeft {
-            top: -4px;
-            left: -4px;
+            top: -2px;
+            left: -2px;
             height: 6px;
             width: 6px;
         }
@@ -688,32 +698,32 @@
         &.bottom {
             left: 50%;
             transform: translateX(-50%);
-            height: 4px;
-            width: 98%;
-        }
-
-        &.top {
-            top: -4px;
-        }
-
-        &.bottom {
-            bottom: -4px;
+            height: 5px;
+            width: 99%;
         }
 
         &.left,
         &.right {
             top: 50%;
             transform: translateY(-50%);
-            height: 98%;
-            width: 4px;
+            height: 99%;
+            width: 5px;
+        }
+
+        &.top {
+            top: -2px;
+        }
+
+        &.bottom {
+            bottom: -2px;
         }
 
         &.left {
-            left: -4px;
+            left: -2px;
         }
 
         &.right {
-            right: -4px;
+            right: -2px;
         }
     }
 }
@@ -753,18 +763,18 @@
     display: inline-flex;
     height: 20px;
 
-    .menu::before {
+    /* .menu::before {
         content: "";
         position: absolute;
-        top: -4px;
-        left: -4px;
-        right: -4px;
-        bottom: -4px;
-        border-top: 2px solid #d6d6d6;
-        border-left: 2px solid #d6d6d6;
-        border-right: 2px solid black;
-        border-bottom: 2px solid black;
-    }
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        border-top: 1px solid #d6d6d6;
+        border-left: 1px solid #d6d6d6;
+        border-right: 1px solid black;
+        border-bottom: 1px solid black;
+    } */
 
     .item {
         font-size: 14px;
@@ -796,55 +806,72 @@
 
             .menu {
                 /* display: block; */
-                display: flex;
+                display: grid;
             }
         }
     }
 
     .item:hover {
-        /* background: var(--blue-dark);
-        color: white; */
+        border-top: 1px solid #fff;
+        border-left: 1px solid #fff;
+        border-bottom: 1px solid gray;
+        border-right: 1px solid gray;
+
+        &.active {
+            /* background: var(--blue-dark);
+            color: white; */
             border-right: 1px solid #fff;
             border-bottom: 1px solid #fff;
             border-left: 1px solid gray;
             border-top: 1px solid gray;
+        }
     }
 
     .menu {
+        pointer-events: none;
         display: none;
         position: absolute;
         top: 100%;
         left: 0px;
         flex-direction: column;
+        grid-template-columns: 18px auto auto 15px 0px;
 
         background-color: #bdbebd;
         color: black;
         box-sizing: border-box;
-        border-left: 2px solid white;
-        border-top: 2px solid white;
-        border-right: 2px solid grey;
-        border-bottom: 2px solid grey;
+        border-left: 1px solid var(--grey-98);
+        border-top: 1px solid var(--grey-98);
+        border-right: 1px solid black;
+        border-bottom: 1px solid black;
+        box-shadow: 1px 1px 0 white inset, -1px -1px 0 rgb(128, 128, 128) inset;
+        padding: 2px;
+
+        .separator {
+            border-top: 1px solid var(--shadow-98);
+            border-bottom: 1px solid white;
+            margin: 0px;
+            margin-top: 2px;
+            margin-bottom: 2px;
+        }
 
         .menuItem {
-            display: flex;
-            /* Add this line */
+            pointer-events: auto;
+            /* display: flex; */
+            display: contents;
             flex-direction: row;
-            /* Add this line */
             padding-top: 1px;
             padding-bottom: 1px;
             font-size: 13px;
             position: relative;
 
             .menuItemCheck {
-                margin: 0px 4px 0px 3px;
-                width: 16px;
-                height: 18px;
+                grid-column: 1;
                 display: flex;
-                flex-direction: row;
+                -moz-box-align: center;
                 align-items: center;
-                /* Add this line */
+                -moz-box-pack: center;
                 justify-content: center;
-                /* Add this line */
+                background: inherit;
 
                 .icon {
                     width: 14px;
@@ -853,9 +880,10 @@
             }
 
             .menuItemLabel {
-                padding-right: 8px;
                 white-space: nowrap;
-                pointer-events: none;
+                padding-right: 8px;
+                grid-column: 2;
+                background: inherit;
             }
 
             .menuItemLabel::first-letter {
@@ -863,14 +891,17 @@
             }
 
             .menuItemHotkey {
-                margin-left: auto;
                 white-space: nowrap;
+                grid-column: 3;
                 padding-right: 2px;
+                background: inherit;
             }
 
             .menuItemArrow {
                 width: 15px;
                 height: 18px;
+                grid-column: 4;
+                background: inherit;
             }
 
             >.menu {
@@ -882,45 +913,54 @@
 
 
             &.disabled {
-                color: rgba(140, 140, 140, 0.71);
+                /* color: rgb(122, 122, 122); */
+                color: var(--shadow-98);
+                text-shadow: 0.8px 0.8px 0px rgb(255, 255, 255);
             }
 
             &.more {
                 >.menuItemArrow {
-                    position: absolute;
-                    right: 7px;
-                    top: 50%;
-                    /* Add this line */
-                    transform: translateY(-50%);
-                    /* Add this line */
-
-                    background: none;
-                    width: auto;
-                    height: auto;
-                    border-width: 3.5px 0px 3.5px 3.5px;
-                    border-style: solid none solid solid;
-                    border-color: transparent currentcolor transparent rgb(0, 19, 107);
-                    border-image: none;
+                    position: relative;
+                    grid-column: 4;
+                    width: 100%;
+                    height: 100%;
+                    display: flex;
+                    -moz-box-align: center;
+                    align-items: center;
+                    -moz-box-pack: center;
+                    justify-content: center;
                 }
-                
+
+                >.menuItemArrow::before {
+                    width: 0px;
+                    height: 0px;
+                    border-style: solid;
+                    border-width: 3px 0px 3px 3px;
+                    border-color: transparent transparent transparent rgb(0, 0, 0);
+                    content: "";
+                    display: block;
+                }
+
             }
 
             &.active {
-                background: var(--blue-dark);
+                background: var(--blue-dark) !important;
                 color: white;
+                text-shadow: none;
 
-                >.menuItemArrow {
-                    border-color: transparent currentcolor transparent white;
+                >.menuItemArrow::before {
+                    border-color: transparent transparent transparent white;
                 }
 
                 >.menu {
-                    display: flex;
+                    display: grid;
 
                     .menuItem {
                         >.menu {
                             top: unset;
                             bottom: -2px;
                         }
+
                         &.active {
                             >.menu {
                                 .menuItem {
@@ -935,18 +975,6 @@
                 }
             }
 
-        }
-
-        .menuItem:hover {
-            background-color: var(--blue-dark);
-            color: white;
-
-            &.more {
-                >.menuItemArrow {
-                    border-color: transparent currentcolor transparent rgb(255, 255, 255);
-
-                }
-            }
         }
     }
 }
@@ -1282,5 +1310,11 @@
 
 
 .notepadContainer {
+    height: 100%;
+    width: 100%;
+    padding: 3px;
+    display: flex;
+    flex-direction: column;
+    user-select: text;
     /* border: 1px solid red; */
 }

@@ -27,14 +27,12 @@ const Notepad = (props: NotepadProps) => {
     }
 
     if (!styles.window) return <></>
-    return <Window ref={windowRef} icon={_notepad}
-        width={width} height={height}
-        title={thisTitle} helpBtn={true} maximizeBtn={false} hideBtn={false}>
+    return <Window ref={windowRef} title={thisTitle} icon={_notepad} width={width} height={height}>
 
         <Toolbar windowTitle={thisTitle}>
             <Item label="File">
                 <Menu>
-                    <MenuItem label="New" icon={_folder}/>
+                    <MenuItem label="New" icon={_folder} hotkey='Ctrl+N'/>
                     <MenuItem label="Open" more>
                         <Menu>
                             <MenuItem label="Open this" disabled />
@@ -45,10 +43,10 @@ const Notepad = (props: NotepadProps) => {
                             </MenuItem>
                         </Menu>
                     </MenuItem>
-                    <MenuItem label="Save"/>
-                    <MenuItem label="Save As..."/>
+                    <MenuItem label="Save" hotkey='Ctrl+S'/>
+                    <MenuItem label="Save As..." hotkey='Ctrl+Shift+S'/>
                     <MenuItem label="Page Setup..."/>
-                    <MenuItem label="Print..."/>
+                    <MenuItem label="Print..." hotkey='Ctrl+P'/>
                     <MenuItem label="Exit"/>
                 </Menu>
             </Item>
@@ -62,18 +60,21 @@ const Notepad = (props: NotepadProps) => {
             
             <Item label="Search">
                 <Menu>
-                    <MenuItem label="Search This"/>
-                    <MenuItem label="Search That"/>
+                    <MenuItem label="Search This" hotkey='Ctrl+F'/>
+                    <MenuItem label="Search That" hotkey='Ctrl+Shift+F'/>
                 </Menu>
             </Item>
             
             <Item label="Help">
                 <Menu>
                     <MenuItem label="Help You"/>
+                    <div className={styles.separator}/>
                     <MenuItem label="Help Me"/>
                 </Menu>
             </Item>
         </Toolbar>
+
+
         <div className={styles.notepadContainer}>
             Hello Notepad?
         </div>

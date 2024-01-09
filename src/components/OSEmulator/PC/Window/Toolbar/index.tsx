@@ -42,6 +42,7 @@ const Toolbar = (props: ToolbarProps) => {
         const menuItem: Element = findParentWithClass(target, styles.menuItem) as Element
 
         if (!item && !menuItem) {
+            console.log('REMOVE ACTIVE FROM ALL IN TOOLBAR!')
             const activeBtns = thisToolbar.current.querySelectorAll(`.${styles.item}.${styles.active}, .${styles.menuItem}.${styles.active}`)
             activeBtns.forEach(element => {
                 element.classList.remove(styles.active)
@@ -56,7 +57,7 @@ const Toolbar = (props: ToolbarProps) => {
         if (!thisToolbar.current) { return }
 
         const target = event.target
-        if (target instanceof HTMLDivElement) {
+        if (target instanceof Element) {
             const item: Element = findParentWithClass(target, styles.item) as Element
             const menuItem: Element = findParentWithClass(target, styles.menuItem) as Element
             const menu = target.querySelector(`.${styles.menu}`) as HTMLElement
@@ -66,16 +67,29 @@ const Toolbar = (props: ToolbarProps) => {
                 if (element !== item &&
                     element !== menuItem &&
                     (menuItem === null || !element.contains(menuItem))) {
+                        console.log('Rmove from', element)
                     element.classList.remove(styles.active)
                 }
             })
 
-            if (!target.classList.contains(styles.active)) {
-                target.classList.add(styles.active)
-                setMenuOpen(true)
+            if (item) {
+                if (!item.classList.contains(styles.active)) {
+                    item.classList.add(styles.active)
+                    setMenuOpen(true)
+                }
+                else {
+                    item.classList.remove(styles.active)
+                }
             }
-            else if (!target.classList.contains(styles.menuItem)) {
-                target.classList.remove(styles.active)
+            if (menuItem) {
+                if (!menuItem.classList.contains(styles.active)) {
+                    menuItem.classList.add(styles.active)
+                    setMenuOpen(true)
+                }
+                else {
+                    menuItem.classList.remove(styles.active)
+                    setMenuOpen(false)
+                }
             }
         }
     }
@@ -84,7 +98,7 @@ const Toolbar = (props: ToolbarProps) => {
     const mouseOver = (event: React.MouseEvent<HTMLDivElement>) => {
         if (!thisToolbar.current) { return }
         const target = event.target
-        if (target instanceof HTMLDivElement) {
+        if (target instanceof Element) {
             const activeBtns = thisToolbar.current.querySelectorAll(`.${styles.item}.${styles.active}, .${styles.menuItem}.${styles.active}`)
             // if any of the items in toolbar already has an active class, we should add & remove active classes while hovering
             if (activeBtns.length > 0) {
@@ -99,8 +113,15 @@ const Toolbar = (props: ToolbarProps) => {
                     }
                 })
 
-                if (!target.classList.contains(styles.active)) {
-                    target.classList.add(styles.active)
+                if (item) {
+                    if (!item.classList.contains(styles.active)) {
+                        item.classList.add(styles.active)
+                    }
+                }
+                if (menuItem) {
+                    if (!menuItem.classList.contains(styles.active)) {
+                        menuItem.classList.add(styles.active)
+                    }
                 }
             }
         }
@@ -114,38 +135,46 @@ const Toolbar = (props: ToolbarProps) => {
     } : {}
 
 
-
+    type RefObject = {
+        eventsadded?: boolean;
+        // other properties...
+    };
     const addEventHandlers = (child: React.ReactNode): React.ReactNode => {
         if (React.isValidElement(child) && (child.type === Item || child.type === MenuItem)) {
-            const existingMouseDown = child.props.onMouseDown
-            const newMouseDown = startmenuMouseEvents.onMouseDown
+            const ref = React.createRef<RefObject>();
+            const existingMouseDown = child.props.onMouseDown;
+            const newMouseDown = startmenuMouseEvents.onMouseDown;
             const combinedMouseDown = (e: React.MouseEvent) => {
-                existingMouseDown && existingMouseDown(e)
-                newMouseDown && newMouseDown(e as React.MouseEvent<HTMLDivElement>)
-            }
+                existingMouseDown && existingMouseDown(e);
+                newMouseDown && newMouseDown(e as React.MouseEvent<HTMLDivElement>);
+            };
     
             const childWithProps = cloneElement(child as React.ReactElement, { 
                 ...(child.props || {}), 
                 ...startmenuMouseEvents, 
                 ...startmenuTouchEvents, 
-                onMouseDown: combinedMouseDown 
-            })
+                onMouseDown: combinedMouseDown,
+                ref
+            });
     
             if (child.props.children) {
-                const childrenWithProps = React.Children.map(child.props.children, addEventHandlers)
-                return cloneElement(childWithProps as React.ReactElement, { children: childrenWithProps })
+                const childrenWithProps = React.Children.map(child.props.children, addEventHandlers);
+                return cloneElement(childWithProps as React.ReactElement, { children: childrenWithProps });
             }
     
-            return childWithProps
+            if (ref.current && !ref.current.eventsadded) {
+                ref.current.eventsadded = true;
+                return childWithProps;
+            }
         }
     
         if (React.isValidElement(child) && (child as React.ReactElement<any>).props.children) {
-            const childrenWithProps = React.Children.map((child as React.ReactElement<any>).props.children, addEventHandlers)
-            return cloneElement(child as React.ReactElement<any>, { ...(child.props as any), children: childrenWithProps })
+            const childrenWithProps = React.Children.map((child as React.ReactElement<any>).props.children, addEventHandlers);
+            return cloneElement(child as React.ReactElement<any>, { ...(child.props as any), children: childrenWithProps });
         }
     
-        return child
-    }
+        return child;
+    };
 
     const childrenWithProps = React.Children.map(children, addEventHandlers)
 
@@ -190,6 +219,7 @@ Menu.displayName = "Menu"
 
 interface MenuItemProps extends React.HTMLAttributes<HTMLDivElement> {
     label: string;
+    hotkey?: string;
     disabled?: boolean;
     more?: boolean;
     icon?: StaticImageData;
@@ -197,7 +227,7 @@ interface MenuItemProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
-    ({ label, disabled, more, icon, children, ...props }, ref) => {
+    ({ label, hotkey, disabled, more, icon, children, ...props }, ref) => {
         const { styles } = useSettingsStore()
         const classNames = [styles.menuItem];
         if (disabled) classNames.push(styles.disabled);
@@ -209,7 +239,7 @@ const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
                     { icon && <Image className={styles.icon} src={icon} alt={`game-icon`} /> }
                 </div>
                 <span className={styles.menuItemLabel}>{label}</span>
-                <div className={styles.menuItemHotkey}></div>
+                <div className={styles.menuItemHotkey}>{hotkey}</div>
                 <div className={styles.menuItemArrow}></div>
                 {children}
             </div>
@@ -218,5 +248,5 @@ const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
 );
 MenuItem.displayName = "MenuItem"
 
-export default Toolbar
 export { Item, Menu, MenuItem }
+export default Toolbar
