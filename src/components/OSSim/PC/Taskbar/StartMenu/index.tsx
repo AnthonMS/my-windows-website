@@ -2,8 +2,8 @@
 import Image from 'next/image'
 import { useRef } from 'react'
 
-import styles_win98 from '@/components/OSEmulator/PC/styles-win98.module.css'
-import styles_winxp from '@/components/OSEmulator/PC/styles-winxp.module.css'
+import styles_win98 from '@/components/OSSim/PC/styles-win98.module.css'
+import styles_winxp from '@/components/OSSim/PC/styles-winxp.module.css'
 
 import images from './imageAssets'
 

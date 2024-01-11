@@ -83,6 +83,12 @@ a {
   font-weight: normal; 
   font-style: normal; 
 }
+@font-face {
+  font-family: 'Fixedsys Excelsior';
+  src: url('/Assets/Fonts/fsex300-webfont.woff') format('truetype');
+  font-weight: normal; 
+  font-style: normal; 
+}
 
 @media (pointer:none), (pointer:coarse) {
   body {

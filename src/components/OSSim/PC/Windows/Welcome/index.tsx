@@ -1,4 +1,4 @@
-import Window from '@/components/OSEmulator/PC/Window'
+import Window from '@/components/OSSim/PC/Window'
 
 import welcomeIcon from '@/assets/images/icons/welcome_icon.png'
 import AboutMeWindow from '../AboutMe'

@@ -14,6 +14,7 @@ import aboutMeIcon from '@/assets/images/icons/aboutme_icon.png'
 import contactIcon from '@/assets/images/icons/contact_icon.png'
 import userCardIcon from '@/assets/images/icons/user_card.png'
 import cmdIcon from '@/assets/images/icons/console_prompt-0.png'
+import _notepad from '@/assets/images/Windows98/notepad.png'
 
 // import Window from './Window'
 import WelcomeWindow from './Windows/Welcome'
@@ -29,7 +30,7 @@ import { isElementInClass, findParentWithClass } from '@/lib/util_DOM'
 import { useSettingsStore } from '@/stores/SettingsStore'
 import { isTouch } from '@/lib/utils'
 
-const PCEmulator = () => {
+const PCSim = () => {
     const { windows, openWindow, showWindow, removeClass, setWindowsContainer, setStyles, styles } = useSettingsStore()
     const initialMount = useRef<Boolean>(true)
     const windowsContainer = useRef<HTMLDivElement | null>(null)
@@ -179,7 +180,7 @@ const PCEmulator = () => {
     const highlight = (event: MouseEvent | TouchEvent) => {
         handleSelectedIconsWhileHighlighting()
         let clientX: number, clientY: number;
-    
+
         if ('clientX' in event) {
             clientX = event.clientX;
             clientY = event.clientY;
@@ -187,7 +188,7 @@ const PCEmulator = () => {
             clientX = event.touches[0].clientX;
             clientY = event.touches[0].clientY;
         }
-    
+
         setHighlightBox((prevBox) => ({
             ...prevBox,
             width: clientX - prevBox.startX,
@@ -254,32 +255,29 @@ const PCEmulator = () => {
         onTouchEnd: inputEnd,
         onTouchMove: inputMove
     }
-    
+
     return <>
-        <div className={styles.main || styles_win98.main} { ...mainMouseEvents } { ...mainTouchEvents }>
+        <div className={styles.main || styles_win98.main} {...mainMouseEvents} {...mainTouchEvents}>
             <DesktopIcon left='0px' top='0px' id='Computer'
-                text='Computer' icon={computerExplorer}
-                primaryAction={onClickDesktopIcon} />
+                text='Computer' icon={computerExplorer} />
 
             <DesktopIcon left='0px' top='100px' id='CommandPrompt'
-                text='Command Prompt' icon={cmdIcon}
-                primaryAction={onClickDesktopIcon} />
+                text='Command Prompt' icon={cmdIcon} />
 
             <DesktopIcon left='0px' top='200px' id='MicrosoftIE'
-                text='Microsoft IE' icon={msieIcon}
-                primaryAction={onClickDesktopIcon} />
+                text='Microsoft IE' icon={msieIcon} />
+
+            <DesktopIcon left='0px' top='300px' id='Notepad'
+                text='Notepad' icon={_notepad} />
 
             <DesktopIcon left='100px' top='0px' id='Welcome'
-                text='Welcome' icon={welcomeIcon}
-                primaryAction={onClickDesktopIcon} />
+                text='Welcome' icon={welcomeIcon} />
 
             <DesktopIcon left='100px' top='100px' id='AboutMe'
-                text='About Me' icon={userCardIcon}
-                primaryAction={onClickDesktopIcon} />
+                text='About Me' icon={userCardIcon} />
 
             <DesktopIcon left='200px' top='0px' id='Contact'
-                text='Contact' icon={contactIcon}
-                primaryAction={onClickDesktopIcon} />
+                text='Contact' icon={contactIcon} />
 
 
 
@@ -305,4 +303,4 @@ const PCEmulator = () => {
     </>
 }
 
-export default PCEmulator
+export default PCSim

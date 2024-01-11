@@ -42,7 +42,6 @@ const Toolbar = (props: ToolbarProps) => {
         const menuItem: Element = findParentWithClass(target, styles.menuItem) as Element
 
         if (!item && !menuItem) {
-            console.log('REMOVE ACTIVE FROM ALL IN TOOLBAR!')
             const activeBtns = thisToolbar.current.querySelectorAll(`.${styles.item}.${styles.active}, .${styles.menuItem}.${styles.active}`)
             activeBtns.forEach(element => {
                 element.classList.remove(styles.active)
@@ -67,12 +66,11 @@ const Toolbar = (props: ToolbarProps) => {
                 if (element !== item &&
                     element !== menuItem &&
                     (menuItem === null || !element.contains(menuItem))) {
-                        console.log('Rmove from', element)
                     element.classList.remove(styles.active)
                 }
             })
 
-            if (item) {
+            if (item && !menuItem) {
                 if (!item.classList.contains(styles.active)) {
                     item.classList.add(styles.active)
                     setMenuOpen(true)
@@ -91,9 +89,21 @@ const Toolbar = (props: ToolbarProps) => {
                     setMenuOpen(false)
                 }
             }
+
+            // Close menus after handling click events etc.
+            const menuItemClicked = () => {
+                item.classList.remove(styles.active)
+                setMenuOpen(false)
+            }
+            if (item && menuItem) {
+                if (!menuItem.classList.contains(styles.more)) {
+                    document.addEventListener("mouseup", menuItemClicked, { once: true })
+                }
+            }
         }
     }
 
+	
 
     const mouseOver = (event: React.MouseEvent<HTMLDivElement>) => {
         if (!thisToolbar.current) { return }
@@ -134,49 +144,56 @@ const Toolbar = (props: ToolbarProps) => {
         onTouchStart: handleInput
     } : {}
 
-
-    type RefObject = {
-        eventsadded?: boolean;
-        // other properties...
-    };
+    type MouseEventHandler = (e: React.MouseEvent<HTMLDivElement>) => void
+    type TouchEventHandler = (e: React.TouchEvent<HTMLDivElement>) => void
     const addEventHandlers = (child: React.ReactNode): React.ReactNode => {
         if (React.isValidElement(child) && (child.type === Item || child.type === MenuItem)) {
-            const ref = React.createRef<RefObject>();
-            const existingMouseDown = child.props.onMouseDown;
-            const newMouseDown = startmenuMouseEvents.onMouseDown;
-            const combinedMouseDown = (e: React.MouseEvent) => {
-                existingMouseDown && existingMouseDown(e);
-                newMouseDown && newMouseDown(e as React.MouseEvent<HTMLDivElement>);
-            };
-    
-            const childWithProps = cloneElement(child as React.ReactElement, { 
-                ...(child.props || {}), 
-                ...startmenuMouseEvents, 
-                ...startmenuTouchEvents, 
-                onMouseDown: combinedMouseDown,
+            const ref = React.createRef()
+            const combinedMouseEvents = Object.keys(startmenuMouseEvents).reduce((handlers: Record<string, MouseEventHandler>, key) => {
+                const existingHandler = child.props[key as keyof typeof startmenuMouseEvents] as MouseEventHandler
+                const newHandler = startmenuMouseEvents[key as keyof typeof startmenuMouseEvents]
+                handlers[key] = (e: React.MouseEvent<HTMLDivElement>) => {
+                    existingHandler && existingHandler(e)
+                    newHandler && newHandler(e)
+                };
+                return handlers
+            }, {} as Record<string, MouseEventHandler>)
+
+            const combinedTouchEvents = Object.keys(startmenuTouchEvents).reduce((handlers: Record<string, TouchEventHandler>, key) => {
+                const existingHandler = child.props[key as keyof typeof startmenuTouchEvents] as TouchEventHandler
+                const newHandler = startmenuTouchEvents[key as keyof typeof startmenuTouchEvents]
+                handlers[key] = (e: React.TouchEvent<HTMLDivElement>) => {
+                    existingHandler && existingHandler(e)
+                    newHandler && newHandler(e)
+                }
+                return handlers
+            }, {} as Record<string, TouchEventHandler>)
+
+
+            const childWithProps = cloneElement(child as React.ReactElement, {
+                ...(child.props || {}),
+                ...combinedMouseEvents,
+                ...combinedTouchEvents,
                 ref
-            });
-    
+            })
+
+
             if (child.props.children) {
-                const childrenWithProps = React.Children.map(child.props.children, addEventHandlers);
-                return cloneElement(childWithProps as React.ReactElement, { children: childrenWithProps });
-            }
-    
-            if (ref.current && !ref.current.eventsadded) {
-                ref.current.eventsadded = true;
-                return childWithProps;
+                const childrenWithProps = React.Children.map(child.props.children, addEventHandlers)
+                return cloneElement(childWithProps as React.ReactElement, { children: childrenWithProps })
             }
         }
-    
+
         if (React.isValidElement(child) && (child as React.ReactElement<any>).props.children) {
-            const childrenWithProps = React.Children.map((child as React.ReactElement<any>).props.children, addEventHandlers);
-            return cloneElement(child as React.ReactElement<any>, { ...(child.props as any), children: childrenWithProps });
+            const childrenWithProps = React.Children.map((child as React.ReactElement<any>).props.children, addEventHandlers)
+            return cloneElement(child as React.ReactElement<any>, { ...(child.props as any), children: childrenWithProps })
         }
-    
-        return child;
-    };
+
+        return child
+    }
 
     const childrenWithProps = React.Children.map(children, addEventHandlers)
+    // console.log('childrenWithProps:', childrenWithProps)
 
     if (!styles.window) return <></>
     return <div ref={thisToolbar} className={styles.toolbar}>
@@ -236,7 +253,7 @@ const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
         return (
             <div className={classNames.join(' ')} ref={ref} {...props}>
                 <div className={styles.menuItemCheck}>
-                    { icon && <Image className={styles.icon} src={icon} alt={`game-icon`} /> }
+                    {icon && <Image className={styles.icon} src={icon} alt={``} />}
                 </div>
                 <span className={styles.menuItemLabel}>{label}</span>
                 <div className={styles.menuItemHotkey}>{hotkey}</div>

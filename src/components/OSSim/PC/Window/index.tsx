@@ -26,10 +26,11 @@ export interface WindowProps {
     maximizeBtn?: Boolean
     helpBtn?: Boolean
     closeBtn?: Boolean
+    onClose?: Function
 }
 
 const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unknown>) => {
-    const { children, width, height, left, top, title, icon, onActive, fullscreen } = props
+    const { children, width, height, left, top, title, icon, onActive, onClose, fullscreen } = props
     let { hideBtn, maximizeBtn, helpBtn, closeBtn } = props
     if (hideBtn === null || hideBtn === undefined) { hideBtn = true }
     if (maximizeBtn === null || maximizeBtn === undefined) { maximizeBtn = true }
@@ -38,8 +39,6 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
     const { windows, openWindow, closeWindow, hideWindow, updateWindowStyle, removeClass, styles } = useSettingsStore()
     const initialMount = useRef<Boolean>(true)
     const thisWindow = useRef<HTMLDivElement | null>(null)
-    // const [toolbar, setToolbar] = useState<React.ReactElement | null>(null)
-    // const [otherChildren, setOtherChildren] = useState<React.ReactElement[]>([])
     let toolbarElement: React.ReactElement | null = null
     let otherChildren: React.ReactElement[] = []
 
@@ -51,18 +50,30 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
 
     const [isFullscreen, setIsFullscreen] = useState(fullscreen || false)
     const [thisTitle, setThisTitle] = useState<string>(generateTitle(title))
+    const updateThisTitle = (newTitle: string) => {
+        setThisTitle(generateTitle(newTitle))
+        updateWindowStyle(thisTitle, { })
+    }
     function generateTitle(baseTitle: string): string {
         if (!windows.some(win => win.getAttribute('data-title') === baseTitle)) {
             return baseTitle
         }
-
+    
         let counter = 1
-        let newTitle = `${baseTitle} ${counter}`
+        let newTitle = insertCounter(baseTitle, counter)
         while (windows.some(win => win.getAttribute('data-title') === newTitle)) {
             counter++
-            newTitle = `${baseTitle} ${counter}`
+            newTitle = insertCounter(baseTitle, counter)
         }
         return newTitle
+    }
+    function insertCounter(baseTitle: string, counter: number): string {
+        const dotIndex = baseTitle.indexOf('.')
+        if (dotIndex === -1) { // no extension
+            return `${baseTitle} ${counter}`
+        } else {
+            return `${baseTitle.slice(0, dotIndex)} ${counter}${baseTitle.slice(dotIndex)}`
+        }
     }
 
     React.Children.forEach(children, child => {
@@ -79,6 +90,9 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
     React.useImperativeHandle(ref, () => ({
         close: () => {
             closeThis()
+        },
+        updateTitle: (newTitle:string) => {
+            updateThisTitle(newTitle)
         },
         // expose more functions or values here if needed
     }))
@@ -403,7 +417,12 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
             hideThis()
         }
         else if (event.currentTarget.classList.contains(styles.close)) {
-            closeThis()
+            if (onClose) {
+                onClose()
+            }
+            else {
+                closeThis()
+            }
         }
         else if (event.currentTarget.classList.contains(styles.help)) {
             console.log('help?')

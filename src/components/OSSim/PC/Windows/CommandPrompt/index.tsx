@@ -1,4 +1,4 @@
-import Window from '@/components/OSEmulator/PC/Window'
+import Window from '@/components/OSSim/PC/Window'
 
 import cmdIcon from '@/assets/images/icons/console_prompt-0.png'
 import { KeyboardEventHandler, useRef, useState, useEffect } from 'react'

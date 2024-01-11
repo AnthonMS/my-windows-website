@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from 'react'
 
 import { useSettingsStore } from '@/stores/SettingsStore'
 
-// import AboutMeWindow from '@/components/OSEmulator/PC/Windows/AboutMe'
 import AboutMeWindow from '../Windows/AboutMe'
 import { findParentWithClass, getClientCoordinates } from '@/lib/util_DOM'
 import PopupWindow from '../Windows/Popup'

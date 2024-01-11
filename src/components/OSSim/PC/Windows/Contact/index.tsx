@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import Window from '@/components/OSEmulator/PC/Window'
+import Window from '@/components/OSSim/PC/Window'
 
 import contactIcon from '@/assets/images/icons/contact_icon.png'
 import sendmailIcon from '@/assets/images/icons/sendmail_icon.png'

@@ -1,6 +1,6 @@
 import { useRef } from 'react'
 
-import Window from '@/components/OSEmulator/PC/Window'
+import Window from '@/components/OSSim/PC/Window'
 
 import errorIcon from '@/assets/images/icons/msg_error-0.png'
 import successIcon from '@/assets/images/icons/check-0.png'
