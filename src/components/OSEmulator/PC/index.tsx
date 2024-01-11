@@ -46,9 +46,9 @@ const PCEmulator = () => {
         }
 
         if (initialMount.current) {
-            openWindow(<Notepad />)
+            // openWindow(<Notepad />)
             // openWindow(<CommandPrompt />)
-            // openWindow(<WelcomeWindow />)
+            openWindow(<WelcomeWindow />)
             // openWindow(<AboutMeWindow />)
             // openWindow(<ContactWindow />)
             // openWindow(<ErrorWindow text='This is an error message. Wubba lubba dub dub!' />)
