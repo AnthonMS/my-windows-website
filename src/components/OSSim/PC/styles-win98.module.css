@@ -1290,21 +1290,37 @@
     flex-direction: column;
     height: 100%;
 
-    .text {
+    .content {
         color: black;
         margin: 5px;
+        flex-grow: 1;
     }
 
-    .content {
+    .bottomContainer {
         display: flex;
         justify-content: space-between;
         align-items: flex-end;
         margin-top: auto;
 
         .buttonContainer {
+            display: flex;
+            justify-content: flex-end;
             margin-left: auto;
             margin-right: 5px;
             margin-bottom: 5px;
+        }
+
+        .buttonContainer>*:not(:first-child) {
+            margin-left: 5px;
+        }
+        .buttonContainer > * {
+            /* padding-left: 5px;
+            padding-right: 5px;
+             */
+             min-width: 75px;
+             >.buttonContent {
+                 justify-content: center;
+             }
         }
     }
 }
@@ -1352,5 +1368,18 @@
             }
 
         }
+    }
+}
+
+.notepadWarning {
+    display: flex;
+    align-items: center;
+
+    >.img {
+        margin: 7px;
+    }
+
+    >.text {
+        margin: 5px;
     }
 }

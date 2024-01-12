@@ -42,6 +42,9 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
     let toolbarElement: React.ReactElement | null = null
     let otherChildren: React.ReactElement[] = []
 
+
+    const hideBtnRef = useRef(null)
+
     const [isHeaderHeld, setIsHeaderHeld] = useState(false)
     const [isResizeHeld, setIsResizeHeld] = useState(false)
     const [resizeX, setResizeX] = useState<number>(0) // 0: false, -1: true inverse, 1: true
@@ -492,6 +495,12 @@ const Window = React.forwardRef((props: WindowProps, ref: React.ForwardedRef<unk
     </>
 
 })
-
 Window.displayName = 'Window'
+
+export function useWindowRef() {
+    return useRef<{ 
+        close: () => void,
+        updateTitle: (newTitle:string) => void,
+     }  | null>(null)
+}
 export default Window

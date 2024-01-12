@@ -1,13 +1,17 @@
-import { useRef, useState } from 'react'
+import { use, useEffect, useRef, useState } from 'react'
 
-import Window from '@/components/OSSim/PC/Window'
+import Image from 'next/image'
+import Window, { useWindowRef } from '@/components/OSSim/PC/Window'
 import Toolbar, { Item, Menu, MenuItem } from '@/components/OSSim/PC/Window/Toolbar'
 
 import _notepad from '@/assets/images/Windows98/notepad.png'
 import _folder from '@/assets/images/Windows98/folder.png'
 import _checkmark from '@/assets/images/Windows98/checkmark_small.png'
+import _warning from '@/assets/images/Windows98/warning.png'
 
 import { useSettingsStore } from '@/stores/SettingsStore'
+import Popup, { usePopupRef } from '../Popup'
+import Button from '../../UI/Button'
 
 interface NotepadProps {
     width?: number
@@ -17,7 +21,9 @@ const Notepad = (props: NotepadProps) => {
     const { } = props
     let { width, height } = props
     const { styles, openWindow } = useSettingsStore()
-    const windowRef = useRef<{ close: () => void, updateTitle: (newTitle: string) => void } | null>(null)
+    // const windowRef = useRef<{ close: () => void, updateTitle: (newTitle: string) => void } | null>(null)
+    const windowRef = useWindowRef()
+    const unsavedChangesPopupRef = usePopupRef()
     const textareaRef = useRef<HTMLTextAreaElement | null>(null)
     const fileInputRef = useRef<HTMLInputElement>(null)
     const [thisTitle, setThisTitle] = useState('Notepad - Untitled.txt')
@@ -26,6 +32,7 @@ const Notepad = (props: NotepadProps) => {
     const [textareaSelectionEnd, setTextareaSelectionEnd] = useState<number>(0)
     const [textareaHistory, setTextareaHistory] = useState<string[]>([''])
     const [textareaHistoryIndex, setTextareaHistoryIndex] = useState(0)
+    const [lastSavedHistoryIndex, setLastSavedHistoryIndex] = useState(-1)
     const [textareaTimeoutId, setTextareaTimeoutId] = useState<NodeJS.Timeout | null>(null)
 
     const [wrap, setWrap] = useState(false)
@@ -36,15 +43,66 @@ const Notepad = (props: NotepadProps) => {
     if (height === null || height === undefined) {
         height = Math.min(window.innerHeight - 25, 750)
     }
+    useEffect(() => {
+        if (lastSavedHistoryIndex === -1) { return }
+        updateTitleBySaveState()
+    }, [lastSavedHistoryIndex])
+
     const updateTextareaHistory = (newValue: string) => {
         setTextareaHistory(prevHistory => [...prevHistory.slice(0, textareaHistoryIndex + 1), newValue])
         setTextareaHistoryIndex(textareaHistoryIndex + 1)
+
+        updateTitleBySaveState()
+    }
+    const updateTitleBySaveState = () => {
+        const text = textareaRef.current!.value
+        const firstLine = text.split('\n')[0].split(' ')
+        let newTitle = thisTitle
+
+        if (newTitle.startsWith('Notepad - Untitled') && firstLine[0] || (newTitle.length < 20 && !firstLine[1])) {
+            // first word from first line in textarea as filename
+            newTitle = firstLine[0] + '.txt'
+        }
+
+        const lastSavedState = textareaHistory[lastSavedHistoryIndex]
+        if (text === lastSavedState) {
+            newTitle = newTitle.replace('*', '')
+        }
+        else if (!newTitle.endsWith('*')) {
+            newTitle += '*'
+        }
+
+        if (thisTitle !== newTitle) {
+            setThisTitle(newTitle)
+            windowRef.current?.updateTitle(newTitle)
+        }
     }
 
-    const handleClose = () => {
-        if (!windowRef.current || !windowRef.current.close) { return }
-        windowRef.current.close()
+    const save = async () => {
+        if (!textareaRef.current) { return }
+        const text = textareaRef.current.value
+        const blob = new Blob([text], { type: 'text/plain' })
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = thisTitle
+        link.click()
+        URL.revokeObjectURL(url)
+        link.remove()
+        setLastSavedHistoryIndex(textareaHistoryIndex)
     }
+    const close = () => {
+        if (!windowRef.current) { return }
+        const text = textareaRef.current?.value || ''
+        const lastSavedState = textareaHistory[lastSavedHistoryIndex] || ''
+        if (text === lastSavedState) {
+            windowRef.current.close()
+        }
+        else {
+            openWindow(unsavedChangesPopup)
+        }
+    }
+
 
     const handleNew = (event: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
         if ('button' in event && event.button !== 0) { return }
@@ -66,23 +124,20 @@ const Notepad = (props: NotepadProps) => {
 
             const reader = new FileReader();
             reader.onload = function (e) {
-                textareaRef.current!.value = e.target?.result as string;
+                textareaRef.current!.value = e.target?.result as string
+                // updateTextareaHistory(textareaRef.current!.value)
+                // setLastSavedHistoryIndex(textareaHistoryIndex)
+
+                setTextareaHistory([textareaRef.current!.value])
+                setTextareaHistoryIndex(0)
+                setLastSavedHistoryIndex(0)
             }
             reader.readAsText(file);
         }
     }
     const handleSave = (event: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
         if ('button' in event && event.button !== 0) { return }
-        if (!textareaRef.current) { return }
-        const text = textareaRef.current.value
-        const blob = new Blob([text], { type: 'text/plain' })
-        const url = URL.createObjectURL(blob)
-        const link = document.createElement('a')
-        link.href = url
-        link.download = thisTitle
-        link.click()
-        URL.revokeObjectURL(url)
-        link.remove()
+        save()
     }
     const handleSaveAs = (event: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
         if ('button' in event && event.button !== 0) { return }
@@ -113,8 +168,7 @@ const Notepad = (props: NotepadProps) => {
     }
     const handleExit = (event: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
         if ('button' in event && event.button !== 0) { return }
-        if (!windowRef.current || !windowRef.current.close) { return }
-        windowRef.current.close()
+        close()
     }
 
 
@@ -273,8 +327,38 @@ const Notepad = (props: NotepadProps) => {
             handleRedo()
         }
     }
+
     if (!styles.window) return <></>
-    return <Window ref={windowRef} title={thisTitle} icon={_notepad} width={width} height={height} onClose={handleClose}>
+    const unsavedChangesPopup = <>
+        <Popup ref={unsavedChangesPopupRef} warning={true} title='Unsaved Changes...' width={Math.min(window.innerWidth - 25, 400)} height={Math.min(window.innerHeight - 25, 175)}>
+            <div className={styles.notepadWarning}>
+                <Image className={styles.img} src={_warning} width={32} height={32} alt='warning' />
+                <p className={styles.text} >
+                    The text in {thisTitle} has changed.
+                    <br /><br />
+                    Do you want to save the changes?
+                </p>
+            </div>
+            <Button text='Yes' onClick={e => {
+                unsavedChangesPopupRef.current!.window!.close()
+                save()
+                if (!windowRef.current) { return }
+                windowRef.current.close()
+            }} />
+            <Button text='No' onClick={e => {
+                unsavedChangesPopupRef.current!.window!.close()
+                if (!windowRef.current) { return }
+                windowRef.current.close()
+            }} />
+            <Button text='Cancel' onClick={e => {
+                unsavedChangesPopupRef.current!.window!.close()
+                if (!textareaRef.current) { return }
+                textareaRef.current.focus()
+                textareaRef.current.setSelectionRange(textareaSelectionStart, textareaSelectionEnd)
+            }} />
+        </Popup>
+    </>
+    return <Window ref={windowRef} title={thisTitle} icon={_notepad} width={width} height={height} onClose={close}>
 
         <Toolbar windowTitle={thisTitle}>
             <Item label="File">

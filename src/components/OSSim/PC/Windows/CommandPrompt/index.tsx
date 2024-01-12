@@ -1,4 +1,4 @@
-import Window from '@/components/OSSim/PC/Window'
+import Window, { useWindowRef } from '@/components/OSSim/PC/Window'
 
 import cmdIcon from '@/assets/images/icons/console_prompt-0.png'
 import { KeyboardEventHandler, useRef, useState, useEffect } from 'react'
@@ -37,7 +37,8 @@ const CommandPrompt = (props: CommandPromptProps) => {
     const [command, setCommand] = useState<string>('')
     const [output, setOutput] = useState<string[]>(['Welcome to the Command Prompt Emulator!'])
 
-    const windowRef = useRef<{ close: () => void } | null>(null)
+    // const windowRef = useRef<{ close: () => void } | null>(null)
+    const windowRef = useWindowRef()
 
     const updateOutput = (str: string) => {
         setOutput((prev) => [...prev, str])

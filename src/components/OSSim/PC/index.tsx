@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef, MutableRefObject } from 'react'
 
+import Image from 'next/image'
 import styles_win98 from './styles-win98.module.css'
 import styles_winxp from './styles-winxp.module.css'
 
@@ -15,6 +16,7 @@ import contactIcon from '@/assets/images/icons/contact_icon.png'
 import userCardIcon from '@/assets/images/icons/user_card.png'
 import cmdIcon from '@/assets/images/icons/console_prompt-0.png'
 import _notepad from '@/assets/images/Windows98/notepad.png'
+import _warning from '@/assets/images/Windows98/warning.png'
 
 // import Window from './Window'
 import WelcomeWindow from './Windows/Welcome'
@@ -23,9 +25,9 @@ import ContactWindow from './Windows/Contact'
 import ErrorWindow from './Windows/Popup'
 import CommandPrompt from './Windows/CommandPrompt'
 import Notepad from './Windows/Notepad'
+import Popup, {usePopupRef} from './Windows/Popup'
 
 import { isElementInClass, findParentWithClass } from '@/lib/util_DOM'
-
 
 import { useSettingsStore } from '@/stores/SettingsStore'
 import { isTouch } from '@/lib/utils'
@@ -38,6 +40,7 @@ const PCSim = () => {
     const [isHighlighting, setIsHighlighting] = useState(false)
     const [highlightBox, setHighlightBox] = useState({ startX: 0, startY: 0, width: 0, height: 0 })
     const [highlightBoxRendered, setHighlightBoxRendered] = useState({ startX: 0, startY: 0, width: 0, height: 0 })
+
 
 
     useEffect(() => {

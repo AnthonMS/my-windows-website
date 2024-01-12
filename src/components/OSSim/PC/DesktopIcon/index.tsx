@@ -6,7 +6,7 @@ import { useSettingsStore } from '@/stores/SettingsStore'
 
 import AboutMeWindow from '../Windows/AboutMe'
 import { findParentWithClass, getClientCoordinates } from '@/lib/util_DOM'
-import PopupWindow from '../Windows/Popup'
+import Popup from '../Windows/Popup'
 import { isTouch } from '@/lib/utils'
 
 interface DesktopIconProps {
@@ -71,11 +71,11 @@ const DesktopIcon = (props: DesktopIconProps) => {
                 openWindow(windowEl)
             }
             else {
-                openWindow(<PopupWindow width={300} height={150} error={true} title='Program not found' text='The requested program could not be found.' />)
+                openWindow(<Popup width={300} height={150} error={true} title='Program not found'>The requested program could not be found.</Popup>)
             }
         }
         catch (err) {
-            openWindow(<PopupWindow error={true} title='Error' text='An error occurred while loading the program.' />)
+            openWindow(<Popup error={true} title='Error'>An error occurred while loading the program.</Popup>)
             console.warn(err)
         }
     }

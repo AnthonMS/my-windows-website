@@ -5,7 +5,7 @@ import Window from '@/components/OSSim/PC/Window'
 import contactIcon from '@/assets/images/icons/contact_icon.png'
 import sendmailIcon from '@/assets/images/icons/sendmail_icon.png'
 
-import PopupWindow from '../Popup'
+import Popup from '../Popup'
 import Button from '../../UI/Button'
 
 import { useSettingsStore } from '@/stores/SettingsStore'
@@ -31,23 +31,23 @@ const ContactWindow = (props: ContactWindowProps) => {
 
     const click = async (event: React.MouseEvent<HTMLDivElement>) => {
         if (name === '') {
-            openWindow(<PopupWindow error={true} title='Name missing' text='Your name is required.' />)
+            openWindow(<Popup error={true} title='Name missing'>Your name is required.</Popup>)
             return
         }
         if (email === '') {
-            openWindow(<PopupWindow error={true} title='Email missing' text='Your email is required.' />)
+            openWindow(<Popup error={true} title='Email missing'>Your email is required.</Popup>)
             return
         }
         if (phone === '') {
-            openWindow(<PopupWindow error={true} title='Phone missing' text='Your phone is required.' />)
+            openWindow(<Popup error={true} title='Phone missing'>Your phone is required.</Popup>)
             return
         }
         if (subject === '') {
-            openWindow(<PopupWindow error={true} title='Subject missing' text='Subject is required.' />)
+            openWindow(<Popup error={true} title='Subject missing'>Subject is required.</Popup>)
             return
         }
         if (content === '') {
-            openWindow(<PopupWindow error={true} title='Content missing' text='Content is required.' />)
+            openWindow(<Popup error={true} title='Content missing'>Content is required.</Popup>)
             return
         }
 
@@ -60,10 +60,10 @@ const ContactWindow = (props: ContactWindowProps) => {
         })
         const data = await res.data
         if (res.status === 200) {
-            openWindow(<PopupWindow title='Message sent!' text='Message was succesfully sent!' />)
+            openWindow(<Popup title='Message sent!'>Message was succesfully sent!</Popup>)
         }
         else {
-            openWindow(<PopupWindow error={true} title='Failed sending message...' text='There was an error when trying to send your message.' />)
+            openWindow(<Popup error={true} title='Failed sending message...'>There was an error when trying to send your message.</Popup>)
             console.error(data)
         }
     }
