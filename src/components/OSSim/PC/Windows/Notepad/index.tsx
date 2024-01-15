@@ -12,18 +12,20 @@ import _warning from '@/assets/images/Windows98/warning.png'
 import { useSettingsStore } from '@/stores/SettingsStore'
 import Popup, { usePopupRef } from '../Popup'
 import Button from '../../UI/Button'
+import Find from '../Find'
 
 interface NotepadProps {
+    file?: string
     width?: number
     height?: number
 }
 const Notepad = (props: NotepadProps) => {
-    const { } = props
+    const { file } = props
     let { width, height } = props
     const { styles, openWindow } = useSettingsStore()
-    // const windowRef = useRef<{ close: () => void, updateTitle: (newTitle: string) => void } | null>(null)
     const windowRef = useWindowRef()
     const unsavedChangesPopupRef = usePopupRef()
+    const initialMount = useRef<Boolean>(true)
     const textareaRef = useRef<HTMLTextAreaElement | null>(null)
     const fileInputRef = useRef<HTMLInputElement>(null)
     const [thisTitle, setThisTitle] = useState('Notepad - Untitled.txt')
@@ -44,6 +46,38 @@ const Notepad = (props: NotepadProps) => {
         height = Math.min(window.innerHeight - 25, 750)
     }
     useEffect(() => {
+        if (textareaRef.current) {
+            if (initialMount.current) {
+                initialMount.current = false
+                if (file) {
+                    const url = new URL(file)
+                    const filename = url.pathname.split('/').pop() || ''
+                    setThisTitle(filename)
+
+                    fetch(file)
+                        .then(response => response.text())
+                        .then(text => {
+                            textareaRef.current!.value = text
+
+                            setTextareaHistory([text])
+                            setTextareaHistoryIndex(0)
+                            setLastSavedHistoryIndex(0)
+                        })
+                }
+            }
+        }
+    }, [])
+
+    useEffect(() => {
+        if (!initialMount.current) {
+            setTimeout(() => { // Wait on setting Title so it finishes rendering itself
+                windowRef.current?.updateTitle(thisTitle)
+            }, 100)
+        }
+    }, [thisTitle])
+    
+
+    useEffect(() => {
         if (lastSavedHistoryIndex === -1) { return }
         updateTitleBySaveState()
     }, [lastSavedHistoryIndex])
@@ -55,7 +89,8 @@ const Notepad = (props: NotepadProps) => {
         updateTitleBySaveState()
     }
     const updateTitleBySaveState = () => {
-        const text = textareaRef.current!.value
+        // console.log('Update something?')
+        const text = textareaRef.current!.value.replace(/\r\n/g, '\n')
         const firstLine = text.split('\n')[0].split(' ')
         let newTitle = thisTitle
 
@@ -64,7 +99,7 @@ const Notepad = (props: NotepadProps) => {
             newTitle = firstLine[0] + '.txt'
         }
 
-        const lastSavedState = textareaHistory[lastSavedHistoryIndex]
+        const lastSavedState = textareaHistory[lastSavedHistoryIndex].replace(/\r\n/g, '\n')
         if (text === lastSavedState) {
             newTitle = newTitle.replace('*', '')
         }
@@ -74,7 +109,7 @@ const Notepad = (props: NotepadProps) => {
 
         if (thisTitle !== newTitle) {
             setThisTitle(newTitle)
-            windowRef.current?.updateTitle(newTitle)
+            // windowRef.current?.updateTitle(newTitle)
         }
     }
 
@@ -119,7 +154,7 @@ const Notepad = (props: NotepadProps) => {
         if (file) {
             if (thisTitle !== file.name) {
                 setThisTitle(file.name)
-                windowRef.current?.updateTitle(file.name)
+                // windowRef.current?.updateTitle(file.name)
             }
 
             const reader = new FileReader();

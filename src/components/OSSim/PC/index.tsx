@@ -50,9 +50,9 @@ const PCSim = () => {
         }
 
         if (initialMount.current) {
-            // openWindow(<Notepad />)
+            openWindow(<Notepad file='http://localhost:3000/Assets/txt/test.txt' />)
             // openWindow(<CommandPrompt />)
-            openWindow(<WelcomeWindow />)
+            // openWindow(<WelcomeWindow />)
             // openWindow(<AboutMeWindow />)
             // openWindow(<ContactWindow />)
             // openWindow(<ErrorWindow text='This is an error message. Wubba lubba dub dub!' />)

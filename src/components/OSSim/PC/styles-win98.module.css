@@ -1314,9 +1314,6 @@
             margin-left: 5px;
         }
         .buttonContainer > * {
-            /* padding-left: 5px;
-            padding-right: 5px;
-             */
              min-width: 75px;
              >.buttonContent {
                  justify-content: center;
