@@ -12,7 +12,7 @@ import _warning from '@/assets/images/Windows98/warning.png'
 import { useSettingsStore } from '@/stores/SettingsStore'
 import Popup, { usePopupRef } from '../Popup'
 import Button from '../../UI/Button'
-import Find from '../Find'
+import Find, { useFindRef } from '../Find'
 
 interface NotepadProps {
     file?: string
@@ -25,6 +25,7 @@ const Notepad = (props: NotepadProps) => {
     const { styles, openWindow } = useSettingsStore()
     const windowRef = useWindowRef()
     const unsavedChangesPopupRef = usePopupRef()
+    const findRef = useFindRef()
     const initialMount = useRef<Boolean>(true)
     const textareaRef = useRef<HTMLTextAreaElement | null>(null)
     const fileInputRef = useRef<HTMLInputElement>(null)
@@ -50,8 +51,7 @@ const Notepad = (props: NotepadProps) => {
             if (initialMount.current) {
                 initialMount.current = false
                 if (file) {
-                    const url = new URL(file)
-                    const filename = url.pathname.split('/').pop() || ''
+                    const filename = file.split('/').pop() || ''
                     setThisTitle(filename)
 
                     fetch(file)
@@ -113,6 +113,17 @@ const Notepad = (props: NotepadProps) => {
         }
     }
 
+    const findNext = () => {
+        if (!findRef.current) { return }
+        const { currentFoundIndex, foundItems } = findRef.current
+        if (currentFoundIndex === -1) { return }
+        if (foundItems.length === 0) { return }
+
+        const { startPosition, endPosition } = foundItems[currentFoundIndex]
+        textareaRef.current!.focus()
+        textareaRef.current!.setSelectionRange(startPosition, endPosition)
+    }
+
     const save = async () => {
         if (!textareaRef.current) { return }
         const text = textareaRef.current.value
@@ -128,8 +139,8 @@ const Notepad = (props: NotepadProps) => {
     }
     const close = () => {
         if (!windowRef.current) { return }
-        const text = textareaRef.current?.value || ''
-        const lastSavedState = textareaHistory[lastSavedHistoryIndex] || ''
+        const text = textareaRef.current?.value.replace(/\r\n/g, '\n') || ''
+        const lastSavedState = textareaHistory[lastSavedHistoryIndex].replace(/\r\n/g, '\n') || ''
         if (text === lastSavedState) {
             windowRef.current.close()
         }
@@ -324,6 +335,12 @@ const Notepad = (props: NotepadProps) => {
         }
     }
 
+    const handleFind = (event: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
+        if (!textareaRef.current) { return }
+        console.log('Open find!')
+        openWindow(<Find ref={findRef} findNext={findNext} text={textareaRef.current.value} />)
+    }
+
 
     const handleSelectionChange = (event: React.UIEvent<HTMLTextAreaElement>) => {
         const textarea = event.target as HTMLTextAreaElement
@@ -430,7 +447,7 @@ const Notepad = (props: NotepadProps) => {
 
             <Item label="Search">
                 <Menu>
-                    <MenuItem label="Find" hotkey='Ctrl+F' disabled />
+                    <MenuItem label="Find" hotkey='Ctrl+F' onClick={handleFind} />
                     <MenuItem label="Find Next..." hotkey='F3' disabled />
                 </Menu>
             </Item>

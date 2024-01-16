@@ -5,6 +5,7 @@ import Window, { useWindowRef } from '@/components/OSSim/PC/Window'
 import _warning from '@/assets/images/Windows98/warning.png'
 import _error from '@/assets/images/Windows98/error.png'
 import _success from '@/assets/images/Windows98/check.png'
+import _info from '@/assets/images/Windows98/info.png'
 
 import Button from '../../UI/Button'
 
@@ -15,15 +16,16 @@ interface PopupProps {
     title: string
     error?: boolean
     warning?: boolean
+    info?: boolean
     width?: number
     height?: number
     children?: React.ReactNode
 }
 const Popup = React.forwardRef<unknown, PopupProps>((props: PopupProps, ref: React.ForwardedRef<unknown>) => {
-    const { title, error, warning, children } = props
+    const { title, error, warning, info, children } = props
     let { width, height } = props
     const { styles } = useSettingsStore()
-    const icon = error ? _error : warning ? _warning : _success
+    const icon = error ? _error : warning ? _warning : info ? _info : _success
     if (width === null ||width === undefined) {
         width = Math.min(window.innerWidth - 25, 300)
     }
@@ -60,7 +62,7 @@ const Popup = React.forwardRef<unknown, PopupProps>((props: PopupProps, ref: Rea
 
             <div className={`${styles.bottomContainer}`}>
                 <div className={styles.buttonContainer}>
-                    { buttonChildren ? buttonChildren : <Button text='OK' onClick={click}/> }
+                    { buttonChildren.length > 0 ? buttonChildren : <Button text='OK' onClick={click}/> }
                 </div>
             </div>
         </div>

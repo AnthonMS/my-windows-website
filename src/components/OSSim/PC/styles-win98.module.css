@@ -1313,11 +1313,13 @@
         .buttonContainer>*:not(:first-child) {
             margin-left: 5px;
         }
-        .buttonContainer > * {
-             min-width: 75px;
-             >.buttonContent {
-                 justify-content: center;
-             }
+
+        .buttonContainer>* {
+            min-width: 75px;
+
+            >.buttonContent {
+                justify-content: center;
+            }
         }
     }
 }
@@ -1368,7 +1370,7 @@
     }
 }
 
-.notepadWarning {
+.notepadWarning, .notfoundWarning {
     display: flex;
     align-items: center;
 
@@ -1378,5 +1380,137 @@
 
     >.text {
         margin: 5px;
+    }
+}
+
+
+
+
+.findContainer {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    color: black;
+    font-size: 13px;
+    padding: 5px 5px 10px 5px;
+
+    >.left {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        margin-right: 5px;
+
+        >.inputContainer {
+            display: flex;
+            align-items: center;
+            >.label {
+                flex-shrink: 0;
+            }
+            >.input {
+                flex-grow: 1;
+                margin-left: 10px;
+            }
+        }
+
+        >.configContainer {
+            flex-grow: 1;
+            display: flex;
+
+            >.left {
+                flex-grow: 1;
+                display: grid;
+                grid-auto-flow: column;
+                align-items: end;
+
+                >.configColumn {
+                    >.checkboxContainer {
+                        >.checkbox {
+                            appearance: none;
+                            width: 10px;
+                            height: 10px;
+                            border: 1px solid black;
+                            position: relative;
+                            outline: none;
+                        }
+                        >.checkbox:after {
+                            content: "";
+                            width: 6px;
+                            height: 6px;
+                            position: absolute;
+                            top: 50%;
+                            left: 50%;
+                            transform: translate(-50%, -50%);
+                            background-color: black;
+                            opacity: 0;
+                        }
+                        >.checkbox:checked:after {
+                            opacity: 1;
+                        }
+                        >.label {
+                            padding: 0px 3px;
+                        }
+                        
+                        >.checkbox:not(:checked):hover:after {
+                            opacity: 0.5;
+                        }
+                    }
+                }
+                
+            }
+            >.right {
+                flex-shrink: 0;
+                display: flex;
+                flex-direction: column;
+
+                >.radioContainer {
+                    border: 1px solid rgba(163, 163, 163, 0.75);
+                    position: relative;
+                    padding: 10px 6px; 
+                    margin-top: auto;
+                    >.containerLabel {
+                        position: absolute;
+                        top: -10px;
+                        left: 5px;
+                        background-color: var(--grey-98);
+                    }
+                    >.radio {
+                        appearance: none;
+                        width: 10px;
+                        height: 10px;
+                        border: 1px solid black;
+                        border-radius: 50%;
+                        outline: none;
+                        /* box-shadow: 0 0 5px rgba(0,0,0,.2); */
+                    }
+                    >.radioLabel {
+                        padding: 0px 3px;
+                    }
+                    .radio:checked {
+                        background: radial-gradient(black 1px, transparent 3px);
+                        transition: 0.5s;
+                    }
+                    .radio:not(:checked):hover {
+                        background: radial-gradient(rgba(51, 51, 51, 0.75) 1px, transparent 3px);
+                        transition: 0.5s;
+                    }
+                }
+            }
+
+        }
+    }
+
+    >.right {
+        flex-shrink: 0;
+        margin-left: 5px;
+        /* border: 1px solid green; */
+
+        >.button {
+            margin: 0 0 7px 5px;
+            padding-left: 5px;
+            padding-right: 5px;
+            >.buttonContent {
+                justify-content: center;
+            }
+        }
     }
 }

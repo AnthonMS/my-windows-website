@@ -16,10 +16,10 @@ interface DesktopIconProps {
     primaryAction?: Function
     left: string
     top: string
-    // click: React.MouseEventHandler<HTMLDivElement>
+    windowProps?: Record<string, unknown>
 }
 const DesktopIcon = (props: DesktopIconProps) => {
-    const { id, text, icon, primaryAction, left, top } = props
+    const { id, text, icon, primaryAction, left, top, windowProps } = props
     const { windows, openWindow, styles } = useSettingsStore()
     const thisIcon = useRef<HTMLDivElement | null>(null)
     // const [isSelected, setIsSelected] = useState(false)
@@ -67,7 +67,7 @@ const DesktopIcon = (props: DesktopIconProps) => {
                 const WindowComponent = dynamic(() => import(`../Windows/${id}`), {
                     ssr: false,
                 })
-                const windowEl = <WindowComponent />
+                const windowEl = <WindowComponent {...windowProps}/>
                 openWindow(windowEl)
             }
             else {

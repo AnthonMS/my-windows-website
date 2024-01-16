@@ -25,7 +25,7 @@ import ContactWindow from './Windows/Contact'
 import ErrorWindow from './Windows/Popup'
 import CommandPrompt from './Windows/CommandPrompt'
 import Notepad from './Windows/Notepad'
-import Popup, {usePopupRef} from './Windows/Popup'
+import Popup, { usePopupRef } from './Windows/Popup'
 
 import { isElementInClass, findParentWithClass } from '@/lib/util_DOM'
 
@@ -50,9 +50,9 @@ const PCSim = () => {
         }
 
         if (initialMount.current) {
-            openWindow(<Notepad file='http://localhost:3000/Assets/txt/test.txt' />)
+            // openWindow(<Notepad file='/Assets/txt/test.txt' />)
             // openWindow(<CommandPrompt />)
-            // openWindow(<WelcomeWindow />)
+            openWindow(<WelcomeWindow />)
             // openWindow(<AboutMeWindow />)
             // openWindow(<ContactWindow />)
             // openWindow(<ErrorWindow text='This is an error message. Wubba lubba dub dub!' />)
@@ -272,6 +272,9 @@ const PCSim = () => {
 
             <DesktopIcon left='0px' top='300px' id='Notepad'
                 text='Notepad' icon={_notepad} />
+
+            <DesktopIcon left='0px' top='400px' id='Notepad'
+                text='test.txt' icon={_notepad} windowProps={{file:'/Assets/txt/test.txt'}} />
 
             <DesktopIcon left='100px' top='0px' id='Welcome'
                 text='Welcome' icon={welcomeIcon} />
