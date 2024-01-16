@@ -50,9 +50,12 @@ const PCSim = () => {
         }
 
         if (initialMount.current) {
-            // openWindow(<Notepad file='/Assets/txt/test.txt' />)
-            // openWindow(<CommandPrompt />)
             openWindow(<WelcomeWindow />)
+            
+            // openWindow(<Notepad file='/Assets/txt/README.txt' />)
+            // openWindow(<Notepad file='/Assets/txt/About.txt' />)
+
+            // openWindow(<CommandPrompt />)
             // openWindow(<AboutMeWindow />)
             // openWindow(<ContactWindow />)
             // openWindow(<ErrorWindow text='This is an error message. Wubba lubba dub dub!' />)
@@ -273,14 +276,17 @@ const PCSim = () => {
             <DesktopIcon left='0px' top='300px' id='Notepad'
                 text='Notepad' icon={_notepad} />
 
-            <DesktopIcon left='0px' top='400px' id='Notepad'
-                text='test.txt' icon={_notepad} windowProps={{file:'/Assets/txt/test.txt'}} />
+            <DesktopIcon left='100px' top='0px' id='Notepad'
+                text='README.txt' icon={_notepad} windowProps={{ file: '/Assets/txt/README.txt' }} />
 
-            <DesktopIcon left='100px' top='0px' id='Welcome'
-                text='Welcome' icon={welcomeIcon} />
+            {/* <DesktopIcon left='100px' top='0px' id='Welcome'
+                text='Welcome' icon={welcomeIcon} /> */}
 
-            <DesktopIcon left='100px' top='100px' id='AboutMe'
-                text='About Me' icon={userCardIcon} />
+            {/* <DesktopIcon left='200px' top='200px' id='AboutMe'
+                text='About Me' icon={userCardIcon} /> */}
+
+            <DesktopIcon left='100px' top='100px' id='Notepad'
+                text='About.txt' icon={userCardIcon} windowProps={{ file: '/Assets/txt/About.txt' }} />
 
             <DesktopIcon left='200px' top='0px' id='Contact'
                 text='Contact' icon={contactIcon} />

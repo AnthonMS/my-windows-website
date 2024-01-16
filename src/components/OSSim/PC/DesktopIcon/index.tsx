@@ -67,7 +67,7 @@ const DesktopIcon = (props: DesktopIconProps) => {
                 const WindowComponent = dynamic(() => import(`../Windows/${id}`), {
                     ssr: false,
                 })
-                const windowEl = <WindowComponent {...windowProps}/>
+                const windowEl = <WindowComponent {...windowProps} />
                 openWindow(windowEl)
             }
             else {
@@ -129,35 +129,25 @@ const DesktopIcon = (props: DesktopIconProps) => {
             const deltaX = clientX - prevMousePosition.x
             const deltaY = clientY - prevMousePosition.y
 
-            const computedStyles = getComputedStyle(thisIcon.current)
-            const currentLeft = parseInt(computedStyles.left, 10) || 0 // Default to 0 if left is not set
-            const currentTop = parseInt(computedStyles.top, 10) || 0 // Default to 0 if top is not set
-            const newLeft = currentLeft + deltaX
-            const newTop = currentTop + deltaY
-            thisIcon.current.style.left = `${newLeft}px`
-            thisIcon.current.style.top = `${newTop}px`
-
-            moveOtherSelectedIcons(deltaX, deltaY)
+            moveAllSelectedIcons(deltaX, deltaY)
         }
 
         setPrevMousePosition({ x: clientX, y: clientY })
     }
 
-    const moveOtherSelectedIcons = (deltaX: number, deltaY: number) => {
+    const moveAllSelectedIcons = (deltaX: number, deltaY: number) => {
         const selectedIcons = document.querySelectorAll(`.${styles.desktopIcon}.${styles.selected}`)
         selectedIcons.forEach((icon: Element) => {
-            if (icon.id !== id) {
-                const iconElement = icon as HTMLElement
+            const iconElement = icon as HTMLElement
 
-                const iconStyles = getComputedStyle(iconElement)
+            const iconStyles = getComputedStyle(iconElement)
 
-                const currentLeft = parseInt(iconStyles.left, 10) || 0 // Default to 0 if left is not set
-                const currentTop = parseInt(iconStyles.top, 10) || 0 // Default to 0 if top is not set
-                const newLeft = currentLeft + deltaX
-                const newTop = currentTop + deltaY
-                iconElement.style.left = `${newLeft}px`
-                iconElement.style.top = `${newTop}px`
-            }
+            const currentLeft = parseInt(iconStyles.left, 10) || 0 // Default to 0 if left is not set
+            const currentTop = parseInt(iconStyles.top, 10) || 0 // Default to 0 if top is not set
+            const newLeft = currentLeft + deltaX
+            const newTop = currentTop + deltaY
+            iconElement.style.left = `${newLeft}px`
+            iconElement.style.top = `${newTop}px`
         })
     }
 

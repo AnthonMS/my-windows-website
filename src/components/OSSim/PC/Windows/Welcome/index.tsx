@@ -6,6 +6,7 @@ import ContactWindow from '../Contact'
 
 import { useSettingsStore } from '@/stores/SettingsStore'
 import { isMobile, isTouch } from '@/lib/utils'
+import Notepad from '../Notepad'
 
 export interface WelcomeWindowProps {
 }
@@ -18,7 +19,8 @@ const WelcomeWindow = (props: WelcomeWindowProps) => {
         if (event.button === 0 && target instanceof HTMLAnchorElement) {
             // console.log('On Click', target)
             if (target.id === 'about') {
-                openWindow(<AboutMeWindow />)
+                // openWindow(<AboutMeWindow />)
+                openWindow(<Notepad file='/Assets/txt/About.txt' />)
             }
             if (target.id === 'contact') {
                 openWindow(<ContactWindow />)
@@ -75,7 +77,7 @@ const WelcomeWindow = (props: WelcomeWindowProps) => {
                     Start Here: Click on the Start Menu to explore the array of &quot;programs&quot; and unveil the magic within each window.
                 </p>
                 <p className={styles.text}>
-                    Click & Explore: Open windows, interact with icons, and discover hidden gems. Each element has a story waiting to unfold. (Tip: CTRL to move multiple icons)
+                    Click & Explore: Open windows, interact with icons, and discover hidden gems. Each element has a story waiting to unfold.
                 </p>
                 <p className={styles.text}>
                     Ctrl + Alt + Experience: Immerse yourself in the user-friendly chaos. The more you explore, the more you&apos;ll uncover.

@@ -37,8 +37,7 @@ const Notepad = (props: NotepadProps) => {
     const [textareaHistoryIndex, setTextareaHistoryIndex] = useState(0)
     const [lastSavedHistoryIndex, setLastSavedHistoryIndex] = useState(-1)
     const [textareaTimeoutId, setTextareaTimeoutId] = useState<NodeJS.Timeout | null>(null)
-
-    const [wrap, setWrap] = useState(false)
+    const [wrap, setWrap] = useState(true)
 
     if (width === null || width === undefined) {
         width = Math.min(window.innerWidth - 25, 650)
@@ -50,6 +49,7 @@ const Notepad = (props: NotepadProps) => {
         if (textareaRef.current) {
             if (initialMount.current) {
                 initialMount.current = false
+                handleWrap()
                 if (file) {
                     const filename = file.split('/').pop() || ''
                     setThisTitle(filename)
@@ -89,27 +89,25 @@ const Notepad = (props: NotepadProps) => {
         updateTitleBySaveState()
     }
     const updateTitleBySaveState = () => {
-        // console.log('Update something?')
         const text = textareaRef.current!.value.replace(/\r\n/g, '\n')
         const firstLine = text.split('\n')[0].split(' ')
         let newTitle = thisTitle
 
-        if (newTitle.startsWith('Notepad - Untitled') && firstLine[0] || (newTitle.length < 20 && !firstLine[1])) {
+        if (newTitle.startsWith('Notepad - Untitled') && firstLine[0] && firstLine[0] !== '' || (newTitle.length < 20 && firstLine[1])) {
             // first word from first line in textarea as filename
             newTitle = firstLine[0] + '.txt'
         }
 
-        const lastSavedState = textareaHistory[lastSavedHistoryIndex].replace(/\r\n/g, '\n')
-        if (text === lastSavedState) {
+        const lastSavedState = textareaHistory[lastSavedHistoryIndex]
+        if (lastSavedState && text === lastSavedState.replace(/\r\n/g, '\n')) {
             newTitle = newTitle.replace('*', '')
         }
         else if (!newTitle.endsWith('*')) {
             newTitle += '*'
         }
 
-        if (thisTitle !== newTitle) {
+        if ((newTitle !== '.txt' && newTitle !== '.txt*') && thisTitle !== newTitle) {
             setThisTitle(newTitle)
-            // windowRef.current?.updateTitle(newTitle)
         }
     }
 
@@ -140,8 +138,8 @@ const Notepad = (props: NotepadProps) => {
     const close = () => {
         if (!windowRef.current) { return }
         const text = textareaRef.current?.value.replace(/\r\n/g, '\n') || ''
-        const lastSavedState = textareaHistory[lastSavedHistoryIndex].replace(/\r\n/g, '\n') || ''
-        if (text === lastSavedState) {
+        const lastSavedState = textareaHistory[lastSavedHistoryIndex] || ''
+        if (text === lastSavedState.replace(/\r\n/g, '\n')) {
             windowRef.current.close()
         }
         else {
@@ -165,14 +163,11 @@ const Notepad = (props: NotepadProps) => {
         if (file) {
             if (thisTitle !== file.name) {
                 setThisTitle(file.name)
-                // windowRef.current?.updateTitle(file.name)
             }
 
             const reader = new FileReader();
             reader.onload = function (e) {
                 textareaRef.current!.value = e.target?.result as string
-                // updateTextareaHistory(textareaRef.current!.value)
-                // setLastSavedHistoryIndex(textareaHistoryIndex)
 
                 setTextareaHistory([textareaRef.current!.value])
                 setTextareaHistoryIndex(0)
@@ -337,7 +332,6 @@ const Notepad = (props: NotepadProps) => {
 
     const handleFind = (event: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
         if (!textareaRef.current) { return }
-        console.log('Open find!')
         openWindow(<Find ref={findRef} findNext={findNext} text={textareaRef.current.value} />)
     }
 
