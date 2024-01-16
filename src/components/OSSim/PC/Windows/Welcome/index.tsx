@@ -33,7 +33,7 @@ const WelcomeWindow = (props: WelcomeWindowProps) => {
 
         <div className={styles.windowContainer}>
             <p className={styles.welcomeTitle}>
-                Welcome<span className={styles.smaller}>to the 90s</span><span className={styles.small}>to my site!</span>
+                Welcome<span className={styles.smaller}>to the 90s</span><span className={styles.small}>to my simulation!</span>
             </p>
 
             <div className={`${styles.border} ${styles.content}`}>

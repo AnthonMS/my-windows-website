@@ -89,7 +89,7 @@ const Find = React.forwardRef<unknown, FindProps>((props: FindProps, ref: React.
             <div className={styles.notfoundWarning}>
                 <Image className={styles.img} src={_info} width={32} height={32} alt='warning' />
                 <p className={styles.text} >
-                    Cannot find "{findText}"
+                    Cannot find &quot;{findText}&quot;
                 </p>
             </div>
         </Popup>
